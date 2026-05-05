@@ -1,0 +1,7 @@
+:root {
+  --layout-page-gutter: clamp(1rem, 4vw, 3rem);
+  --layout-section-gap: clamp(3rem, 8vw, 7rem);
+  --layout-stack-gap: var(--spacing-6);
+  --layout-inline-gap: var(--spacing-3);
+  --layout-prose-width: var(--container-reading);
+}

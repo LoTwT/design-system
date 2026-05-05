@@ -1,0 +1,10 @@
+@theme {
+  --border-width-hairline: 0.5px;
+  --border-width-thin: 1px;
+  --border-width-medium: 1.5px;
+  --border-width-thick: 2px;
+  --border-width-heavy: 3px;
+  --border-style-solid: solid;
+  --border-style-dashed: dashed;
+  --border-style-dotted: dotted;
+}

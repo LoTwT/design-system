@@ -1,0 +1,18 @@
+@theme {
+  --size-icon-xs: 0.75rem;
+  --size-icon-sm: 1rem;
+  --size-icon-md: 1.25rem;
+  --size-icon-lg: 1.5rem;
+  --size-icon-xl: 2rem;
+
+  --size-control-xs: 1.75rem;
+  --size-control-sm: 2rem;
+  --size-control-md: 2.5rem;
+  --size-control-lg: 3rem;
+  --size-control-xl: 3.5rem;
+
+  --size-avatar-sm: 2rem;
+  --size-avatar-md: 2.75rem;
+  --size-avatar-lg: 4rem;
+  --size-avatar-xl: 6rem;
+}

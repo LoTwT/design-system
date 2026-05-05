@@ -1,0 +1,4 @@
+:root {
+  --touch-target-min: 2.75rem;
+  --touch-target-gap: 0.5rem;
+}

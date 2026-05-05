@@ -1,0 +1,35 @@
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  color-scheme: dark;
+
+  --surface-canvas: #121019;
+  --surface-panel: #191623;
+  --surface-elevated: #211d2e;
+  --surface-subtle: #2a2635;
+  --surface-muted: #373142;
+
+  --text-primary: #f7f1e6;
+  --text-secondary: #d7cdbc;
+  --text-muted: #aa9e8b;
+  --text-inverse: #151310;
+  --text-accent: var(--color-lavender-300);
+
+  --border-subtle: rgb(247 241 230 / 0.1);
+  --border-default: rgb(247 241 230 / 0.16);
+  --border-strong: rgb(247 241 230 / 0.28);
+
+  --accent-primary: var(--color-lavender-300);
+  --accent-primary-hover: var(--color-lavender-200);
+  --accent-primary-active: var(--color-lavender-100);
+  --accent-soft: rgb(156 143 217 / 0.18);
+  --accent-contrast: var(--color-lavender-950);
+
+  --focus-ring-color: var(--color-lavender-300);
+  --focus-ring-shadow: 0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18);
+
+  --status-success: #84dfbd;
+  --status-warning: #ffdc7a;
+  --status-danger: #ff9ab6;
+  --status-info: #8dc5ff;
+}

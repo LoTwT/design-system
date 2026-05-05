@@ -1,0 +1,11 @@
+@theme {
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-popover: 400;
+  --z-tooltip: 500;
+  --z-overlay: 800;
+  --z-modal: 900;
+  --z-toast: 1000;
+}

@@ -1,0 +1,35 @@
+@theme {
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-normal: 180ms;
+  --duration-slow: 260ms;
+  --duration-slower: 420ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-soft: cubic-bezier(0.7, 0, 0.84, 0);
+
+  --animate-fade-in: ayingott-fade-in var(--duration-normal) var(--ease-standard);
+  --animate-pop-in: ayingott-pop-in var(--duration-slow) var(--ease-emphasized);
+}
+
+@keyframes ayingott-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ayingott-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
