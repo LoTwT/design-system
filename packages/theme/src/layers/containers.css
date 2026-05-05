@@ -1,0 +1,11 @@
+@theme {
+  --container-xs: 30rem;
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 72rem;
+  --container-2xl: 80rem;
+  --container-reading: 42rem;
+  --container-content: 64rem;
+  --container-wide: 80rem;
+}

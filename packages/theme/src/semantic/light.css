@@ -1,0 +1,33 @@
+:root {
+  color-scheme: light;
+
+  --surface-canvas: var(--color-surface-0);
+  --surface-panel: var(--color-surface-1);
+  --surface-elevated: var(--color-surface-2);
+  --surface-subtle: var(--color-surface-3);
+  --surface-muted: var(--color-surface-4);
+
+  --text-primary: var(--color-neutral-950);
+  --text-secondary: var(--color-neutral-700);
+  --text-muted: var(--color-neutral-600);
+  --text-inverse: var(--color-surface-2);
+  --text-accent: var(--color-lavender-700);
+
+  --border-subtle: rgb(36 33 28 / 0.1);
+  --border-default: rgb(36 33 28 / 0.16);
+  --border-strong: rgb(36 33 28 / 0.28);
+
+  --accent-primary: var(--color-lavender-500);
+  --accent-primary-hover: var(--color-lavender-600);
+  --accent-primary-active: var(--color-lavender-700);
+  --accent-soft: var(--color-lavender-100);
+  --accent-contrast: var(--color-lavender-950);
+
+  --focus-ring-color: var(--color-lavender-500);
+  --focus-ring-shadow: 0 0 0 4px rgb(156 143 217 / 0.24);
+
+  --status-success: var(--color-success-500);
+  --status-warning: var(--color-warning-500);
+  --status-danger: var(--color-danger-500);
+  --status-info: var(--color-info-500);
+}

@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@ayingott/theme/fonts.css";
+@import "@ayingott/theme";
+
+@source inline("bg-lavender-500 text-neutral-950 font-display font-sans font-mono p-4 rounded-card shadow-card focus-ring focus-ring-inset touch-target touch-target-inline dark:bg-lavender-300");

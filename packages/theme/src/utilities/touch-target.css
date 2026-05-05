@@ -1,0 +1,9 @@
+@utility touch-target {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+@utility touch-target-inline {
+  min-height: var(--touch-target-min);
+  padding-inline: max(var(--spacing-3), var(--touch-target-gap));
+}

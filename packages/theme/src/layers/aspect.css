@@ -1,0 +1,7 @@
+@theme {
+  --aspect-portrait: 4 / 5;
+  --aspect-landscape: 4 / 3;
+  --aspect-wide: 16 / 9;
+  --aspect-ultrawide: 21 / 9;
+  --aspect-square: 1 / 1;
+}
