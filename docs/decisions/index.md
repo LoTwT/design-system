@@ -45,7 +45,7 @@
 - lo-user 2026-05-06 00:05 拍板 "2. tailwindcss"
 - TL RFC 1（Tailwind v4 vs UnoCSS）+ RFC 2（Vue + atomic CSS UI 框架对比）调研支撑
 
-**ayingott.me 影响**：当前 ayingott.me 仍使用 UnoCSS。AY-D-05 errata 已在 PR #3 起草并 hold（lo-user 2026-05-06 00:20 决定等 `@ayingott/theme` V0 ship 后批量发：errata + UnoCSS → Tailwind v4 迁移 PR）。
+**ayingott.me 影响**：当前 ayingott.me 仍使用 UnoCSS。AY-D-05 errata 已在 ayingott.me 仓 PR #3 起草并 hold（lo-user 2026-05-06 00:20 决定等 `@ayingott/theme` V0 ship 后批量发：errata + UnoCSS → Tailwind v4 迁移 PR）。
 
 ---
 
