@@ -37,7 +37,7 @@ The package keeps UX sections as separate CSS source files:
 
 ## Tailwind Boundary
 
-Foundation tokens that should generate Tailwind utilities use `@theme`.
+Foundation and layer tokens use `@theme static` so the package emits the full token CSS variable contract while still generating Tailwind utilities.
 
 Runtime semantic aliases use `:root` and `.dark`. V0 does not promise semantic utility classes such as `bg-surface-canvas` or `text-primary`.
 

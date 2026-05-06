@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process"
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs"
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -17,6 +17,21 @@ execFileSync("pnpm", ["exec", "tailwindcss", "-i", input, "-o", output], {
 })
 
 const css = readFileSync(output, "utf8")
+
+const readCssVars = (file) => {
+  const source = readFileSync(join(packageDir, file), "utf8")
+  return [...source.matchAll(/--([A-Za-z0-9_-]+)\s*:/g)].map((match) => match[1])
+}
+
+const tokenSourceFiles = [
+  ...readdirSync(join(packageDir, "src", "foundation")).map((file) => `src/foundation/${file}`),
+  ...readdirSync(join(packageDir, "src", "layers")).map((file) => `src/layers/${file}`),
+  "src/semantic/light.css",
+  "src/semantic/dark.css",
+]
+
+const missingTokenVars = [...new Set(tokenSourceFiles.flatMap(readCssVars))]
+  .filter((token) => !css.includes(`--${token}:`))
 
 const requiredOutput = [
   ["lavender utility", ".bg-lavender-500"],
@@ -49,9 +64,12 @@ const requiredFiles = [
   "THIRD_PARTY_NOTICES.md",
 ].filter((file) => !existsSync(join(packageDir, file)))
 
-if (missing.length || requiredFiles.length) {
+if (missing.length || missingTokenVars.length || requiredFiles.length) {
   for (const [label, needle] of missing) {
     console.error(`Missing ${label}: ${needle}`)
+  }
+  for (const token of missingTokenVars) {
+    console.error(`Missing token CSS variable: --${token}`)
   }
   for (const file of requiredFiles) {
     console.error(`Missing required package file: ${file}`)

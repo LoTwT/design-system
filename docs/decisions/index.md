@@ -30,7 +30,7 @@
 
 ## DS-D-02 Engine = Tailwind CSS v4
 
-**决策**：`@ayingott/theme` 基于 Tailwind CSS v4 CSS-first 模型实现。tokens 通过 `@theme` directive 输出 Tailwind utilities；semantic aliases 走 `:root` / `.dark` runtime CSS variables。
+**决策**：`@ayingott/theme` 基于 Tailwind CSS v4 CSS-first 模型实现。tokens 通过 `@theme static` directive 输出完整 token CSS variables 并生成 Tailwind utilities；semantic aliases 走 `:root` / `.dark` runtime CSS variables。
 
 **不选 UnoCSS 的理由**：
 
@@ -84,7 +84,50 @@
 
 ---
 
-## 字体配置（DS-D-01~04 的实施细节，记录但不单独编号）
+## DS-D-05 Showcase site = `site/` 独立 VitePress 展示站
+
+**决策**：启用独立 `site/` VitePress showcase，纯展示 design-system token / 视觉规则 / 字体 / utilities，不复用 `docs/` 作为站点根。
+
+**不包含**：
+
+- playground / live editor
+- 组件库或 Vue component demos
+- VRT / package contract gate / 真实 consumer smoke
+
+**部署**：Cloudflare Workers Static Assets，Worker name `design-system`，custom domain `design.ayingott.me`。
+
+**可逆性**：高（站点是展示层，可迁移或重构，不改变 package API）
+
+**来源**：
+
+- lo-user 2026-05-06 11:04 拍板：不要复用 `docs` 文件夹，使用 `site` 文件夹，仅做设计系统各部分展示，不兼容测试
+- PR #5 VitePress showcase site
+- PR #6 / #7 Workers Static Assets deployment
+
+---
+
+## DS-D-06 Theme tokens use `@theme static`
+
+**决策**：foundation / layer token files 使用 Tailwind CSS v4 `@theme static`，强制输出所有 token CSS variables，而不是只输出被 utility 引用到的变量。
+
+**理由**：
+
+- `@ayingott/theme` 是共享 token package，token 本身就是 CSS variable contract
+- showcase site 和未来 consumer 都可能直接用 `var(--token)` 消费 token，而不是只通过 utility class
+- Tailwind v4 默认裁剪未使用的 `@theme` variables，会导致 token reference 页面和 consumer 直接取值失效
+- 体积增量很小，优先保证契约稳定性
+
+**可逆性**：中（可回退到裁剪模式，但需要另设 docs-only var 注入或限制 consumer 不直接使用未引用 token）
+
+**来源**：
+
+- lo-user 2026-05-06 16:47 线上部署后发现多个 token 展示未生效
+- QA 线上 smoke 发现构建 CSS 缺失大量 raw token variables
+- TL 根因确认：Tailwind v4 默认 only generates used CSS variables；共享 theme package 需要 `@theme static`
+
+---
+
+## 字体配置（实施细节，记录但不单独编号）
 
 V0 实际打包：
 
