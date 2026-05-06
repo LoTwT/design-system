@@ -46,7 +46,10 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
           <div class="token-value">{{ token.value }}</div>
         </div>
 
-        <div class="min-h-16 rounded-md bg-[var(--surface-subtle)] p-3">
+        <div
+          class="min-h-16 rounded-md p-3"
+          :style="{ backgroundColor: preview === 'shadow' ? 'var(--surface-canvas)' : 'var(--surface-subtle)' }"
+        >
           <div
             v-if="preview === 'spacing'"
             class="h-6 rounded-sm bg-[var(--accent-primary)]"
@@ -54,7 +57,7 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
           />
           <div
             v-else-if="preview === 'radius'"
-            class="h-12 bg-[var(--accent-soft)]"
+            class="h-12 bg-[var(--accent-primary)]"
             :style="{ borderRadius: `var(--${token.name})` }"
           />
           <div
@@ -69,12 +72,91 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
           />
           <div
             v-else-if="preview === 'motion'"
-            class="h-12 rounded-card bg-[var(--accent-soft)] transition-transform hover:translate-x-4"
-            :style="{ transitionDuration: token.value }"
-          />
+            class="motion-demo"
+          >
+            <span
+              class="motion-demo__bar"
+              :style="{ transitionDuration: `var(--${token.name})` }"
+            />
+          </div>
+          <div
+            v-else-if="source === 'transitions'"
+            class="transition-demo"
+            :style="{ transition: `var(--${token.name})` }"
+          >
+            <span class="transition-demo__dot" />
+          </div>
           <div v-else class="token-value">{{ token.value }}</div>
         </div>
       </article>
     </div>
   </section>
 </template>
+
+<style scoped>
+.motion-demo {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding-inline: var(--spacing-3);
+  border-radius: var(--radius-card);
+  background: var(--accent-soft);
+}
+
+.motion-demo__bar {
+  display: block;
+  width: 34%;
+  height: var(--spacing-4);
+  border-radius: var(--radius-full);
+  background: var(--accent-primary);
+  transform: translateX(0);
+  transition-property: width, transform, opacity;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: inherit;
+}
+
+.motion-demo:hover .motion-demo__bar {
+  width: 62%;
+  opacity: var(--opacity-emphasis);
+  transform: translateX(1.5rem);
+}
+
+.transition-demo {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding-inline: var(--spacing-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--accent-soft);
+  box-shadow: var(--shadow-xs);
+}
+
+.transition-demo__dot {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+  border-radius: var(--radius-full);
+  background: var(--accent-primary);
+  opacity: var(--opacity-subtle);
+  transform: translateX(0) scale(1);
+  transition: inherit;
+}
+
+.transition-demo:hover {
+  border-color: var(--accent-primary-hover);
+  background: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.transition-demo:hover .transition-demo__dot {
+  background: var(--text-inverse);
+  opacity: 1;
+  transform: translateX(2rem) scale(1.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-demo__bar {
+    transition-duration: 0ms !important;
+  }
+}
+</style>
