@@ -21,7 +21,7 @@
 
 ## §1 · Foundation Tokens（V0 已 ship）
 
-所有 token 在 `packages/theme/src/foundation/*.css` 通过 `@theme` 暴露，自动生成 Tailwind utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` 等）。
+所有 foundation token 在 `packages/theme/src/foundation/*.css` 通过 `@theme static` 暴露，强制输出完整 token CSS variables，并自动生成 Tailwind utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` 等）。
 
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
@@ -790,7 +790,7 @@ pnpm add @ayingott/theme
 | RFC v0.3 锁定 | V0 实施 | 本文 v1.0 spec 对应 |
 |---|---|---|
 | Theme-only V0 | `packages/theme/` 唯一包 | §0 + §A |
-| Tailwind v4 CSS-first `@theme` | foundation/layers 全部用 `@theme` | §1 + §2 都标 V0 token |
+| Tailwind v4 CSS-first `@theme static` | foundation/layers 全部用 `@theme static` | §1 + §2 都标 V0 token |
 | 独立仓 `LoTwT/design-system` | repo 已 bootstrap | §10.1 npm package 消费 |
 | Semantic vars CSS-only | semantic/light.css + dark.css 用 `:root` / `.dark` | §3 全部 |
 | Public exports minimal | `.` / `./index.css` / `./fonts.css` / `./fonts/*` (4 项)| §10.1 + §7.1 |

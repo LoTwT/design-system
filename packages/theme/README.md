@@ -27,6 +27,6 @@ Opt in to bundled fonts:
 
 ## Contract
 
-- Foundation tokens generate Tailwind utilities through `@theme`.
+- Foundation tokens use `@theme static` so all token CSS variables are emitted and Tailwind utilities are generated.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables.
 - V0 does not publish component primitives or framework adapters.

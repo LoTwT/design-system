@@ -1,4 +1,4 @@
-@theme {
+@theme static {
   --duration-instant: 0ms;
   --duration-fast: 120ms;
   --duration-normal: 180ms;

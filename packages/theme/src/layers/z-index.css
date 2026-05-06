@@ -1,4 +1,4 @@
-@theme {
+@theme static {
   --z-base: 0;
   --z-raised: 10;
   --z-sticky: 100;

@@ -13,7 +13,7 @@
 
 ## In Scope
 
-- Foundation tokens through Tailwind CSS v4 `@theme`.
+- Foundation tokens through Tailwind CSS v4 `@theme static`.
 - Runtime semantic variables through `:root` and `.dark`.
 - Base styles.
 - Focus and touch target utilities.

@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: Tailwind CSS v4
-    details: Foundation tokens are published through CSS-first @theme files.
+    details: Foundation tokens are published through CSS-first @theme static files.
   - title: Runtime Semantics
     details: Surface, text, accent, border, status, and focus variables are CSS-only contracts.
   - title: Opt-in Fonts
