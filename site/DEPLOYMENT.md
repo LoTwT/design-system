@@ -14,10 +14,16 @@ The source of truth is `wrangler.jsonc`.
 ## Cloudflare Git Build Settings
 
 - Root directory: repository root
-- Build command: `pnpm site:build`
-- Deploy command: `pnpm wrangler deploy`
+- Build command: leave empty
+- Deploy command: `npx wrangler deploy` or `pnpm wrangler deploy`
 - Environment variable: `NODE_VERSION=22`
 - Environment variable: `PNPM_VERSION=10.33.0`
+
+`wrangler.jsonc` defines `build.command = "pnpm site:build"`, so Wrangler runs
+the VitePress build before uploading `site/.vitepress/dist`. Do not configure a
+separate Cloudflare Build command unless the Workers Git UI explicitly requires
+one; keeping the build command in `wrangler.jsonc` makes local deploys and
+Cloudflare deploys follow the same path.
 
 ## Local Commands
 
