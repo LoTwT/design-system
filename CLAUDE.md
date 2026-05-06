@@ -9,6 +9,7 @@ This repository is the source for the Ayingott design system.
 - Keep the package framework-agnostic.
 - Do not add component primitives, Vue packages, adapters, playgrounds, or fixtures unless a later decision explicitly expands scope.
 - The VitePress showcase lives only under `site/`; keep `docs/` as source RFC/spec/decision markdown.
+- AI tools that need to consume this design system for UI output should start with `skills/ayingott-design-system/SKILL.md`. The skill is repository documentation only and is not part of the `@ayingott/theme` npm package.
 
 ## Package Contract
 

@@ -127,6 +127,32 @@
 
 ---
 
+## DS-D-08 Repo-level AI agent skill
+
+**决策**：design-system 仓库提供 repo-level AI agent skill：`skills/ayingott-design-system/SKILL.md`。该 skill 面向 Claude / Codex / Cursor 等 AI 工具，说明如何在消费方项目中正确使用 `@ayingott/theme` 的 token、semantic variables、dark mode、font opt-in、voice/tone 和 V0 边界。
+
+**边界**：
+
+- skill 是仓库文档，不是 `@ayingott/theme` npm package 内容
+- 不新增 package exports / runtime dependency / icon library recommendation
+- 不包含 logo / wordmark / Claude Design zip assets
+- 不发明新 token；当 skill 与 spec 冲突时，以 `docs/spec/design-system-v1.0.md` 为准
+
+**理由**：
+
+- AI agent 是 design system 的实际消费方之一；提供单一入口可以减少跨项目使用时的 token/path 猜测和视觉漂移
+- skill 让 ayingott.me 和未来项目复用 design language 时能稳定遵守 V0 contract
+- repo-level 文档形式保持工具中立，不绑定 Claude 私有格式，也不污染 npm payload
+
+**可逆性**：高（可删除或重写该 skill，不影响 package API 或 consumer runtime）
+
+**来源**：
+
+- lo-user 2026-05-06 明确：Claude Design zip 带来的改动全部不参考，只让 UX 用 `skill-creator` 为当前项目写 skill，并由 TL/QA review
+- UX skill-creator 草稿 + TL/QA P0/P1 review
+
+---
+
 ## 字体配置（实施细节，记录但不单独编号）
 
 V0 实际打包：
