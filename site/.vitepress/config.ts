@@ -7,6 +7,7 @@ export default defineConfig({
   lang: "zh-CN",
   cleanUrls: true,
   appearance: true,
+  srcExclude: ["DEPLOYMENT.md"],
   vite: {
     plugins: [tailwindcss()],
   },
