@@ -4,3 +4,5 @@ node_modules/
 
 packages/theme/test/.tmp/
 site/.vitepress/dist/
+
+.wrangler/

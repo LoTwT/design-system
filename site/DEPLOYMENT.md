@@ -1,13 +1,31 @@
 # Site Deployment
 
-The showcase site is a static VitePress build.
+The showcase site is a static VitePress build deployed with Cloudflare Workers
+Static Assets.
 
-Recommended Cloudflare Pages settings:
+## Worker Settings
 
-- Framework preset: `None`
-- Build command: `pnpm site:build`
-- Build output directory: `site/.vitepress/dist`
+- Worker name: `design-system`
+- Custom domain: `design.ayingott.me`
+- Assets directory: `site/.vitepress/dist`
+
+The source of truth is `wrangler.jsonc`.
+
+## Cloudflare Git Build Settings
+
 - Root directory: repository root
-- Node.js version: `22`
+- Build command: `pnpm site:build`
+- Deploy command: `pnpm wrangler deploy`
+- Environment variable: `NODE_VERSION=22`
+- Environment variable: `PNPM_VERSION=10.33.0`
 
-Deployment is intentionally not automated yet. Final Cloudflare Pages project name, domain, and environment settings should be decided with lo-user after the site PR is reviewed.
+## Local Commands
+
+```bash
+pnpm site:build
+pnpm site:cf-preview
+pnpm site:deploy
+```
+
+`site:deploy` requires an authenticated Wrangler session or equivalent
+Cloudflare API credentials in CI.
