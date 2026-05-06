@@ -6,6 +6,17 @@
   "scripts": {
     "check": "pnpm -r check",
     "smoke": "pnpm --filter @ayingott/theme smoke",
-    "pack:dry": "pnpm --filter @ayingott/theme pack:dry"
+    "pack:dry": "pnpm --filter @ayingott/theme pack:dry",
+    "site:dev": "vitepress dev site",
+    "site:build": "vitepress build site",
+    "site:preview": "vitepress preview site"
+  },
+  "dependencies": {
+    "@ayingott/theme": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.2.4",
+    "tailwindcss": "4.2.4",
+    "vitepress": "1.6.4"
   }
 }

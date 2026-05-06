@@ -7,7 +7,8 @@ This repository is the source for the Ayingott design system.
 - V0 scope is `@ayingott/theme` only.
 - Use Tailwind CSS v4 CSS-first features.
 - Keep the package framework-agnostic.
-- Do not add component primitives, Vue packages, adapters, playgrounds, fixtures, or VitePress unless a later decision explicitly expands scope.
+- Do not add component primitives, Vue packages, adapters, playgrounds, or fixtures unless a later decision explicitly expands scope.
+- The VitePress showcase lives only under `site/`; keep `docs/` as source RFC/spec/decision markdown.
 
 ## Package Contract
 
@@ -25,6 +26,14 @@ pnpm check
 ```
 
 This covers package-name import smoke and npm package dry-run.
+
+For the display-only VitePress showcase, run:
+
+```bash
+pnpm site:build
+```
+
+This only proves the showcase builds; it is not a package contract gate.
 
 ## More Context
 

@@ -3,3 +3,4 @@ node_modules/
 *.log
 
 packages/theme/test/.tmp/
+site/.vitepress/dist/
