@@ -28,6 +28,15 @@ pnpm check
 
 This covers package-name import smoke and npm package dry-run.
 
+## Release
+
+- Release versions are shared by every repository `package.json`.
+- Use `pnpm release:bump` for a patch bump, or `pnpm release:bump X.Y.Z` for an explicit version.
+- Run release bumps only from `main` after the release PR has merged.
+- The release script uses bumpp's built-in commit/tag format: `chore: release vX.Y.Z` and `vX.Y.Z`.
+- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; CI validates metadata, runs package/site gates, publishes `@ayingott/theme` with npm Trusted Publishing / OIDC, and runs registry install smoke.
+- The protected GitHub environment for publish is `npm-publish`.
+
 For the display-only VitePress showcase, run:
 
 ```bash
@@ -39,5 +48,6 @@ This only proves the showcase builds; it is not a package contract gate.
 ## More Context
 
 - RFC: `docs/rfc/0001-theme-v0.md`
+- Release: `docs/release/DS-D-09-release.md`
 - Package: `packages/theme/README.md`
 - Notices: `packages/theme/THIRD_PARTY_NOTICES.md`

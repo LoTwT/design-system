@@ -153,6 +153,44 @@
 
 ---
 
+## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
+
+**决策**：design-system 使用 `bumpp@11.1.0` 控制版本。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。release bump 必须从带 upstream 的 `main` 分支执行。
+
+**发布目标**：monorepo 同版发布，但 npm publish 目标必须是 release workflow 中显式 `PUBLISH_PACKAGES` allowlist，不使用无条件 `pnpm -r publish`。初始 allowlist 只有 `packages/theme`；未来新增 public 子包时，同 PR 必须把该 package 加入 allowlist 并补对应 package gate。
+
+**commit / tag 格式**：沿用 bumpp 内置格式：
+
+- commit：`chore: release vX.Y.Z`
+- tag：`vX.Y.Z`
+
+**CI release gate**：`.github/workflows/release.yml` 仅响应 `vX.Y.Z` tag push。发布前校验 tag/version/commit message/main/npm CLI 版本/allowlist package/npm registry 状态，随后运行 `pnpm install --frozen-lockfile`、`pnpm check`、`pnpm site:build`、`pnpm --filter @ayingott/theme pack:dry`。
+
+**npm publish**：GitHub Actions 在受保护环境 `npm-publish` 中用 npm Trusted Publishing / OIDC 执行：
+
+```bash
+cd packages/theme
+npm publish --access public --no-git-checks
+```
+
+发布后 CI 必须从 npm registry 安装 allowlist package，并通过 package-specific smoke。当前 `packages/theme` 的 smoke 是安装 `@ayingott/theme@X.Y.Z` 并通过 Tailwind v4 CSS 构建。
+
+**retry safety**：如果 rerun 时 allowlist package 的 `X.Y.Z` 已存在，workflow 必须确认 npm `gitHead` 等于当前 release commit，才能跳过该 package publish 并继续 registry smoke / GitHub Release；如果指向其他 commit，必须 fail hard。
+
+**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 protected environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
+
+**rollback**：tag / GitHub Release 发错但未 publish 时删除 tag/Release 后重发；已 publish 的版本不依赖 unpublish，走 deprecate bad version + 发布 patch。
+
+**可逆性**：中（release 自动化可调整，但 npm 已发布版本不可覆盖）
+
+**来源**：
+
+- lo-user 2026-05-07 / 2026-05-08 在 #design-system 要求用 bumpp 控制版本并调研 CI/OIDC 发布
+- QA release-readiness 建议：publish 走 npm CLI + OIDC，release workflow 不使用 package-manager cache，post-publish registry smoke 必做
+- TL bumpp 调研：`bumpp@11.1.0` 内置 commit/tag 格式、programmatic API、`noGitCheck: false` 语义
+
+---
+
 ## 字体配置（实施细节，记录但不单独编号）
 
 V0 实际打包：

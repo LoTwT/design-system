@@ -1,5 +1,6 @@
 {
   "name": "design-system",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.33.0",
@@ -11,13 +12,15 @@
     "site:build": "vitepress build site",
     "site:preview": "vitepress preview site",
     "site:cf-preview": "pnpm site:build && wrangler dev",
-    "site:deploy": "pnpm site:build && wrangler deploy"
+    "site:deploy": "pnpm site:build && wrangler deploy",
+    "release:bump": "node scripts/release-bump.mjs"
   },
   "dependencies": {
     "@ayingott/theme": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.2.4",
+    "bumpp": "11.1.0",
     "tailwindcss": "4.2.4",
     "vitepress": "1.6.4",
     "wrangler": "4.88.0"

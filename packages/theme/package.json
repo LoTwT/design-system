@@ -4,6 +4,11 @@
   "description": "Ayingott CSS-first Tailwind theme package.",
   "type": "module",
   "style": "./src/index.css",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LoTwT/design-system.git",
+    "directory": "packages/theme"
+  },
   "files": [
     "src/**/*.css",
     "src/fonts/**/*.woff2",
