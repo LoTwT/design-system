@@ -4,7 +4,7 @@
 
 Patch — scope focus-ring utilities to `:focus-visible`.
 
-- `focus-ring` and `focus-ring-inset` utilities now apply only when the element matches `:focus-visible`, matching the existing `base.css` `:focus-visible` outline rule and the documented intent. Previously the styles applied whenever the class was present, which produced an always-on ring in light-mouse usage (observed downstream in the `ayingott.me` consumer).
+- `focus-ring` and `focus-ring-inset` utilities now apply only when the element matches `:focus-visible`, matching the existing `base.css` `:focus-visible` outline rule and the documented intent. Previously the styles applied whenever the class was present, which produced an always-on ring during mouse-driven focus (observed downstream in the `ayingott.me` consumer).
 - No changes to tokens, semantic variables, base styles, fonts, or package exports.
 - Consumers that previously relied on the unintended always-on behavior must add their own outline declaration.
 
