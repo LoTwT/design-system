@@ -548,7 +548,10 @@ load-bearing for this runbook:
 - **Registry probes use npm tooling**, not `curl`. Use
   `npm view <pkg>@<version> version` and `npm view <pkg>@<version> gitHead`
   against the live registry, not `curl` against npm's HTTP API
-  directly. The retry-with-backoff smoke step in Phase 2 follows this.
+  directly. The retry-with-backoff smoke step in Phase 2 also uses
+  npm tooling (`npm install`) to probe installability; the metadata
+  checks (`npm view ... version` / `npm view ... gitHead`) run
+  separately in Phase 5 and Phase 6.
 - **HTTP user-facing route smoke sends `Accept: text/html`** so
   content-negotiated handlers route to the HTML branch instead of the
   JSON / API branch. This convention does **not** apply inside this
