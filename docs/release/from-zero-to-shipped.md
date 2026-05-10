@@ -1,5 +1,11 @@
 # From Zero To Shipped — npm Release Pipeline Runbook
 
+> **Canonical version**: [`LoTwT/ai/docs/npm-release-from-zero-to-shipped.md`](https://github.com/LoTwT/ai/blob/main/docs/npm-release-from-zero-to-shipped.md).
+> This copy is kept inside `LoTwT/design-system` as a worked-example reference
+> for design-system contributors. Future updates to this runbook should land
+> in `LoTwT/ai` first; if the change is design-system-specific (e.g. an
+> erratum about this repo's `release.yml`), update both.
+
 A reference for setting up a tag-driven npm release pipeline backed by
 GitHub Actions OIDC + npm Trusted Publisher, distilled from the
 `LoTwT/design-system` v0.0.1 → v0.0.2 ship cycle (2026-05-08 → 2026-05-10).
