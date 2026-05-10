@@ -191,6 +191,36 @@ npm publish --access public --no-git-checks
 
 ---
 
+## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
+
+**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish protected environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
+
+**改动汇总**（lo-user 2026-05-10 02:16 现场操作）：
+
+- **Settings → Environments → `npm-publish`**：从 Required reviewers 列表中移除 `@LoTwT`。effect：tag push 触发的 release CI 不再需要 30s 人工 approve（包括 first-attempt + rerun）。
+- **Settings → Rules → Rulesets**：新建 `Protect release tags` ruleset，target tags `Include by pattern: v*.*.*`，bypass list = Repository admin。Rules 勾选 `Restrict creations / Restrict updates / Restrict deletions`。effect：只有 repo admin 可创建 / 修改 / 删除 `v*.*.*` 形式的 tag；其他 token 或 collaborator 都被拦。
+
+**fail-safe 模型**：
+
+- **真正担心的不可逆动作 = 错误的 tag 进入 release pipeline**。`pnpm release:bump` + tag push 是显式人为操作（不会无意 `git push --tags`），且 tag-protection 使误推被 ruleset 拦下。
+- **CI 之后无需 re-approve**：tag 已通过 admin gate → bumpp 已打了正确 version → release pipeline 跑 OIDC publish + smoke + Release，不再需要人工干预。
+- **registry 万一发错版本**：走 `npm deprecate` + 新 patch（DS-D-09 rollback policy 已覆盖），不依赖 unpublish。
+
+**适用范围**：V0.0.x patch 阶段。如果后续到 V0.1+ / V1+ 形态决定需要更严格的人工 confirm gate（如向 stable 用户 broadcast），可单独决策恢复 reviewer 或拆 environment（V0.0.x auto-publish env / V0.1+ gated env）。
+
+**配套：DD-012 retry safety**：与 DS-D-10 同时落地的 release.yml CI patch（PR #13，commit `1f9bf89e`）把 registry install smoke 包进 retry-with-backoff（6 × 10s `until` loop ≈ 60s 预算），消除 npm CDN propagation race 导致的 first-attempt smoke fail（auto-publish 后无人工 rerun 的依赖）。两改一起把 V0.0.x release CI 的人工干预降到 0。
+
+**可逆性**：高（GitHub Settings UI / Ruleset 可一键回滚；workflow 配置改动也可回退）
+
+**来源**：
+
+- lo-user 2026-05-10 02:01 `ae11d396` 反馈"registry smoke 需要等待 npm cdn 同步完成"暴露 first-attempt race
+- lo-user 2026-05-10 02:10 `cb1408d9` 提出删 reviewer 的方向
+- TL 技术倾向 (A) + tag-protection 组合（msg `78b611b9` / `e7cc79ae`）
+- lo-user 2026-05-10 02:16 `6e2155bf` 完成 (a) reviewer 删除 + (b) tag ruleset 配置
+
+---
+
 ## 字体配置（实施细节，记录但不单独编号）
 
 V0 实际打包：
