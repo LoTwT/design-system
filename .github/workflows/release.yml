@@ -11,18 +11,18 @@ permissions:
 
 jobs:
   publish:
-    name: Publish workspace packages
+    name: Publish @ayingott/theme
     runs-on: ubuntu-latest
     environment: npm-publish
-    env:
-      PUBLISH_PACKAGES: '["packages/theme"]'
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
       - uses: pnpm/action-setup@v6
         with:
           version: 10.33.0
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -49,9 +49,11 @@ jobs:
         run: |
           set -euo pipefail
           ROOT_VERSION="$(node -p "require('./package.json').version")"
+          THEME_VERSION="$(node -p "require('./packages/theme/package.json').version")"
           COMMIT_SUBJECT="$(git log -1 --pretty=%s)"
 
           test "$ROOT_VERSION" = "$VERSION" || { echo "root package.json version $ROOT_VERSION != $VERSION" >&2; exit 1; }
+          test "$THEME_VERSION" = "$VERSION" || { echo "packages/theme package.json version $THEME_VERSION != $VERSION" >&2; exit 1; }
           test "$COMMIT_SUBJECT" = "chore: release v$VERSION" || { echo "unexpected release commit: $COMMIT_SUBJECT" >&2; exit 1; }
           git fetch origin main:refs/remotes/origin/main --tags
           git merge-base --is-ancestor HEAD origin/main || { echo "release tag commit is not contained in origin/main" >&2; exit 1; }
@@ -77,130 +79,19 @@ jobs:
       - run: pnpm site:build
       - run: pnpm --filter @ayingott/theme pack:dry
 
-      - name: Resolve publish package allowlist
-        id: packages
-        shell: bash
+      - name: Check npm version absence
         env:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
-          node <<'NODE'
-          const fs = require('node:fs')
-          const path = require('node:path')
+          if npm view "@ayingott/theme@$VERSION" version >/dev/null 2>&1; then
+            echo "@ayingott/theme@$VERSION already exists on npm" >&2
+            exit 1
+          fi
 
-          const root = process.cwd()
-          const releaseVersion = process.env.VERSION
-          const allowlist = JSON.parse(process.env.PUBLISH_PACKAGES)
-
-          if (!Array.isArray(allowlist) || !allowlist.length) {
-            console.error('PUBLISH_PACKAGES must be a non-empty JSON array of package directories.')
-            process.exit(1)
-          }
-
-          const seen = new Set()
-          const packages = allowlist.map((directory) => {
-            if (seen.has(directory)) {
-              console.error(`Duplicate publish package directory: ${directory}`)
-              process.exit(1)
-            }
-            seen.add(directory)
-
-            const manifestPath = path.join(root, directory, 'package.json')
-            if (!fs.existsSync(manifestPath)) {
-              console.error(`Publish package manifest not found: ${directory}/package.json`)
-              process.exit(1)
-            }
-
-            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
-            if (!manifest.name) {
-              console.error(`${directory}/package.json missing name`)
-              process.exit(1)
-            }
-            if (manifest.private === true) {
-              console.error(`${manifest.name} is private and cannot be published`)
-              process.exit(1)
-            }
-            if (manifest.version !== releaseVersion) {
-              console.error(`${directory}/package.json version ${manifest.version} != ${releaseVersion}`)
-              process.exit(1)
-            }
-
-            return { name: manifest.name, version: manifest.version, directory }
-          })
-
-          fs.writeFileSync(process.env.GITHUB_OUTPUT, `packages=${JSON.stringify(packages)}\n`, { flag: 'a' })
-          console.log(JSON.stringify(packages, null, 2))
-          NODE
-
-      - name: Resolve npm publish state
-        id: npm-packages
-        shell: bash
-        env:
-          PACKAGES: ${{ steps.packages.outputs.packages }}
-          VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const { execFileSync } = require('node:child_process')
-          const fs = require('node:fs')
-
-          const packages = JSON.parse(process.env.PACKAGES)
-          const version = process.env.VERSION
-          const releaseSha = process.env.GITHUB_SHA
-          const publish = []
-          const existing = []
-
-          for (const pkg of packages) {
-            let exists = false
-            try {
-              execFileSync('npm', ['view', `${pkg.name}@${version}`, 'version', '--silent'], { stdio: 'pipe' })
-              exists = true
-            }
-            catch {
-              exists = false
-            }
-
-            if (!exists) {
-              publish.push(pkg)
-              continue
-            }
-
-            const gitHead = execFileSync('npm', ['view', `${pkg.name}@${version}`, 'gitHead', '--silent'], { encoding: 'utf8' }).trim()
-            if (!gitHead) {
-              console.error(`${pkg.name}@${version} exists on npm without gitHead`)
-              process.exit(1)
-            }
-            if (gitHead !== releaseSha) {
-              console.error(`${pkg.name}@${version} gitHead ${gitHead} != ${releaseSha}`)
-              process.exit(1)
-            }
-            existing.push(pkg)
-          }
-
-          fs.writeFileSync(process.env.GITHUB_OUTPUT, `publish=${JSON.stringify(publish)}\nexisting=${JSON.stringify(existing)}\n`, { flag: 'a' })
-          console.log('to publish:', JSON.stringify(publish, null, 2))
-          console.log('existing for this release:', JSON.stringify(existing, null, 2))
-          NODE
-
-      - name: Publish packages to npm with trusted publishing
-        shell: bash
-        env:
-          PACKAGES: ${{ steps.npm-packages.outputs.publish }}
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const { spawnSync } = require('node:child_process')
-          const packages = JSON.parse(process.env.PACKAGES)
-
-          for (const pkg of packages) {
-            console.log(`Publishing ${pkg.name} from ${pkg.directory}`)
-            const result = spawnSync('npm', ['publish', '--access', 'public', '--no-git-checks'], {
-              cwd: pkg.directory,
-              stdio: 'inherit',
-            })
-            if (result.status !== 0) process.exit(result.status ?? 1)
-          }
-          NODE
+      - name: Publish @ayingott/theme to npm with trusted publishing
+        working-directory: packages/theme
+        run: pnpm publish --access public --no-git-checks --provenance
 
       - name: Registry install smoke for @ayingott/theme
         shell: bash
@@ -246,18 +137,12 @@ jobs:
           grep -q -- '.focus-ring' output.css
           grep -q -- '.touch-target' output.css
 
+      - name: Generate release notes
+        run: npx --yes git-cliff@2.13.1 --latest --strip header --output /tmp/release-notes.md
+
       - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          if gh release view "v$VERSION" >/dev/null 2>&1; then
-            gh release edit "v$VERSION" \
-              --title "design-system v$VERSION" \
-              --notes-file CHANGELOG.md
-          else
-            gh release create "v$VERSION" \
-              --title "design-system v$VERSION" \
-              --notes-file CHANGELOG.md \
-              --verify-tag
-          fi
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
+        with:
+          name: design-system v${{ steps.release.outputs.version }}
+          body_path: /tmp/release-notes.md
+          make_latest: true
