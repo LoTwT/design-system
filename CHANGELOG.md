@@ -1,3 +1,20 @@
+## 0.0.4 - 2026-05-12
+
+### Changed
+
+- Retry npm install with backoff to handle CDN propagation (#13)
+- Migrate release flow to v3 runbook (#17)
+
+### Documentation
+
+- Record DS-D-10 V0.0.x auto-publish + tag-protection (#14)
+- Add from-zero-to-shipped runbook (#15)
+- Mark runbook canonical location at LoTwT/ai (#16)
+
+### Fixed
+
+- Align trusted publishing release flow (#18)
+
 ## 0.0.2
 
 Patch — scope focus-ring utilities to `:focus-visible`.
