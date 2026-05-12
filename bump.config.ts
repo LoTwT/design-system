@@ -1,3 +1,5 @@
+import { execSync } from 'node:child_process'
+import { resolve } from 'node:path'
 import { defineConfig } from 'bumpp'
 
 export default defineConfig({
@@ -11,5 +13,17 @@ export default defineConfig({
   install: false,
   recursive: false,
   noGitCheck: false,
-  execute: 'pnpm changelog',
+  execute: (operation) => {
+    execSync('pnpm changelog', {
+      cwd: operation.options.cwd,
+      stdio: 'inherit',
+    })
+
+    operation.update({
+      updatedFiles: [
+        ...operation.state.updatedFiles,
+        resolve(operation.options.cwd, 'CHANGELOG.md'),
+      ],
+    })
+  },
 })

@@ -29,7 +29,9 @@ The script runs `bumpp@11.1.0` with `bump.config.ts`:
 - version files: `package.json` and `packages/theme/package.json`
 - commit and tag use the built-in bumpp format: `chore: release vX.Y.Z` and `vX.Y.Z`
 - `noGitCheck: false` keeps bumpp's working-tree check enabled
-- `execute: "pnpm changelog"` runs git-cliff before the release commit
+- the `execute` function runs `pnpm changelog` before the release commit
+  and adds `CHANGELOG.md` to the commit file set without making it a
+  version-bump target
 - push is enabled so the tag triggers release CI
 
 ## Changelog and Release Notes
@@ -37,6 +39,12 @@ The script runs `bumpp@11.1.0` with `bump.config.ts`:
 `pnpm changelog` uses `git-cliff` to prepend the next generated entry to
 `CHANGELOG.md`. Existing hand-written entries are preserved below the
 new generated entries.
+
+`CHANGELOG.md` is not listed in bumpp `files`: bumpp treats non-manifest
+files as text replacement targets and would rewrite older changelog
+headers that contain the previous version. The `bump.config.ts`
+`execute` function runs the changelog command and then explicitly adds
+`CHANGELOG.md` to the release commit file set.
 
 Release CI generates GitHub Release notes from the tag with:
 
@@ -76,7 +84,7 @@ OIDC:
 
 ```bash
 cd packages/theme
-pnpm publish --access public --no-git-checks --provenance
+pnpm publish --access public --no-git-checks
 ```
 
 The release job must have `id-token: write` permission and run in the
@@ -90,6 +98,10 @@ point at:
 
 npm Trusted Publishing requires npm CLI 11.5.1 or later and Node
 22.14.0 or later. The release workflow uses Node 24.
+
+Trusted Publishing automatically generates provenance attestations
+server-side, so the workflow does not pass the client-side
+`--provenance` flag.
 
 `pnpm publish` does not write npm `gitHead` metadata, so the workflow no
 longer uses `gitHead` as a retry-safety check. The workflow checks npm

@@ -91,7 +91,7 @@ jobs:
 
       - name: Publish @ayingott/theme to npm with trusted publishing
         working-directory: packages/theme
-        run: pnpm publish --access public --no-git-checks --provenance
+        run: pnpm publish --access public --no-git-checks
 
       - name: Registry install smoke for @ayingott/theme
         shell: bash
