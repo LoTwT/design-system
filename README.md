@@ -43,7 +43,7 @@ pnpm release:bump        # patch bump
 pnpm release:bump 0.0.1  # explicit version
 ```
 
-Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the protected release workflow, which validates the explicit publish package allowlist, publishes each allowlist package through npm Trusted Publishing / OIDC, runs registry install smoke, and creates a GitHub Release. See `docs/release/DS-D-09-release.md`.
+Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the protected release workflow, which validates release metadata, publishes `@ayingott/theme` through npm Trusted Publishing / OIDC, runs registry install smoke, and creates a GitHub Release from git-cliff notes. See `docs/release/DS-D-09-release.md`.
 
 The showcase site is intentionally separate from source docs:
 

@@ -1,5 +1,3 @@
-# Changelog
-
 ## 0.0.2
 
 Patch — scope focus-ring utilities to `:focus-visible`.
