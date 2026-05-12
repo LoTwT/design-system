@@ -155,7 +155,7 @@
 
 ## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
 
-**决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 release files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
+**决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 version files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
 
 **发布目标**：当前唯一 npm publish 目标是 `@ayingott/theme`。design-system 保持单包发布路径：release workflow 在 `packages/theme` 下执行 `pnpm publish`。未来新增 public 子包时，需在同 PR 中重新设计 package selection、package-specific gates 和 registry smoke。
 
@@ -170,12 +170,16 @@
 
 ```bash
 cd packages/theme
-pnpm publish --access public --no-git-checks --provenance
+pnpm publish --access public --no-git-checks
 ```
+
+Trusted Publishing automatically generates provenance attestations server-side, so the workflow must not pass the client-side `--provenance` flag.
 
 发布后 CI 必须从 npm registry 安装 `@ayingott/theme@X.Y.Z`，并通过 package-specific smoke。当前 `packages/theme` 的 smoke 是安装 package 后通过 Tailwind v4 CSS 构建。
 
 **release notes**：`git-cliff` 生成 `CHANGELOG.md` 和 GitHub Release body。CI 使用 `git-cliff --latest` 生成单版本 release notes，并通过 pinned `softprops/action-gh-release` 创建/更新 GitHub Release。
+
+`CHANGELOG.md` 不放入 bumpp `files`，避免 bumpp 对文本文件做 version-string replacement。`bump.config.ts` 的 `execute` 函数运行 `pnpm changelog` 后显式把 `CHANGELOG.md` 加入 bumpp commit 文件集。
 
 **retry safety**：`pnpm publish` 不写 npm `gitHead` metadata，workflow 不再使用 `gitHead` 作为 rerun skip guard。workflow 在 publish 前检查 npm version absence；如该版本已存在，CI fail fast，已 publish 的错误版本走 deprecate + next patch 的 fix-forward 路径。
 
