@@ -1,6 +1,6 @@
 {
   "name": "@ayingott/theme",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Ayingott CSS-first Tailwind theme package.",
   "type": "module",
   "style": "./src/index.css",

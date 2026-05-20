@@ -1,3 +1,13 @@
+## 0.1.0 - 2026-05-20
+
+### Added
+
+- Add reading token layer (#20)
+
+### Changed
+
+- Increase release smoke retry budget (#19)
+
 ## 0.0.4 - 2026-05-12
 
 ### Changed
