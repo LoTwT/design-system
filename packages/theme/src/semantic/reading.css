@@ -1,0 +1,26 @@
+:root {
+  --reading-font-body: var(--font-reading);
+  --reading-font-heading: var(--font-reading);
+  --reading-font-mono: var(--font-mono);
+  --reading-measure: 65ch;
+  --reading-font-size: var(--text-lg);
+  --reading-line-height: var(--leading-reading);
+  --reading-paragraph-gap: 1.2em;
+  --reading-fg: var(--text-primary);
+  --reading-bg: var(--surface-canvas);
+  --reading-fg-muted: var(--text-secondary);
+  --reading-link: var(--text-accent);
+  --reading-link-hover: var(--accent-primary-active);
+  --reading-accent: var(--accent-primary);
+  --reading-code-fg: var(--text-primary);
+  --reading-code-bg: var(--surface-subtle);
+  --reading-rule: var(--border-subtle);
+  --reading-scale-h1: var(--text-3xl);
+  --reading-scale-h2: var(--text-2xl);
+  --reading-scale-h3: var(--text-xl);
+  --reading-scale-h4: var(--text-lg);
+}
+
+.dark {
+  --reading-link-hover: var(--color-lavender-200);
+}

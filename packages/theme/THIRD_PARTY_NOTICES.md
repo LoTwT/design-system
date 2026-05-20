@@ -45,6 +45,30 @@ This package redistributes open-source font files. Keep this file in the npm pac
     - Weight: `700`
     - Style: `normal`
 
+## Newsreader
+
+- Package: `@fontsource-variable/newsreader@5.2.10`
+- Upstream family: Newsreader
+- Upstream source: `https://github.com/google/fonts`
+- Upstream project: `https://github.com/productiontype/Newsreader`
+- License: SIL Open Font License 1.1 (`OFL-1.1`)
+- Metadata version: `v26`
+- Last modified: `2025-09-08`
+- Copyright: Copyright 2020 The Newsreader Project Authors (`http://github.com/productiontype/Newsreader`)
+- Included files:
+  - `src/fonts/newsreader-latin-opsz-normal.woff2`
+    - SHA-256: `6e4f2958c3a7c4a80acde4e5a679abe7e01bc1e30b92be3c7a8b696ef401d101`
+    - Unicode range: Latin
+    - Weight range: `200 800`
+    - Optical size axis: packaged `opsz` variable build
+    - Style: `normal`
+  - `src/fonts/newsreader-latin-ext-opsz-normal.woff2`
+    - SHA-256: `45683de03de37187604102316c0b42c0cb2d8dc9c4140a20ad471c3148cc1278`
+    - Unicode range: Latin Extended
+    - Weight range: `200 800`
+    - Optical size axis: packaged `opsz` variable build
+    - Style: `normal`
+
 ## License Text
 
 The bundled font files are licensed under the SIL Open Font License 1.1. Full text: `https://openfontlicense.org/open-font-license-official-text/`.

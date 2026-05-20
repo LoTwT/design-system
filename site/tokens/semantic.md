@@ -21,3 +21,25 @@ The same semantic names are overridden under `.dark`.
   <ColorSwatchGrid title="Dark text" prefix="text-" source="semantic-dark" />
   <ColorSwatchGrid title="Dark accent" prefix="accent-" source="semantic-dark" />
 </div>
+
+## Reading
+
+The reading layer is for long-form prose. It inherits light and dark semantic
+colors and adds a font-relative measure for body copy.
+
+| Variable | Value / source |
+| --- | --- |
+| `--reading-font-body` | `var(--font-reading)` |
+| `--reading-font-heading` | `var(--font-reading)` |
+| `--reading-measure` | `65ch` |
+| `--reading-font-size` | `var(--text-lg)` |
+| `--reading-line-height` | `var(--leading-reading)` |
+| `--reading-paragraph-gap` | `1.2em` |
+| `--reading-fg` | `var(--text-primary)` |
+| `--reading-bg` | `var(--surface-canvas)` |
+| `--reading-fg-muted` | `var(--text-secondary)` |
+| `--reading-link` | `var(--text-accent)` |
+| `--reading-code-bg` | `var(--surface-subtle)` |
+
+Use `--reading-measure` for the body text column. Use
+`--container-reading` or `--layout-prose-width` for the outer layout shell.

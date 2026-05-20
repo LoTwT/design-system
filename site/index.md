@@ -19,11 +19,11 @@ features:
   - title: Runtime Semantics
     details: Surface, text, accent, border, status, and focus variables are CSS-only contracts.
   - title: Opt-in Fonts
-    details: Space Grotesk and Space Mono are available through a separate fonts.css entry.
+    details: Space Grotesk, Space Mono, and Newsreader are available through a separate fonts.css entry.
 ---
 
 ## Showcase Scope
 
 This site only displays the design system. It is not a playground, component library, or consumer integration test.
 
-Use it to inspect token values, see visual previews, and understand the V0 package contract.
+Use it to inspect token values, see visual previews, and understand the V0 / V0.1 package contract.

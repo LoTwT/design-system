@@ -14,7 +14,7 @@ This repository is the source for the Ayingott design system.
 ## Package Contract
 
 - Public CSS exports are limited to `.`, `./index.css`, `./fonts.css`, and `./fonts/*`.
-- `@ayingott/theme` must not import `fonts.css`; font loading is consumer opt-in.
+- `@ayingott/theme` must not import `fonts.css`; Space Grotesk, Space Mono, and Newsreader loading is consumer opt-in.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables, not guaranteed Tailwind utilities.
 - If font files ship in the npm package, `THIRD_PARTY_NOTICES.md` must ship with them.
 

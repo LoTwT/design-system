@@ -70,6 +70,33 @@ Consumers should reach for **semantic vars** first.
 | `--status-danger` | `--color-danger-500` `#df3d63` | `#ff9ab6` |
 | `--status-info` | `--color-info-500` `#2f82df` | `#8dc5ff` |
 
+### Reading
+
+| Variable | Value / source |
+| --- | --- |
+| `--reading-font-body` | `var(--font-reading)` |
+| `--reading-font-heading` | `var(--font-reading)` |
+| `--reading-font-mono` | `var(--font-mono)` |
+| `--reading-measure` | `65ch` |
+| `--reading-font-size` | `var(--text-lg)` |
+| `--reading-line-height` | `var(--leading-reading)` |
+| `--reading-paragraph-gap` | `1.2em` |
+| `--reading-fg` | `var(--text-primary)` |
+| `--reading-bg` | `var(--surface-canvas)` |
+| `--reading-fg-muted` | `var(--text-secondary)` |
+| `--reading-link` | `var(--text-accent)` |
+| `--reading-link-hover` | Light: `var(--accent-primary-active)`; dark: `var(--color-lavender-200)` |
+| `--reading-accent` | `var(--accent-primary)` |
+| `--reading-code-fg` | `var(--text-primary)` |
+| `--reading-code-bg` | `var(--surface-subtle)` |
+| `--reading-rule` | `var(--border-subtle)` |
+| `--reading-scale-h1` | `var(--text-3xl)` |
+| `--reading-scale-h2` | `var(--text-2xl)` |
+| `--reading-scale-h3` | `var(--text-xl)` |
+| `--reading-scale-h4` | `var(--text-lg)` |
+
+`--reading-link` intentionally uses `--text-accent` rather than `--accent-primary`, so normal-size links pass AA on the light canvas.
+
 ## Foundation palettes (use only when semantic vars do not fit)
 
 - **Surface** (warm cream ramp): `--color-surface-0` `#fffaef` → `--color-surface-5` `#d8d1bf`. 6 steps.
@@ -81,8 +108,9 @@ Consumers should reach for **semantic vars** first.
 
 ## Type
 
-- Families: `--font-display` (Space Grotesk), `--font-sans` (system-ui), `--font-mono` (Space Mono).
+- Families: `--font-display` (Space Grotesk), `--font-sans` (system-ui), `--font-mono` (Space Mono), `--font-reading` (Newsreader + serif fallback chain).
 - Scale: `--text-2xs` `10px` → `--text-7xl` `72px`. 13 steps. Each pairs with `--text-{size}--line-height`.
+- Reading leading: `--leading-reading 1.7`.
 - Tracking: `--tracking-tighter` `-0.04em`, `--tracking-tight` `-0.02em`, `--tracking-normal` `0`, `--tracking-wide` `0.02em`, `--tracking-wider` `0.04em`, `--tracking-widest` `0.08em`.
 - Font weights: `--font-weight-light 300`, `--font-weight-regular 400`, `--font-weight-medium 500`, `--font-weight-semibold 600`, `--font-weight-bold 700`.
 
@@ -95,6 +123,7 @@ Consumers should reach for **semantic vars** first.
 - `--layout-page-gutter`: `clamp(1rem, 4vw, 3rem)`
 - `--layout-section-gap`: `clamp(3rem, 8vw, 7rem)`
 - `--layout-prose-width`: equals `--container-reading` (`42rem`)
+- `--reading-measure`: font-relative long-form body measure (`65ch`), not a layout shell width.
 
 ## Radius
 

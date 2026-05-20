@@ -32,7 +32,7 @@ Public CSS exports:
 | Path | What it is |
 | --- | --- |
 | `@ayingott/theme` (or `@ayingott/theme/index.css`) | All foundation tokens, layer tokens, semantic vars (`:root` + `.dark`), focus and touch-target utilities, and base styles. Does **not** auto-import fonts. |
-| `@ayingott/theme/fonts.css` | `@font-face` declarations for Space Grotesk (variable, latin + latin-ext) and Space Mono (400/700). Opt-in. |
+| `@ayingott/theme/fonts.css` | `@font-face` declarations for Space Grotesk (variable, latin + latin-ext), Space Mono (400/700), and Newsreader (variable opsz/wght, latin + latin-ext). Opt-in. |
 | `@ayingott/theme/fonts/<file>.woff2` | The woff2 files referenced by `fonts.css`. |
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
@@ -78,6 +78,22 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--status-success` / `-warning` / `-danger` / `-info` | State communication. Mirror decorative hues mint / amber / rose / sky. |
 
 Full list: see `references/tokens.md`.
+
+### Reading semantic variables
+
+V0.1 adds a long-form reading layer in `packages/theme/src/semantic/reading.css`.
+Use it for article, documentation, and MIRU-style reading surfaces:
+
+| Variable | Use for |
+| --- | --- |
+| `--reading-font-body` / `--reading-font-heading` | Long-form serif body and heading family. |
+| `--reading-measure` | Font-relative body measure (`65ch`). Use `max-inline-size: min(100%, var(--reading-measure))` for mobile safety. |
+| `--reading-font-size` / `--reading-line-height` / `--reading-paragraph-gap` | Long-form type rhythm. |
+| `--reading-fg` / `--reading-bg` / `--reading-fg-muted` | Reading text and background colors. |
+| `--reading-link` / `--reading-link-hover` | Reading links. `--reading-link` uses `--text-accent`, not `--accent-primary`, to pass AA on the light canvas. |
+| `--reading-code-fg` / `--reading-code-bg` / `--reading-rule` | Inline code, code panels, and rules inside reading surfaces. |
+
+`--container-reading` and `--layout-prose-width` are layout-width tokens. `--reading-measure` is the body-text measure. Do not substitute one for the other.
 
 ## Token usage rules
 
@@ -127,7 +143,7 @@ When you write component styles, you almost never need a `.dark` block of your o
 
 ## Fonts (opt-in)
 
-Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Space Grotesk and Space Mono in a consumer project, import `fonts.css` explicitly:
+Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Space Grotesk, Space Mono, and Newsreader in a consumer project, import `fonts.css` explicitly:
 
 ```css
 @import "tailwindcss";
@@ -135,9 +151,11 @@ Font files ship inside the npm package, but `@ayingott/theme` does not load `fon
 @import "@ayingott/theme";
 ```
 
-Without that `fonts.css` import, the `--font-display` and `--font-mono` token values keep their full fallback chains (Space Grotesk → system-ui / -apple-system / PingFang SC / Hiragino Sans GB / Microsoft YaHei / sans-serif; Space Mono → ui-monospace / SFMono-Regular / Cascadia Mono / Consolas / monospace). The browser will not load the Space Grotesk or Space Mono webfont, so it walks the chain to whichever system font matches first. This is intentional, not a regression.
+Without that `fonts.css` import, the `--font-display`, `--font-mono`, and `--font-reading` token values keep their full fallback chains. The browser will not load the Space Grotesk, Space Mono, or Newsreader webfont, so it walks the chain to whichever system font matches first. This is intentional, not a regression.
 
 Body text uses `--font-sans` = `system-ui` with PingFang SC / Hiragino Sans GB / Microsoft YaHei fallback for CJK. The theme does not bundle a body webfont — system fallback is the contract.
+
+Long-form reading text uses `--font-reading` through the `--reading-font-body` token. Newsreader covers latin / latin-ext when `fonts.css` is imported; CJK serif fonts are fallback names only and are not bundled.
 
 ## Voice and tone
 
@@ -167,6 +185,7 @@ When producing visual artifacts (mockups, slides, prototype HTML), follow these 
 - **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Never strip the outline.
 - **Borders** are alpha derivatives, never solid grey. Default thickness is 1px (`thin`).
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
+- **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
 - **Display headlines** (Space Grotesk) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.
 - **Backgrounds** are flat warm cream surfaces. No gradients, no images, no patterns, no textures.
 - **Decorative motif**: dots, lines, outlined circles, rotated squares — geometric primitives in `var(--accent-primary)`. Use sparingly at corners or section breaks; never as pattern fills or full bleed.
@@ -181,7 +200,7 @@ V0 deliberately excludes the following. If the user asks for something here, sur
 - **Framework adapter.** No `@ayingott/theme/vue`, `/react`, `/svelte`. Consumers wire the CSS imports themselves.
 - **Imagery, illustrations, gradients, patterns.** The visual rhythm is type + space + sparse geometry only.
 - **`prefers-reduced-motion` injection at the base layer.** The theme exposes motion tokens; the consumer applies reduced-motion media queries as appropriate.
-- **Serif font.** Display = Space Grotesk; sans = system; mono = Space Mono. No `--font-serif` is shipped.
+- **Component-level type-role tokens.** The theme ships family, scale, leading, and reading tokens. It does not ship `--type-h1`, `--type-meta`, or component-specific typography bundles.
 
 When you find yourself wanting to add one of these inside `@ayingott/theme`, stop and check with the user. The right move is almost always "implement it in the consumer project, not in the theme".
 
@@ -241,7 +260,8 @@ These live in the design-system repository. Read them when the skill is not enou
 
 - `docs/spec/design-system-v1.0.md` — the V0 contract, including the §8 contrast table and §13 alignment notes.
 - `docs/rfc/0001-theme-v0.md` — the implementation RFC.
-- `docs/decisions/index.md` — DS-D-01 through DS-D-06 design decisions.
+- `docs/rfc/0002-reading-token-layer-v0.1.md` — the reading token layer RFC.
+- `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.
 - `packages/theme/THIRD_PARTY_NOTICES.md` — font licensing.
 - `AGENTS.md` and `CLAUDE.md` — repository-level agent guidance.

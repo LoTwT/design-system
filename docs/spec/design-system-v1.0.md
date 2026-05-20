@@ -1,13 +1,13 @@
-# lotwt Design System · v1.0 Spec
+# lotwt Design System · v1.0 Spec + V0.1 Reading Update
 
 - 起草人：@UX · 2026-05-06
-- 项目：`@ayingott/theme` V0 design system
-- 状态：v1.0 草稿（PR #2 进入二轮 review；spec 与 V0 main `26971e4` 1:1 对齐 source of truth）
-- Source of truth：**V0 main 已发布的 `packages/theme/src/**/*.css` + `package.json#exports`**
-- 锁定输入：DS-D-01~04 / RFC 0001 v0.3 final / V0 PR #1 实施
+- 项目：`@ayingott/theme` V0 design system + V0.1 additive reading layer
+- 状态：v1.1 update（V0.1 reading token layer；spec 与当前 `packages/theme/src/**/*.css` 1:1 对齐 source of truth）
+- Source of truth：**当前已实施的 `packages/theme/src/**/*.css` + `package.json#exports`**
+- 锁定输入：DS-D-01~04 / DS-D-11 / RFC 0001 v0.3 final / RFC 0002 reading token layer
 - 配套：`docs/decisions/index.md`（Product 决策日志，PR #3 已合）
 
-> **重要约定**：本 spec 是 V0 已发布契约的设计意图文档。token 值 / semantic 命名 / utility 实现 / 公共 exports **与 V0 main 1:1 对齐**；任何 UX 关于 v1.x 演进的想法移到 §A 标为 future / non-contract。
+> **重要约定**：本 spec 是 V0 契约与 V0.1 additive reading layer 的设计意图文档。token 值 / semantic 命名 / utility 实现 / 公共 exports **与当前 source of truth 1:1 对齐**；任何 UX 关于后续演进的想法移到 §A 标为 future / non-contract。
 
 ---
 
@@ -106,15 +106,16 @@
 
 > [FUTURE]：UX baseline 曾提议 14 syntax token（含 boolean / class-name / tag / attr-* / punct / bg / line-num 等）；V0 仅 6 个。后续按真实代码高亮库需要扩。
 
-### 1.7 Typography · Family（V0 已 ship 3 family）
+### 1.7 Typography · Family（V0.1 已 ship 4 family）
 
 ```css
 --font-display: "Space Grotesk", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-sans:    system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-mono:    "Space Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+--font-reading: "Newsreader", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
 ```
 
-> [FUTURE]：UX baseline 曾提议 `--font-serif`（Newsreader / IBM Plex Serif fallback），V0 不 ship。Blog body serif 启用时单独加。
+`--font-reading` 是 V0.1 additive long-form token。Newsreader 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
 
 ### 1.8 Typography · Size Scale（13 阶，各带配套 line-height）
 
@@ -132,9 +133,11 @@ V0 暴露 paired tokens（`--text-{size}` + `--text-{size}--line-height`）：
 
 ```css
 --font-weight-light / regular / medium / semibold / bold     (5 阶)
---leading-none / tight / snug / normal / relaxed / loose      (6 阶)
+--leading-none / tight / snug / normal / relaxed / loose / reading      (7 阶)
 --tracking-tighter / tight / normal / wide / wider / widest   (6 阶)
 ```
+
+`--leading-reading: 1.7` 是 V0.1 long-form body rhythm。
 
 > [FUTURE]：UX baseline 曾提议 17 个语义 type-role tokens（`--type-h1`, `--type-meta`, `--type-code-block` 等组合 token）；V0 不 ship type-role token，consumer 自己组合 `font-display + text-3xl + font-bold` 即可。后续若发现重复使用模式可抽 type-role。
 
@@ -231,6 +234,8 @@ V0 keyframes 命名带 `ayingott-` 前缀避免与 consumer 自有 keyframes 冲
 --layout-inline-gap:   var(--spacing-3)
 --layout-prose-width:  var(--container-reading)
 ```
+
+`--container-reading` / `--layout-prose-width` 是 layout 容器宽度。`--reading-measure` 是 V0.1 新增的 font-relative 正文 measure，长文 body 应使用 `max-inline-size: min(100%, var(--reading-measure))`；外层 shell 继续使用 `--layout-prose-width`。
 
 ### 2.6 Opacity（5 语义阶）
 ```css
@@ -370,6 +375,41 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 5. **status 暗色调亮**：success/warning/danger/info 在 dark 用各 hue 的 300 阶，避免高饱和深底刺眼
 
 > [FUTURE]：UX baseline 曾提议 `--text-tertiary` / `--text-disabled` / `--text-link` / `--bg-accent-soft` / `--bg-accent` / `--bg-accent-strong` / `--text-on-accent` / `--text-link-hover` 等 token，V0 不 ship。consumer 当前用 V0 提供的 `--text-muted` / `--accent-primary` / `--accent-soft` 等组合。
+
+### 3.5 Reading semantic layer（V0.1 `packages/theme/src/semantic/reading.css`）
+
+V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me blog 正文和 docs 长文复用。该层纯 additive，不改旧 token。
+
+```css
+:root {
+  --reading-font-body: var(--font-reading);
+  --reading-font-heading: var(--font-reading);
+  --reading-font-mono: var(--font-mono);
+  --reading-measure: 65ch;
+  --reading-font-size: var(--text-lg);
+  --reading-line-height: var(--leading-reading);
+  --reading-paragraph-gap: 1.2em;
+  --reading-fg: var(--text-primary);
+  --reading-bg: var(--surface-canvas);
+  --reading-fg-muted: var(--text-secondary);
+  --reading-link: var(--text-accent);
+  --reading-link-hover: var(--accent-primary-active);
+  --reading-accent: var(--accent-primary);
+  --reading-code-fg: var(--text-primary);
+  --reading-code-bg: var(--surface-subtle);
+  --reading-rule: var(--border-subtle);
+  --reading-scale-h1: var(--text-3xl);
+  --reading-scale-h2: var(--text-2xl);
+  --reading-scale-h3: var(--text-xl);
+  --reading-scale-h4: var(--text-lg);
+}
+
+.dark {
+  --reading-link-hover: var(--color-lavender-200);
+}
+```
+
+`--reading-link` 必须使用 `--text-accent`。不要绑定 `--accent-primary`；light 模式下当前 `--accent-primary` 在 `--surface-canvas` 上只有 2.75:1，不满足正文链接 AA。V0.1 smoke gate 会验证 reading fg / muted / link / code foreground 在 light 和 dark 下均达到 4.5:1。
 
 ---
 
@@ -593,7 +633,7 @@ V0 `packages/theme/src/fonts.css` 提供 `@font-face`：
 
 ```css
 @import "tailwindcss";
-@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Space Grotesk Variable + Space Mono r+b */
+@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Space Grotesk + Space Mono + Newsreader */
 @import "@ayingott/theme";              /* tokens + semantic + utilities + base */
 ```
 
@@ -604,6 +644,8 @@ V0 实际打包字体文件（在 `packages/theme/src/fonts/`）：
 - `space-grotesk-latin-ext-wght-normal.woff2`（latin-ext subset）
 - `space-mono-latin-400-normal.woff2`（regular）
 - `space-mono-latin-700-normal.woff2`（bold）
+- `newsreader-latin-opsz-normal.woff2`（latin subset，variable opsz 6-72 + wght 200-800）
+- `newsreader-latin-ext-opsz-normal.woff2`（latin-ext subset，variable opsz 6-72 + wght 200-800）
 
 License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
@@ -614,7 +656,7 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 | 大标题（H1 / page title）| `--font-display` | Space Grotesk Latin + 系统中文 |
 | 二级 / 小标题（H2-H6）| `--font-display` | 一致性 |
 | Body 默认 | `--font-sans` | 系统字体 + 中文 fallback |
-| Body 长文 | `--font-sans` | 同上 |
+| Body 长文 | `--font-reading` / `--reading-font-body` | Newsreader opt-in + CJK serif fallback |
 | Tagline / hero text | `--font-display` | brand |
 | Date / reading time / meta | `--font-mono` | 等宽对齐 |
 | Tag chip label | `--font-mono` | "标签"感 |
@@ -814,7 +856,6 @@ pnpm add @ayingott/theme
 - `--bg-accent-soft` / `--bg-accent` / `--bg-accent-strong`（V0 用 `--accent-primary` / `--accent-soft` 等代替）
 
 ### A.2 Typography
-- `--font-serif`（Newsreader fallback chain）— blog body serif 启用时加
 - 17 个语义 type-role tokens（`--type-h1` / `--type-display` / `--type-meta` 等）— V0 不 ship，consumer 自组合
 
 ### A.3 Spacing / Sizing / Radius
