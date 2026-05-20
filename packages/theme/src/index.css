@@ -19,6 +19,7 @@
 
 @import "./semantic/light.css";
 @import "./semantic/dark.css";
+@import "./semantic/reading.css";
 
 @import "./utilities/focus.css";
 @import "./utilities/touch-target.css";

@@ -6,7 +6,7 @@ V0 is intentionally narrow:
 
 - Tailwind CSS v4 CSS-first theme package.
 - Foundation tokens, layer tokens, semantic variables, base styles, and small accessibility utilities.
-- Optional self-hosted font entry.
+- Optional self-hosted font entry, including reading fonts.
 - No component primitives, Vue package, adapter, playground, or fixtures.
 - A separate `site/` VitePress showcase displays the shipped tokens and visual language.
 
@@ -17,7 +17,7 @@ V0 is intentionally narrow:
 @import "@ayingott/theme";
 ```
 
-Opt in to self-hosted font files when the consumer wants the bundled Space Grotesk and Space Mono assets:
+Opt in to self-hosted font files when the consumer wants the bundled Space Grotesk, Space Mono, and Newsreader assets:
 
 ```css
 @import "tailwindcss";

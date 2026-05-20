@@ -228,12 +228,42 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ---
 
+## DS-D-11 Reading token layer = design-system V0.1 additive layer
+
+**决策**：新增 long-form reading token layer 到 `@ayingott/theme`，作为 V0.1 minor additive release。该层服务 MIRU V0 阅读体验，并可被 ayingott.me blog 正文和 docs 站长文复用。
+
+**新增范围**：
+
+- `foundation/typography.css` 增加 `--font-reading` 和 `--leading-reading`
+- 新增 `semantic/reading.css`，提供 `--reading-*` runtime variables
+- `fonts.css` opt-in 增加 Newsreader Latin / Latin Extended `opsz` variable normal woff2
+- `THIRD_PARTY_NOTICES.md`、smoke、pack-dry、contrast gate 同步更新
+
+**边界**：
+
+- 不改现有 token 值，纯 additive
+- 不新增 public export；仍通过 `@ayingott/theme` 聚合导入
+- `@ayingott/theme` 仍不自动 import `fonts.css`
+- 不 bundle CJK serif 字体，CJK 只保留 fallback names
+- `--container-reading` / `--layout-prose-width` 继续表示 layout 宽度；`--reading-measure` 表示正文排版 measure
+
+**可逆性**：中（新增 token 可废弃或调整，但 npm release 后不能覆盖已发布版本）
+
+**来源**：
+
+- lo-user 2026-05-20 在 V3 org migration 后锁定 MIRU OQ-miru-1：reading tokens 归 design-system
+- UX-Sunna RFC task #54：MIRU first consumer，未来 ayingott.me / docs 复用
+- TL-Anby + QA-Dialyn cross-review：`--reading-link` 不得用 `--accent-primary`，需走 `--text-accent` 以满足正文小字号 AA
+
+---
+
 ## 字体配置（实施细节，记录但不单独编号）
 
 V0 实际打包：
 
 - **Space Grotesk Variable**（SIL OFL 1.1）— `--font-display`，weight 300-700
 - **Space Mono Regular + Bold**（SIL OFL 1.1）— `--font-mono`
+- **Newsreader Variable**（SIL OFL 1.1）— `--font-reading`，latin / latin-ext，optical size + weight variable
 
 Fallback chain（CSS 引用，不打包）：
 

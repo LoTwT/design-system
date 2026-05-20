@@ -14,10 +14,10 @@
 ## In Scope
 
 - Foundation tokens through Tailwind CSS v4 `@theme static`.
-- Runtime semantic variables through `:root` and `.dark`.
+- Runtime semantic variables through `:root` and `.dark`, including the V0.1 long-form `--reading-*` layer.
 - Base styles.
 - Focus and touch target utilities.
-- Optional self-hosted font assets.
+- Optional self-hosted font assets for Space Grotesk, Space Mono, and Newsreader.
 
 ## Out of Scope
 

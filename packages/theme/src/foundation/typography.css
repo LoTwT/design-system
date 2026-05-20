@@ -1,6 +1,7 @@
 @theme static {
   --font-display: "Space Grotesk", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-sans: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-reading: "Newsreader", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
   --font-mono: "Space Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
 
   --text-2xs: 0.625rem;
@@ -41,6 +42,7 @@
   --leading-snug: 1.4;
   --leading-normal: 1.5;
   --leading-relaxed: 1.6;
+  --leading-reading: 1.7;
   --leading-loose: 1.8;
 
   --tracking-tighter: -0.04em;
