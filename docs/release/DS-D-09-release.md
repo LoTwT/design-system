@@ -52,8 +52,11 @@ Release CI generates GitHub Release notes from the tag with:
 npx --yes git-cliff@2.13.1 --latest --strip header --output /tmp/release-notes.md
 ```
 
-`softprops/action-gh-release` then creates or updates the GitHub Release
-using that file as `body_path`.
+After npm publish succeeds, `softprops/action-gh-release` creates or
+updates the GitHub Release using that file as `body_path`. Registry
+install smoke runs after GitHub Release creation, so npm CDN
+propagation lag cannot prevent release notes from being published after
+a successful package publish.
 
 ## Release Gate
 
@@ -110,8 +113,8 @@ fix forward with the next patch instead of rerunning the same publish.
 
 ## Post-Publish Smoke
 
-After publish, CI creates a temporary package, installs
-`@ayingott/theme@X.Y.Z`, `tailwindcss@4.2.4`, and
+After publish and GitHub Release creation, CI creates a temporary
+package, installs `@ayingott/theme@X.Y.Z`, `tailwindcss@4.2.4`, and
 `@tailwindcss/cli@4.2.4`, then builds a CSS file that imports:
 
 ```css
@@ -120,9 +123,17 @@ After publish, CI creates a temporary package, installs
 @import "@ayingott/theme";
 ```
 
-The smoke checks generated CSS for semantic variables, Tailwind token
-utilities, `@font-face`, font asset references, focus-ring utilities,
-and touch-target utilities.
+The smoke waits for npm registry propagation with a bounded retry
+budget (`20` attempts with `60s` delay). Each attempt first checks
+version visibility with `npm view`; after the package version is
+visible, it runs a fresh install to catch tarball or dependency
+propagation lag separately.
+
+The smoke checks generated CSS for semantic variables, reading tokens
+(`--reading-link`, `--reading-measure`), Tailwind token utilities
+(`font-reading` included), `@font-face`, Space Grotesk and Newsreader
+font asset references, focus-ring utilities, and touch-target
+utilities.
 
 ## Rollback
 
