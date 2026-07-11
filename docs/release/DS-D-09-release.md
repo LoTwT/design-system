@@ -46,22 +46,26 @@ headers that contain the previous version. The `bump.config.ts`
 `execute` function runs the changelog command and then explicitly adds
 `CHANGELOG.md` to the release commit file set.
 
-Release CI generates GitHub Release notes from the tag with:
+The unprivileged validation job generates GitHub Release notes from the tag with:
 
 ```bash
-npx --yes git-cliff@2.13.1 --latest --strip header --output /tmp/release-notes.md
+pnpm exec git-cliff --latest --strip header --output release-artifact/release-notes.md
 ```
 
-After npm publish succeeds, `softprops/action-gh-release` creates or
-updates the GitHub Release using that file as `body_path`. Registry
-install smoke runs after GitHub Release creation, so npm CDN
-propagation lag cannot prevent release notes from being published after
-a successful package publish.
+The validation job packages the theme into a tarball, stores the tarball
+and release notes in a one-day workflow artifact, and records their SHA-256
+digests. The publish and GitHub Release jobs independently verify those
+digests before using the files.
+
+After npm publish succeeds, a separate least-privilege job runs
+`softprops/action-gh-release` with only `contents: write`. Registry install
+smoke runs after GitHub Release creation, so npm CDN propagation lag cannot
+prevent release notes from being published after a successful package publish.
 
 ## Release Gate
 
-The release workflow is triggered only by `vX.Y.Z` tag pushes. The
-release job validates:
+The release workflow is triggered only by semver tag pushes. The
+unprivileged validation job validates:
 
 - tag format is semver with a leading `v`
 - root `package.json` version equals the tag version
@@ -80,18 +84,37 @@ pnpm site:build
 pnpm --filter @ayingott/theme pack:dry
 ```
 
+It also creates the actual tarball used by the publish job. All third-party
+actions in the workflow are pinned to full commit SHAs, and checkout disables
+credential persistence.
+
+The jobs are separated by trust boundary:
+
+- `validate`: `contents: read`; installs dependencies, runs repository code,
+  creates the package tarball and release notes, then uploads checksums.
+- `publish`: `actions: read` and `id-token: write`; downloads the validated
+  artifact and publishes it without repository contents permission, checkout,
+  or execution of repository build scripts.
+- `github-release`: `actions: read` and `contents: write`; downloads the
+  validated release notes and creates the GitHub Release after publish succeeds.
+- `registry-smoke`: no repository permissions; verifies the published package
+  from a new temporary consumer after the GitHub Release exists.
+
 ## npm Publish
 
-Publish is performed by GitHub Actions using npm Trusted Publishing /
-OIDC:
+Publish is performed from the validated tarball by GitHub Actions using npm
+Trusted Publishing / OIDC:
 
 ```bash
-cd packages/theme
-pnpm publish --access public --no-git-checks
+npm publish release-artifact/ayingott-theme-X.Y.Z.tgz --access public --tag latest --ignore-scripts
 ```
 
-The release job must have `id-token: write` permission and run in the
-protected `npm-publish` environment. The npm Trusted Publisher should
+For a prerelease tag such as `v1.0.0-rc.1`, the workflow uses npm dist-tag
+`next`, marks the GitHub Release as a prerelease, and sets `make_latest: false`.
+Stable versions use npm dist-tag `latest` and may set `make_latest: true`.
+
+Only the publish job has `id-token: write`; it runs in the protected
+`npm-publish` environment. The npm Trusted Publisher should
 point at:
 
 - package: `@ayingott/theme`
@@ -106,10 +129,10 @@ Trusted Publishing automatically generates provenance attestations
 server-side, so the workflow does not pass the client-side
 `--provenance` flag.
 
-`pnpm publish` does not write npm `gitHead` metadata, so the workflow no
-longer uses `gitHead` as a retry-safety check. The workflow checks npm
-version absence before publishing; if a version has already reached npm,
-fix forward with the next patch instead of rerunning the same publish.
+Publishing the tarball does not rely on npm `gitHead` metadata, so the workflow
+uses version absence and artifact SHA-256 verification as its retry and
+handoff checks. If a version has already reached npm, fix forward with the next
+patch instead of rerunning the same publish.
 
 ## Post-Publish Smoke
 

@@ -34,7 +34,8 @@ This covers package-name import smoke and npm package dry-run.
 - Use `pnpm release:bump` for a patch bump, or `pnpm release:bump X.Y.Z` for an explicit version.
 - Run release bumps only from `main` after the release PR has merged.
 - The release script uses bumpp's built-in commit/tag format: `chore: release vX.Y.Z` and `vX.Y.Z`.
-- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; CI validates metadata, runs package/site gates, publishes `@ayingott/theme` with npm Trusted Publishing / OIDC, and runs registry install smoke.
+- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; an unprivileged validation job produces a checksummed tarball and release notes, the protected publish job receives only artifact-read and OIDC permissions, a separate job creates the GitHub Release, and a final job runs registry install smoke.
+- Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
 - The protected GitHub environment for publish is `npm-publish`.
 
 For the display-only VitePress showcase, run:
