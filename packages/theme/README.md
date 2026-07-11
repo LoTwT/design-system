@@ -2,6 +2,8 @@
 
 CSS-first Tailwind CSS v4 theme package for Ayingott projects.
 
+Tailwind CSS `^4.0.0` is a required peer dependency. The package itself has no runtime JavaScript dependencies.
+
 ## Install
 
 ```bash

@@ -14,6 +14,7 @@ This repository is the source for the Ayingott design system.
 ## Package Contract
 
 - Public CSS exports are limited to `.`, `./index.css`, `./fonts.css`, and `./fonts/*`.
+- Tailwind CSS `^4.0.0` is a required peer dependency; the published package must not expose repository-only test scripts.
 - `@ayingott/theme` must not import `fonts.css`; Space Grotesk, Space Mono, and Newsreader loading is consumer opt-in.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables, not guaranteed Tailwind utilities.
 - If font files ship in the npm package, `THIRD_PARTY_NOTICES.md` must ship with them.
@@ -26,7 +27,7 @@ Run:
 pnpm check
 ```
 
-This covers package-name import smoke and npm package dry-run.
+This covers source smoke, package dry-run, real-tarball consumer install/compile, and site contrast checks.
 
 ## Release
 

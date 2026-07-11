@@ -22,10 +22,8 @@
     "./fonts.css": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*"
   },
-  "scripts": {
-    "check": "pnpm run smoke && pnpm run pack:dry",
-    "smoke": "node ./test/smoke.mjs",
-    "pack:dry": "node ./test/pack-dry.mjs"
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.2.4",
