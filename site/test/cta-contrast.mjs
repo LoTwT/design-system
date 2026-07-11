@@ -1,28 +1,66 @@
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+import postcss from "postcss"
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 
 function readSource(file) {
-  return readFileSync(join(rootDir, file), "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  return readFileSync(join(rootDir, file), "utf8")
+}
+
+function parseVariables(source, file, selector) {
+  let root
+  try {
+    root = postcss.parse(source, { from: file })
+  }
+  catch (error) {
+    const detail = error instanceof Error ? error.message : String(error)
+    throw new Error(`Unsupported CSS syntax in ${file}: ${detail}`)
+  }
+
+  const containers = []
+  if (selector === undefined) {
+    root.walk((node) => {
+      if ((node.type === "rule" || node.type === "atrule")
+        && node.nodes?.some(child => child.type === "decl" && child.prop.startsWith("--")))
+        containers.push(node)
+    })
+  }
+  else {
+    root.walkRules((rule) => {
+      if (rule.selector === selector)
+        containers.push(rule)
+    })
+  }
+
+  if (containers.length === 0)
+    throw new Error(`Missing CSS block ${selector ?? "<any>"} in ${file}`)
+
+  const variables = {}
+  for (const container of containers) {
+    for (const node of container.nodes ?? []) {
+      if (node.type === "comment")
+        continue
+      if (node.type !== "decl")
+        throw new Error(`Unsupported nested CSS syntax in ${file}: ${node.toString()}`)
+      if (!node.prop.startsWith("--"))
+        continue
+      if (!/^--[A-Za-z0-9_-]+$/.test(node.prop) || node.value.trim() === "" || node.important)
+        throw new Error(`Unsupported CSS variable syntax in ${file}: ${node.toString()}`)
+
+      const name = node.prop.slice(2)
+      if (Object.hasOwn(variables, name))
+        throw new Error(`Duplicate CSS variable --${name} in ${file}`)
+      variables[name] = node.value.trim()
+    }
+  }
+
+  return variables
 }
 
 function readVariables(file, selector) {
-  const source = readSource(file)
-  const blocks = [...source.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-    .filter((match) => {
-      const blockSelector = match[1].trim().split(";").at(-1).trim()
-      return selector === undefined || blockSelector === selector
-    })
-
-  if (blocks.length === 0)
-    throw new Error(`Missing CSS block ${selector ?? "<any>"} in ${file}`)
-
-  return Object.fromEntries(
-    blocks.flatMap((match) => [...match[2].matchAll(/--([A-Za-z0-9_-]+)\s*:\s*([^;]+);/g)])
-      .map((match) => [match[1], match[2].trim()]),
-  )
+  return parseVariables(readSource(file), file, selector)
 }
 
 function resolveVariable(name, maps, chain = []) {
@@ -76,6 +114,21 @@ function expectResolutionFailure(label, callback, expectedMessage) {
 expectResolutionFailure("missing variable", () => resolveVariable("missing", [{}]), "Missing CSS variable")
 expectResolutionFailure("circular variable", () => resolveVariable("a", [{ a: "var(--b)", b: "var(--a)" }]), "Circular CSS variable")
 expectResolutionFailure("unsupported value", () => resolveVariable("a", [{ a: "rgb(0 0 0)" }]), "Unsupported color value")
+expectResolutionFailure(
+  "unsupported parser syntax",
+  () => parseVariables(":root { --a: #000000", "<invalid-fixture>", ":root"),
+  "Unsupported CSS syntax",
+)
+expectResolutionFailure(
+  "ambiguous parser syntax",
+  () => parseVariables(":root { --a: #000000; --a: #ffffff; }", "<duplicate-fixture>", ":root"),
+  "Duplicate CSS variable",
+)
+expectResolutionFailure(
+  "nested parser syntax",
+  () => parseVariables(":root { @media (prefers-contrast: more) { --a: #000000; } }", "<nested-fixture>", ":root"),
+  "Unsupported nested CSS syntax",
+)
 
 const foundation = readVariables("packages/theme/src/foundation/colors.css")
 const lightSemantic = readVariables("packages/theme/src/semantic/light.css", ":root")
