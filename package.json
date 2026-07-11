@@ -5,11 +5,12 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "check": "pnpm -r check",
+    "check": "pnpm -r check && pnpm site:check",
     "smoke": "pnpm --filter @ayingott/theme smoke",
     "pack:dry": "pnpm --filter @ayingott/theme pack:dry",
     "site:dev": "vitepress dev site",
     "site:build": "vitepress build site",
+    "site:check": "node site/test/cta-contrast.mjs",
     "site:preview": "vitepress preview site",
     "site:cf-preview": "pnpm site:build && wrangler dev",
     "site:deploy": "pnpm site:build && wrangler deploy",
