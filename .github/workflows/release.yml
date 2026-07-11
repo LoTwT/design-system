@@ -5,31 +5,40 @@ on:
     tags:
       - 'v*.*.*'
 
-permissions:
-  contents: write
-  id-token: write
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
-    name: Publish @ayingott/theme
+  validate:
+    name: Validate release artifact
     runs-on: ubuntu-latest
-    environment: npm-publish
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      npm_tag: ${{ steps.release.outputs.npm_tag }}
+      prerelease: ${{ steps.release.outputs.prerelease }}
+      make_latest: ${{ steps.release.outputs.make_latest }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
         with:
           version: 10.33.0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Derive release version
+      - name: Derive release version and channel
         id: release
         shell: bash
         run: |
@@ -39,8 +48,24 @@ jobs:
             echo "Tag must be vX.Y.Z or vX.Y.Z-prerelease, got $TAG" >&2
             exit 1
           fi
+
           VERSION="${TAG#v}"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-* ]]; then
+            NPM_TAG="next"
+            PRERELEASE="true"
+            MAKE_LATEST="false"
+          else
+            NPM_TAG="latest"
+            PRERELEASE="false"
+            MAKE_LATEST="true"
+          fi
+
+          {
+            echo "version=$VERSION"
+            echo "npm_tag=$NPM_TAG"
+            echo "prerelease=$PRERELEASE"
+            echo "make_latest=$MAKE_LATEST"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Validate release metadata
         shell: bash
@@ -79,9 +104,91 @@ jobs:
       - run: pnpm site:build
       - run: pnpm --filter @ayingott/theme pack:dry
 
-      - name: Check npm version absence
+      - name: Build immutable release artifact
+        shell: bash
         env:
           VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          ARTIFACT_DIR="$RUNNER_TEMP/release-artifact"
+          mkdir -p "$ARTIFACT_DIR"
+          pnpm --filter @ayingott/theme pack --pack-destination "$ARTIFACT_DIR"
+
+          mapfile -t TARBALLS < <(find "$ARTIFACT_DIR" -maxdepth 1 -type f -name '*.tgz' -print)
+          test "${#TARBALLS[@]}" -eq 1 || { echo "expected exactly one release tarball, found ${#TARBALLS[@]}" >&2; exit 1; }
+          TARBALL="${TARBALLS[0]}"
+
+          PACKAGE_JSON="$ARTIFACT_DIR/package.json"
+          tar -xOf "$TARBALL" package/package.json > "$PACKAGE_JSON"
+          node - "$PACKAGE_JSON" "$VERSION" <<'NODE'
+          const fs = require('node:fs')
+          const [packageJsonPath, expectedVersion] = process.argv.slice(2)
+          const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+          if (pkg.name !== '@ayingott/theme' || pkg.version !== expectedVersion) {
+            console.error(`unexpected tarball metadata: ${pkg.name}@${pkg.version}`)
+            process.exit(1)
+          }
+          NODE
+          rm "$PACKAGE_JSON"
+
+          pnpm exec git-cliff --latest --strip header --output "$ARTIFACT_DIR/release-notes.md"
+          (cd "$ARTIFACT_DIR" && sha256sum ./*.tgz ./release-notes.md > SHA256SUMS)
+
+      - name: Upload validated release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: validated-release-artifact
+          path: ${{ runner.temp }}/release-artifact
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish @ayingott/theme
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Download validated release artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: validated-release-artifact
+          path: release-artifact
+
+      - name: Verify artifact integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-artifact
+          sha256sum --check SHA256SUMS
+
+      - name: Validate npm CLI version
+        shell: bash
+        run: |
+          set -euo pipefail
+          NPM_VERSION="$(npm --version)"
+          node - "$NPM_VERSION" <<'NODE'
+          const version = process.argv[2]
+          const [major = 0, minor = 0, patch = 0] = version.split('.').map(Number)
+          const ok = major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1)))
+          if (!ok) {
+            console.error(`npm ${version} does not satisfy >= 11.5.1`)
+            process.exit(1)
+          }
+          console.log(`npm ${version} satisfies >= 11.5.1`)
+          NODE
+
+      - name: Check npm version absence
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
         run: |
           set -euo pipefail
           if npm view "@ayingott/theme@$VERSION" version >/dev/null 2>&1; then
@@ -89,28 +196,66 @@ jobs:
             exit 1
           fi
 
-      - name: Publish @ayingott/theme to npm with trusted publishing
-        id: publish
-        working-directory: packages/theme
-        run: pnpm publish --access public --no-git-checks
-
-      - name: Generate release notes
-        if: always() && steps.publish.outcome == 'success'
-        run: npx --yes git-cliff@2.13.1 --latest --strip header --output /tmp/release-notes.md
-
-      - name: Create GitHub Release
-        if: always() && steps.publish.outcome == 'success'
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
-        with:
-          name: design-system v${{ steps.release.outputs.version }}
-          body_path: /tmp/release-notes.md
-          make_latest: true
-
-      - name: Registry install smoke for @ayingott/theme
-        if: always() && steps.publish.outcome == 'success'
+      - name: Publish validated tarball with trusted publishing
         shell: bash
         env:
-          VERSION: ${{ steps.release.outputs.version }}
+          NPM_TAG: ${{ needs.validate.outputs.npm_tag }}
+        run: |
+          set -euo pipefail
+          mapfile -t TARBALLS < <(find release-artifact -maxdepth 1 -type f -name '*.tgz' -print)
+          test "${#TARBALLS[@]}" -eq 1 || { echo "expected exactly one release tarball, found ${#TARBALLS[@]}" >&2; exit 1; }
+          npm publish "${TARBALLS[0]}" --access public --tag "$NPM_TAG" --ignore-scripts
+
+  github-release:
+    name: Create GitHub Release
+    needs:
+      - validate
+      - publish
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download validated release artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: validated-release-artifact
+          path: release-artifact
+
+      - name: Verify artifact integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-artifact
+          sha256sum --check SHA256SUMS
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: design-system v${{ needs.validate.outputs.version }}
+          body_path: release-artifact/release-notes.md
+          prerelease: ${{ needs.validate.outputs.prerelease }}
+          make_latest: ${{ needs.validate.outputs.make_latest }}
+
+  registry-smoke:
+    name: Registry install smoke
+    needs:
+      - validate
+      - publish
+      - github-release
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Registry install smoke for @ayingott/theme
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
         run: |
           set -euo pipefail
           TMP_DIR="$(mktemp -d)"

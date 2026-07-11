@@ -13,9 +13,12 @@ Repo-specific implementation lives in:
 Repo-specific notes:
 
 - `@ayingott/theme` is the only publishable package today, so CI runs
-  `pnpm publish` from `packages/theme` rather than `pnpm -r publish`.
+  `npm publish` on the checksummed tarball produced by the unprivileged
+  validation job rather than `pnpm -r publish` from a privileged checkout.
 - The root package is private but keeps the same version as
   `packages/theme/package.json` so tags, docs, and package metadata stay
   aligned.
+- Stable tags publish to npm dist-tag `latest`. Prerelease tags publish to
+  `next`, create a GitHub prerelease, and never become the latest release.
 - The `npm-publish` environment, Trusted Publisher binding, and `v*.*.*`
   tag-protection ruleset are repository settings, not source files.
