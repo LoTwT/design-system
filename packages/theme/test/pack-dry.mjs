@@ -1,8 +1,12 @@
 import { execFileSync } from "node:child_process"
-import { dirname } from "node:path"
+import { createHash } from "node:crypto"
+import { readFileSync } from "node:fs"
+import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
+const rootDir = dirname(dirname(packageDir))
+const expectedLicenseHash = "a4baf0eff35f346cb41cf3fc4fa39b79ac1c04037257793886c382473bb43c8b"
 
 const output = execFileSync("pnpm", ["pack", "--dry-run", "--json"], {
   cwd: packageDir,
@@ -14,6 +18,7 @@ const files = new Set(payload.files.map((file) => file.path))
 
 const required = [
   "package.json",
+  "LICENSE",
   "README.md",
   "THIRD_PARTY_NOTICES.md",
   "src/index.css",
@@ -41,14 +46,21 @@ const forbidden = [
 
 const missing = required.filter((file) => !files.has(file))
 const leaked = forbidden.filter((file) => files.has(file))
+const rootLicense = readFileSync(join(rootDir, "LICENSE"))
+const packageLicense = readFileSync(join(packageDir, "LICENSE"))
+const licenseHash = createHash("sha256").update(packageLicense).digest("hex")
 
-if (missing.length || leaked.length) {
+if (missing.length || leaked.length || !rootLicense.equals(packageLicense) || licenseHash !== expectedLicenseHash) {
   for (const file of missing) {
     console.error(`Missing from package payload: ${file}`)
   }
   for (const file of leaked) {
     console.error(`Unexpected test file in package payload: ${file}`)
   }
+  if (!rootLicense.equals(packageLicense))
+    console.error("Root and package MIT LICENSE files differ")
+  if (licenseHash !== expectedLicenseHash)
+    console.error(`Unexpected MIT LICENSE SHA-256: ${licenseHash}`)
   process.exit(1)
 }
 

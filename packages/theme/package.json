@@ -12,6 +12,7 @@
   "files": [
     "src/**/*.css",
     "src/fonts/**/*.woff2",
+    "LICENSE",
     "README.md",
     "THIRD_PARTY_NOTICES.md"
   ],
