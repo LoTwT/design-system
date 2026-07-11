@@ -81,7 +81,6 @@ The job then runs:
 pnpm install --frozen-lockfile
 pnpm check
 pnpm site:build
-pnpm --filter @ayingott/theme pack:dry
 ```
 
 It also creates the actual tarball used by the publish job. All third-party

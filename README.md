@@ -32,7 +32,7 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs the package-name import smoke test and npm package dry-run.
+`pnpm check` runs the source smoke, package dry-run, real-tarball consumer install/compile, and site contrast gates.
 
 ## Release
 
