@@ -19,11 +19,15 @@
   --vp-c-border: var(--border-default);
   --vp-c-divider: var(--border-subtle);
   --vp-c-gutter: var(--border-subtle);
-  --vp-button-brand-bg: var(--accent-primary);
-  --vp-button-brand-hover-bg: var(--accent-primary-hover);
-  --vp-button-brand-active-bg: var(--accent-primary-active);
+  --vp-button-brand-bg: var(--color-lavender-700);
+  --vp-button-brand-hover-bg: var(--color-lavender-800);
+  --vp-button-brand-active-bg: var(--color-lavender-900);
   --vp-button-brand-text: var(--text-inverse);
-  --vp-button-brand-border: var(--accent-primary);
+  --vp-button-brand-hover-text: var(--text-inverse);
+  --vp-button-brand-active-text: var(--text-inverse);
+  --vp-button-brand-border: var(--color-lavender-700);
+  --vp-button-brand-hover-border: var(--color-lavender-800);
+  --vp-button-brand-active-border: var(--color-lavender-900);
   --vp-home-hero-name-color: var(--text-primary);
   --vp-home-hero-name-background: none;
 }
@@ -33,6 +37,15 @@
   --vp-c-brand-2: var(--color-lavender-200);
   --vp-c-brand-3: var(--color-lavender-400);
   --vp-c-brand-soft: var(--accent-soft);
+  --vp-button-brand-bg: var(--color-lavender-300);
+  --vp-button-brand-hover-bg: var(--color-lavender-200);
+  --vp-button-brand-active-bg: var(--color-lavender-100);
+  --vp-button-brand-text: var(--text-inverse);
+  --vp-button-brand-hover-text: var(--text-inverse);
+  --vp-button-brand-active-text: var(--text-inverse);
+  --vp-button-brand-border: var(--color-lavender-300);
+  --vp-button-brand-hover-border: var(--color-lavender-200);
+  --vp-button-brand-active-border: var(--color-lavender-100);
 }
 
 .VPNavBarTitle .title,
