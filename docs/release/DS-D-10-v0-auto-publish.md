@@ -1,10 +1,12 @@
-# DS-D-10 V0.x Automated Publish and Phase 5 Readiness
+# DS-D-10 Automated Publish and Current V0.1.x Phase 5 Readiness
 
 ## Status
 
-Accepted and current for V0.x releases. This control model was introduced for
-V0.0.x patch releases and continues through the current V0.1.x line until a
-later decision explicitly supersedes it.
+This control model originated with V0.0.x patch releases. On 2026-07-12, with
+the root and theme packages at 0.1.0, the repository owner accepted the current
+`npm-publish` environment exception and approved this Phase 5 rehearsal. This
+acceptance covers the current V0.1.x patch line and this Phase 5 only. A future
+minor or major release line requires a new decision.
 
 This decision partially supersedes the environment approval language in
 DS-D-09. DS-D-09 remains canonical for versioning, validation, packaging,
