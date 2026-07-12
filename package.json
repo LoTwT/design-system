@@ -38,12 +38,12 @@
     "@types/node": "^24.12.4",
     "bumpp": "11.1.0",
     "git-cliff": "2.13.1",
-    "postcss": "8.5.14",
+    "postcss": "8.5.17",
     "simple-git-hooks": "2.13.1",
     "tailwindcss": "4.3.2",
     "typescript": "6.0.3",
     "vitepress": "1.6.4",
-    "vue": "3.5.33",
+    "vue": "3.5.39",
     "vue-tsc": "3.3.7",
     "wrangler": "4.110.0"
   }
