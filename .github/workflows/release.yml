@@ -101,6 +101,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      - run: pnpm site:typecheck
       - run: pnpm site:build
 
       - name: Build immutable release artifact

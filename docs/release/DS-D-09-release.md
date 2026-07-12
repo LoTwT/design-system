@@ -80,6 +80,7 @@ The job then runs:
 ```bash
 pnpm install --frozen-lockfile
 pnpm check
+pnpm site:typecheck
 pnpm site:build
 ```
 
