@@ -2,7 +2,15 @@
 
 ## Status
 
-Accepted for V0 implementation.
+Implemented. The npm package scope remains current.
+
+## Repository Addendum (DS-D-05)
+
+DS-D-05 later added the repository-level `site/` VitePress showcase. The site
+is a display and documentation surface only: it is not part of the npm package
+payload, public exports, or consumer contract. `@ayingott/theme` therefore
+remains theme-only, and the showcase does not supersede this RFC's package
+boundary.
 
 ## Decisions
 

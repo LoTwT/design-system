@@ -155,6 +155,8 @@
 
 ## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
 
+**当前状态 / supersession**：release/package contract 仍有效；environment gate 口径由 DS-D-10 部分取代。当前控制与 accepted residual 的 canonical 记录见 [`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)。
+
 **决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 version files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
 
 **发布目标**：当前唯一 npm publish 目标是 `@ayingott/theme`。design-system 保持单包发布路径：release workflow 在 `packages/theme` 下执行 `pnpm publish`。未来新增 public 子包时，需在同 PR 中重新设计 package selection、package-specific gates 和 registry smoke。
@@ -166,7 +168,7 @@
 
 **CI release gate**：`.github/workflows/release.yml` 仅响应 `vX.Y.Z` tag push。发布前校验 tag/version/commit message/main/npm CLI 版本，随后运行 `pnpm install --frozen-lockfile`、`pnpm check`、`pnpm site:build`、`pnpm --filter @ayingott/theme pack:dry`。
 
-**npm publish**：GitHub Actions 在受保护环境 `npm-publish` 中用 npm Trusted Publishing / OIDC 执行：
+**npm publish**：GitHub Actions 在 environment `npm-publish` 中用 npm Trusted Publishing / OIDC 执行：
 
 ```bash
 cd packages/theme
@@ -183,7 +185,7 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 **retry safety**：`pnpm publish` 不写 npm `gitHead` metadata，workflow 不再使用 `gitHead` 作为 rerun skip guard。workflow 在 publish 前检查 npm version absence；如该版本已存在，CI fail fast，已 publish 的错误版本走 deprecate + next patch 的 fix-forward 路径。
 
-**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 protected environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
+**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 `npm-publish` environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
 
 **rollback**：tag / GitHub Release 发错但未 publish 时删除 tag/Release 后重发；已 publish 的版本不依赖 unpublish，走 deprecate bad version + 发布 patch。
 
@@ -200,7 +202,9 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
 
-**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish protected environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
+**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。
+
+**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
 
 **改动汇总**（lo-user 2026-05-10 02:16 现场操作）：
 

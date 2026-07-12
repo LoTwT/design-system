@@ -113,14 +113,20 @@ For a prerelease tag such as `v1.0.0-rc.1`, the workflow uses npm dist-tag
 `next`, marks the GitHub Release as a prerelease, and sets `make_latest: false`.
 Stable versions use npm dist-tag `latest` and may set `make_latest: true`.
 
-Only the publish job has `id-token: write`; it runs in the protected
-`npm-publish` environment. The npm Trusted Publisher should
+Only the publish job has `id-token: write`; it runs in the `npm-publish`
+environment. The npm Trusted Publisher should
 point at:
 
 - package: `@ayingott/theme`
 - repository: `LoTwT/design-system`
 - workflow: `release.yml`
 - environment: `npm-publish`
+
+DS-D-10 partially supersedes the environment approval language in this
+decision and owns the canonical current-control and residual register. This
+document remains canonical for versioning, validation, packaging, publish,
+GitHub Release, registry smoke, and rollback mechanics. See
+[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md).
 
 npm Trusted Publishing requires npm CLI 11.5.1 or later and Node
 22.14.0 or later. The release workflow uses Node 24.

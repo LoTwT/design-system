@@ -22,3 +22,7 @@ Repo-specific notes:
   `next`, create a GitHub prerelease, and never become the latest release.
 - The `npm-publish` environment, Trusted Publisher binding, and `v*.*.*`
   tag-protection ruleset are repository settings, not source files.
+
+Current V0.0.x controls, package/showcase boundaries, accepted residuals, and
+Phase 5 rehearsal requirements are canonical in
+[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md).
