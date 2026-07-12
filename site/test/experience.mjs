@@ -128,6 +128,29 @@ function verifyTouchTargetMinimum(source, file) {
   expect(minimums[0].important === false, "Expected --touch-target-min important=false")
 }
 
+const reducedMotionSelectors = [
+  ".VPSwitch.VPSwitchAppearance",
+  ".VPSwitch.VPSwitchAppearance .check",
+  ".dark .VPSwitch.VPSwitchAppearance .icon .sun",
+  ".dark .VPSwitch.VPSwitchAppearance .icon .moon",
+]
+
+function verifyReducedAppearanceMotion(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const reducedMotion = css.nodes.filter(node =>
+    node.type === "atrule"
+    && node.name === "media"
+    && node.params === "(prefers-reduced-motion: reduce)",
+  )
+  expect(reducedMotion.length === 1, `Expected exactly one reduced-motion media query in ${file}`)
+  const motion = readDeclarations(findRule(
+    reducedMotion[0],
+    reducedMotionSelectors,
+    "reduced appearance motion",
+  ))
+  expectDeclaration(motion, "transition-duration", "0s", true)
+}
+
 function sha256(file) {
   return createHash("sha256").update(readFileSync(join(rootDir, file))).digest("hex")
 }
@@ -188,6 +211,21 @@ expectFailure(
 const touchTargetFile = "packages/theme/src/layers/touch-target.css"
 verifyTouchTargetMinimum(readSource(touchTargetFile), touchTargetFile)
 
+expectFailure(
+  "missing reduced-motion icon selector",
+  () => verifyReducedAppearanceMotion(`
+    @media (prefers-reduced-motion: reduce) {
+      .VPSwitch.VPSwitchAppearance,
+      .VPSwitch.VPSwitchAppearance .check,
+      .dark .VPSwitch.VPSwitchAppearance .icon .sun {
+        transition-duration: 0s !important;
+      }
+    }
+  `, "<missing-reduced-motion-icon-fixture>"),
+  "Expected exactly one CSS rule for reduced appearance motion",
+)
+verifyReducedAppearanceMotion(readSource(cssFile), cssFile)
+
 const cta = readDeclarations(findRule(css, [".VPButton.brand", ".VPButton.alt"], "CTA touch targets"))
 expectDeclaration(cta, "min-width", "var(--touch-target-min)")
 expectDeclaration(cta, "min-height", "var(--touch-target-min)")
@@ -210,19 +248,6 @@ expectDeclaration(check, "height", "18px")
 
 const darkCheck = readDeclarations(findRule(css, [".dark .VPSwitch.VPSwitchAppearance .check"], "appearance check travel"))
 expectDeclaration(darkCheck, "transform", "translateX(18px)")
-
-const reducedMotion = css.nodes.filter(node =>
-  node.type === "atrule"
-  && node.name === "media"
-  && node.params === "(prefers-reduced-motion: reduce)",
-)
-expect(reducedMotion.length === 1, "Expected exactly one reduced-motion media query")
-const motion = readDeclarations(findRule(
-  reducedMotion[0],
-  [".VPSwitch.VPSwitchAppearance", ".VPSwitch.VPSwitchAppearance .check"],
-  "reduced appearance motion",
-))
-expectDeclaration(motion, "transition-duration", "0s", true)
 
 expect(
   sha256("site/public/lo.svg") === "566fff909da278219c7a0bef00a5acd7fdd224bf12b9012c4d1cbf5444ea7d02",

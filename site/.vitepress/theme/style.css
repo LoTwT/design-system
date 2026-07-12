@@ -106,7 +106,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .VPSwitch.VPSwitchAppearance,
-  .VPSwitch.VPSwitchAppearance .check {
+  .VPSwitch.VPSwitchAppearance .check,
+  .dark .VPSwitch.VPSwitchAppearance .icon .sun,
+  .dark .VPSwitch.VPSwitchAppearance .icon .moon {
     transition-duration: 0s !important;
   }
 }
