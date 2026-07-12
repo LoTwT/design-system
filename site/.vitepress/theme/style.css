@@ -56,10 +56,61 @@
 }
 
 .VPDoc a:focus-visible,
-.VPButton:focus-visible {
+.VPButton:focus-visible,
+.VPSwitchAppearance:focus-visible {
   outline: 2px solid var(--focus-ring-color);
   outline-offset: 2px;
   box-shadow: var(--focus-ring-shadow);
+}
+
+.VPButton.brand,
+.VPButton.alt {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+.VPSwitch.VPSwitchAppearance {
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.VPSwitch.VPSwitchAppearance::before {
+  position: absolute;
+  top: 11px;
+  left: 2px;
+  width: 40px;
+  height: 22px;
+  border: 1px solid var(--vp-input-border-color);
+  border-radius: 11px;
+  background-color: var(--vp-input-switch-bg-color);
+  content: "";
+}
+
+.VPSwitch.VPSwitchAppearance:hover::before {
+  border-color: var(--vp-c-brand-1);
+}
+
+.VPSwitch.VPSwitchAppearance .check {
+  top: 13px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+}
+
+.dark .VPSwitch.VPSwitchAppearance .check {
+  transform: translateX(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .VPSwitch.VPSwitchAppearance,
+  .VPSwitch.VPSwitchAppearance .check,
+  .dark .VPSwitch.VPSwitchAppearance .icon .sun,
+  .dark .VPSwitch.VPSwitchAppearance .icon .moon {
+    transition-duration: 0s !important;
+  }
 }
 
 .focus-ring:focus-visible {

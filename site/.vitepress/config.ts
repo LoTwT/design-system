@@ -4,7 +4,11 @@ import { defineConfig } from "vitepress"
 export default defineConfig({
   title: "Ayingott Design System",
   description: "Showcase for @ayingott/theme tokens and visual language.",
-  lang: "zh-CN",
+  lang: "en",
+  head: [
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/lo.svg", media: "(prefers-color-scheme: light)" }],
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/lo-white.svg", media: "(prefers-color-scheme: dark)" }],
+  ],
   cleanUrls: true,
   appearance: true,
   srcExclude: ["DEPLOYMENT.md"],
