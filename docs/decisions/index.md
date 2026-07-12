@@ -202,7 +202,7 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
 
-**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。
+**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。该控制模型始于 V0.0.x，继续适用于当前 V0.1.x，直到后续 decision 明确 supersede。
 
 **决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
 

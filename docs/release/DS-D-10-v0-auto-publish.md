@@ -1,8 +1,10 @@
-# DS-D-10 V0.0.x Automated Publish and Phase 5 Readiness
+# DS-D-10 V0.x Automated Publish and Phase 5 Readiness
 
 ## Status
 
-Accepted and current for V0.0.x patch releases.
+Accepted and current for V0.x releases. This control model was introduced for
+V0.0.x patch releases and continues through the current V0.1.x line until a
+later decision explicitly supersedes it.
 
 This decision partially supersedes the environment approval language in
 DS-D-09. DS-D-09 remains canonical for versioning, validation, packaging,
