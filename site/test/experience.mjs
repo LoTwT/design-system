@@ -104,6 +104,30 @@ function expectDeclaration(declarations, property, value, important = false) {
   expect(actual.important === important, `Expected ${property} important=${important}`)
 }
 
+function expectFailure(label, callback, expectedMessage) {
+  try {
+    callback()
+  }
+  catch (error) {
+    if (error instanceof Error && error.message.includes(expectedMessage))
+      return
+    throw error
+  }
+  throw new Error(`${label} did not fail closed`)
+}
+
+function verifyTouchTargetMinimum(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const roots = css.nodes.filter(node => node.type === "rule" && sameSet(selectorSet(node), new Set([":root"])))
+  const minimums = roots.flatMap((rule) => {
+    const declaration = readDeclarations(rule).get("--touch-target-min")
+    return declaration === undefined ? [] : [declaration]
+  })
+  expect(minimums.length === 1, `Expected exactly one CSS declaration --touch-target-min in ${file}`)
+  expect(minimums[0].value === "2.75rem", `Expected --touch-target-min: 2.75rem; received ${minimums[0].value}`)
+  expect(minimums[0].important === false, "Expected --touch-target-min important=false")
+}
+
 function sha256(file) {
   return createHash("sha256").update(readFileSync(join(rootDir, file))).digest("hex")
 }
@@ -149,6 +173,20 @@ expect(iconLinks.some(link =>
 
 const cssFile = "site/.vitepress/theme/style.css"
 const css = postcss.parse(readSource(cssFile), { from: cssFile })
+
+expectFailure(
+  "missing touch target minimum",
+  () => verifyTouchTargetMinimum(":root {}", "<missing-touch-target-fixture>"),
+  "Expected exactly one CSS declaration --touch-target-min",
+)
+expectFailure(
+  "under-44 touch target minimum",
+  () => verifyTouchTargetMinimum(":root { --touch-target-min: 2rem; }", "<under-44-touch-target-fixture>"),
+  "Expected --touch-target-min: 2.75rem",
+)
+
+const touchTargetFile = "packages/theme/src/layers/touch-target.css"
+verifyTouchTargetMinimum(readSource(touchTargetFile), touchTargetFile)
 
 const cta = readDeclarations(findRule(css, [".VPButton.brand", ".VPButton.alt"], "CTA touch targets"))
 expectDeclaration(cta, "min-width", "var(--touch-target-min)")
