@@ -12,7 +12,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   themeConfig: {
-    logo: { text: "Ayingott DS" },
     nav: [
       { text: "Guide", link: "/guide/getting-started" },
       { text: "Tokens", link: "/tokens/colors" },

@@ -25,9 +25,14 @@ Run:
 
 ```bash
 pnpm check
+pnpm site:typecheck
+pnpm site:build
 ```
 
-This covers source smoke, package dry-run, real-tarball consumer install/compile, and site contrast checks.
+`pnpm check` covers source smoke, package dry-run, real-tarball consumer
+install/compile, and site contrast checks. The `site:typecheck` and `site:build`
+commands validate the VitePress implementation. Pull requests expose stable
+`check` and `site` status-check names for branch protection.
 
 ## Release
 
@@ -39,13 +44,7 @@ This covers source smoke, package dry-run, real-tarball consumer install/compile
 - Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
 - The protected GitHub environment for publish is `npm-publish`.
 
-For the display-only VitePress showcase, run:
-
-```bash
-pnpm site:build
-```
-
-This only proves the showcase builds; it is not a package contract gate.
+The display-only VitePress showcase remains separate from the package contract.
 
 ## More Context
 

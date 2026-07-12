@@ -7,16 +7,21 @@ const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
 const tmpDir = join(packageDir, "test", ".tmp")
 const input = join(packageDir, "test", "smoke.package.css")
 const output = join(tmpDir, "smoke.css")
+const themeOnlyInput = join(packageDir, "test", "smoke.theme-only.css")
+const themeOnlyOutput = join(tmpDir, "smoke.theme-only.css")
 
 rmSync(tmpDir, { recursive: true, force: true })
 mkdirSync(tmpDir, { recursive: true })
 
-execFileSync("pnpm", ["exec", "tailwindcss", "-i", input, "-o", output], {
-  cwd: packageDir,
-  stdio: "inherit",
-})
+for (const [fixtureInput, fixtureOutput] of [[input, output], [themeOnlyInput, themeOnlyOutput]]) {
+  execFileSync("pnpm", ["exec", "tailwindcss", "-i", fixtureInput, "-o", fixtureOutput], {
+    cwd: packageDir,
+    stdio: "inherit",
+  })
+}
 
 const css = readFileSync(output, "utf8")
+const themeOnlyCss = readFileSync(themeOnlyOutput, "utf8")
 
 const readCssVars = (file) => {
   const source = readFileSync(join(packageDir, file), "utf8")
@@ -66,6 +71,10 @@ const requiredOutput = [
 ]
 
 const missing = requiredOutput.filter(([, needle]) => !css.includes(needle))
+const forbiddenThemeOnlyOutput = [
+  ["font-face declaration", "@font-face"],
+  ["bundled font asset", ".woff2"],
+].filter(([, needle]) => themeOnlyCss.includes(needle))
 
 const requiredFiles = [
   "src/index.css",
@@ -142,7 +151,7 @@ const contrastFailures = contrastChecks
   .map(([label, foreground, background]) => [label, foreground, background, contrastRatio(foreground, background)])
   .filter(([, , , ratio]) => ratio < 4.5)
 
-if (missing.length || missingTokenVars.length || requiredFiles.length) {
+if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenThemeOnlyOutput.length) {
   for (const [label, needle] of missing) {
     console.error(`Missing ${label}: ${needle}`)
   }
@@ -151,6 +160,9 @@ if (missing.length || missingTokenVars.length || requiredFiles.length) {
   }
   for (const file of requiredFiles) {
     console.error(`Missing required package file: ${file}`)
+  }
+  for (const [label, needle] of forbiddenThemeOnlyOutput) {
+    console.error(`Theme-only build unexpectedly contains ${label}: ${needle}`)
   }
   for (const [label, foreground, background, ratio] of contrastFailures) {
     console.error(`Reading contrast below 4.5:1 for ${label}: ${foreground} on ${background} = ${ratio.toFixed(2)}:1`)
