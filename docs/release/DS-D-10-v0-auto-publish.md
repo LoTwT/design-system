@@ -7,8 +7,10 @@ the root and theme packages at 0.1.0, the repository owner selected Phase 1B
 option 2 and explicitly accepted the current `npm-publish` environment
 exception (`#design-system:56e830f5`, message `88e58ea1`). Later that day, the
 owner authorized the Phase 5 rehearsal to start with `go`
-(`#design-system:0425f476`, message `94ec8ed1`). Together, these decisions cover
-the current V0.1.x patch line and this Phase 5 only. A future minor or major
+(`#design-system:0425f476`, message `94ec8ed1`). On 2026-07-13, after
+the exact applicability boundary was restated, the owner confirmed that the
+exception applies to the current V0.1.x patch line and this Phase 5
+(`#design-system:0425f476`, message `698a12a9`). A future minor or major
 release line requires a new decision.
 
 This decision partially supersedes the environment approval language in
