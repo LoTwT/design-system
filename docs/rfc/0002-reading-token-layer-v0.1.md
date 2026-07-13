@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for V0.1 implementation.
+Implemented. The additive token contract remains current.
 
 ## Context
 

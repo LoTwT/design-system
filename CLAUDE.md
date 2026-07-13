@@ -40,9 +40,9 @@ commands validate the VitePress implementation. Pull requests expose stable
 - Use `pnpm release:bump` for a patch bump, or `pnpm release:bump X.Y.Z` for an explicit version.
 - Run release bumps only from `main` after the release PR has merged.
 - The release script uses bumpp's built-in commit/tag format: `chore: release vX.Y.Z` and `vX.Y.Z`.
-- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; an unprivileged validation job produces a checksummed tarball and release notes, the protected publish job receives only artifact-read and OIDC permissions, a separate job creates the GitHub Release, and a final job runs registry install smoke.
+- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; an unprivileged validation job produces a checksummed tarball and release notes, the publish job receives only artifact-read and OIDC permissions, a separate job creates the GitHub Release, and a final job runs registry install smoke.
 - Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
-- The protected GitHub environment for publish is `npm-publish`.
+- The GitHub environment binding for publish is `npm-publish`. It currently has no required reviewers or deployment branch/tag restrictions, and repository administrators retain bypass. Do not describe it as a protected environment; the `v*.*.*` release tag ruleset is the current pre-publish control.
 
 The display-only VitePress showcase remains separate from the package contract.
 
@@ -50,5 +50,6 @@ The display-only VitePress showcase remains separate from the package contract.
 
 - RFC: `docs/rfc/0001-theme-v0.md`
 - Release: `docs/release/DS-D-09-release.md`
+- Current release controls: `docs/release/DS-D-10-v0-auto-publish.md`
 - Package: `packages/theme/README.md`
 - Notices: `packages/theme/THIRD_PARTY_NOTICES.md`

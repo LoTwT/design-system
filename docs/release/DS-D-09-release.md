@@ -73,7 +73,6 @@ unprivileged validation job validates:
 - release commit subject equals `chore: release vX.Y.Z`
 - tagged commit is contained in `origin/main`
 - npm CLI satisfies `>= 11.5.1`
-- `@ayingott/theme@X.Y.Z` does not already exist on npm
 
 The job then runs:
 
@@ -93,8 +92,9 @@ The jobs are separated by trust boundary:
 - `validate`: `contents: read`; installs dependencies, runs repository code,
   creates the package tarball and release notes, then uploads checksums.
 - `publish`: `actions: read` and `id-token: write`; downloads the validated
-  artifact and publishes it without repository contents permission, checkout,
-  or execution of repository build scripts.
+  artifact, verifies its checksums and npm CLI, checks the target npm version is
+  absent immediately before publish, and publishes without repository contents
+  permission, checkout, or execution of repository build scripts.
 - `github-release`: `actions: read` and `contents: write`; downloads the
   validated release notes and creates the GitHub Release after publish succeeds.
 - `registry-smoke`: no repository permissions; verifies the published package
@@ -109,18 +109,28 @@ Trusted Publishing / OIDC:
 npm publish release-artifact/ayingott-theme-X.Y.Z.tgz --access public --tag latest --ignore-scripts
 ```
 
+Immediately before that command, the privileged publish job verifies the
+artifact checksums and npm CLI, then fails if `@ayingott/theme@X.Y.Z` already
+exists on npm.
+
 For a prerelease tag such as `v1.0.0-rc.1`, the workflow uses npm dist-tag
 `next`, marks the GitHub Release as a prerelease, and sets `make_latest: false`.
 Stable versions use npm dist-tag `latest` and may set `make_latest: true`.
 
-Only the publish job has `id-token: write`; it runs in the protected
-`npm-publish` environment. The npm Trusted Publisher should
+Only the publish job has `id-token: write`; it runs in the `npm-publish`
+environment. The npm Trusted Publisher should
 point at:
 
 - package: `@ayingott/theme`
 - repository: `LoTwT/design-system`
 - workflow: `release.yml`
 - environment: `npm-publish`
+
+DS-D-10 partially supersedes the environment approval language in this
+decision and owns the canonical current-control and residual register. This
+document remains canonical for versioning, validation, packaging, publish,
+GitHub Release, registry smoke, and rollback mechanics. See
+[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md).
 
 npm Trusted Publishing requires npm CLI 11.5.1 or later and Node
 22.14.0 or later. The release workflow uses Node 24.
@@ -129,10 +139,10 @@ Trusted Publishing automatically generates provenance attestations
 server-side, so the workflow does not pass the client-side
 `--provenance` flag.
 
-Publishing the tarball does not rely on npm `gitHead` metadata, so the workflow
-uses version absence and artifact SHA-256 verification as its retry and
-handoff checks. If a version has already reached npm, fix forward with the next
-patch instead of rerunning the same publish.
+Publishing the tarball does not rely on npm `gitHead` metadata, so the publish
+job uses version absence as its privileged retry preflight and artifact SHA-256
+verification as its handoff check. If a version has already reached npm, fix
+forward with the next patch instead of rerunning the same publish.
 
 ## Post-Publish Smoke
 

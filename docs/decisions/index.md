@@ -155,23 +155,20 @@
 
 ## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
 
+**当前状态 / supersession**：release/package contract 仍有效；environment gate 口径由 DS-D-10 部分取代。当前控制与 accepted residual 的 canonical 记录见 [`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)。
+
 **决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 version files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
 
-**发布目标**：当前唯一 npm publish 目标是 `@ayingott/theme`。design-system 保持单包发布路径：release workflow 在 `packages/theme` 下执行 `pnpm publish`。未来新增 public 子包时，需在同 PR 中重新设计 package selection、package-specific gates 和 registry smoke。
+**发布目标**：当前唯一 npm publish 目标是 `@ayingott/theme`。design-system 保持单包发布路径：release workflow 的 unprivileged validation job 构建带 checksum 的 theme tarball，privileged publish job 消费同一 artifact 并执行 `npm publish <tarball> --ignore-scripts`。未来新增 public 子包时，需在同 PR 中重新设计 package selection、package-specific gates 和 registry smoke。
 
 **commit / tag 格式**：沿用 bumpp 内置格式：
 
 - commit：`chore: release vX.Y.Z`
 - tag：`vX.Y.Z`
 
-**CI release gate**：`.github/workflows/release.yml` 仅响应 `vX.Y.Z` tag push。发布前校验 tag/version/commit message/main/npm CLI 版本，随后运行 `pnpm install --frozen-lockfile`、`pnpm check`、`pnpm site:build`、`pnpm --filter @ayingott/theme pack:dry`。
+**CI release gate**：`.github/workflows/release.yml` 仅响应 `vX.Y.Z` tag push。unprivileged validation job 校验 tag/version/commit message/main/npm CLI，随后运行 frozen install、`pnpm check`、`pnpm site:typecheck`、`pnpm site:build`，并生成 release notes、checksummed immutable tarball 和 workflow artifact。privileged publish job 验证 artifact checksum 与 npm CLI，在 publish 前检查目标 version absence，再通过 OIDC 发布该 tarball。命令级机制以 [`docs/release/DS-D-09-release.md`](../release/DS-D-09-release.md) 为准。
 
-**npm publish**：GitHub Actions 在受保护环境 `npm-publish` 中用 npm Trusted Publishing / OIDC 执行：
-
-```bash
-cd packages/theme
-pnpm publish --access public --no-git-checks
-```
+**npm publish**：GitHub Actions 在 environment `npm-publish` 中用 npm Trusted Publishing / OIDC 发布 validation job 产出的 checksummed tarball；publish job 不 checkout repository，也不执行 repository build scripts。
 
 Trusted Publishing automatically generates provenance attestations server-side, so the workflow must not pass the client-side `--provenance` flag.
 
@@ -181,9 +178,9 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 `CHANGELOG.md` 不放入 bumpp `files`，避免 bumpp 对文本文件做 version-string replacement。`bump.config.ts` 的 `execute` 函数运行 `pnpm changelog` 后显式把 `CHANGELOG.md` 加入 bumpp commit 文件集。
 
-**retry safety**：`pnpm publish` 不写 npm `gitHead` metadata，workflow 不再使用 `gitHead` 作为 rerun skip guard。workflow 在 publish 前检查 npm version absence；如该版本已存在，CI fail fast，已 publish 的错误版本走 deprecate + next patch 的 fix-forward 路径。
+**retry safety**：tarball `npm publish` 不依赖 npm `gitHead` metadata，workflow 不再使用 `gitHead` 作为 rerun skip guard。privileged publish job 在 publish 前检查 npm version absence；如该版本已存在，CI fail fast，已 publish 的错误版本走 deprecate + next patch 的 fix-forward 路径。
 
-**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 protected environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
+**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 `npm-publish` environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
 
 **rollback**：tag / GitHub Release 发错但未 publish 时删除 tag/Release 后重发；已 publish 的版本不依赖 unpublish，走 deprecate bad version + 发布 patch。
 
@@ -200,7 +197,9 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
 
-**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish protected environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
+**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。该控制模型始于 V0.0.x；2026-07-12，repository owner 在 root/theme version 为 0.1.0 的现状下选择 Phase 1B 方案 2，明确接受当前 environment exception，随后以 `go` 授权 Phase 5 rehearsal 开始。2026-07-13，owner 在完整边界被重新说明后，明确确认该 exception 适用于当前 V0.1.x patch line 与本次 Phase 5；未来 minor / major release line 需要新 decision。
+
+**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
 
 **改动汇总**（lo-user 2026-05-10 02:16 现场操作）：
 
@@ -225,6 +224,9 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 - lo-user 2026-05-10 02:10 `cb1408d9` 提出删 reviewer 的方向
 - TL 技术倾向 (A) + tag-protection 组合（msg `78b611b9` / `e7cc79ae`）
 - lo-user 2026-05-10 02:16 `6e2155bf` 完成 (a) reviewer 删除 + (b) tag ruleset 配置
+- lo-user 2026-07-12 在 `#design-system:56e830f5` 的 `88e58ea1` 选择 Phase 1B 方案 2，接受 current environment exception
+- lo-user 2026-07-12 在 `#design-system:0425f476` 的 `94ec8ed1` 以 `go` 授权 Phase 5 rehearsal 开始
+- lo-user 2026-07-13 在 `#design-system:0425f476` 的 `698a12a9` 确认 exception 适用于 current V0.1.x patch line 与本次 Phase 5，future minor / major 另行决策
 
 ---
 
