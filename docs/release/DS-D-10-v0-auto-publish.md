@@ -39,9 +39,10 @@ Trusted Publishing, GitHub Release, registry smoke, and rollback mechanics.
   gate and must not be described as one.
 - The `main` ruleset requires the GitHub Actions checks `check` and `site`, with
   branches required to be up to date before merge.
-- Dependabot alerts and security updates are enabled. Weekly version updates
-  cover eligible direct manifest dependencies; development minor/patch updates
-  are grouped, while unmatched updates may open separate pull requests.
+- Dependabot automation is defined as disabled across alerts, security updates,
+  and scheduled version updates. Omitting `.github/dependabot.yml` disables
+  version updates; alert and security-update disablement remains Source-Pending
+  until an administrator completes and reads back the live settings.
 
 ## Accepted Residuals
 
