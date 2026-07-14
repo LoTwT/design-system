@@ -41,8 +41,9 @@ Trusted Publishing, GitHub Release, registry smoke, and rollback mechanics.
   branches required to be up to date before merge.
 - Dependabot automation is defined as disabled across alerts, security updates,
   and scheduled version updates. Omitting `.github/dependabot.yml` disables
-  version updates; alert and security-update disablement remains Source-Pending
-  until an administrator completes and reads back the live settings.
+  version updates. A 2026-07-14 maintainer admin-visible readback confirmed that
+  alerts and security updates are disabled. The agent actor lacks Administration
+  read; anonymous or read-only `404` responses are not settings evidence.
 
 ## Accepted Residuals
 
