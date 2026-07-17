@@ -105,7 +105,7 @@ Always reach for semantic vars first. Drop down to foundation tokens only when t
 .card {
   background: var(--surface-elevated);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
 }

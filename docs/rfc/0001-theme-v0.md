@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented. The npm package scope remains current.
+Implemented as the historical V0 baseline. The current additive package contract also includes the opt-in Neo-Brutalism family defined by [`docs/spec/rfc-brutal-theme.md`](../spec/rfc-brutal-theme.md); that accepted addendum extends, but does not replace, this theme-only boundary.
 
 ## Repository Addendum (DS-D-05)
 
@@ -25,10 +25,13 @@ Public exports:
 
 - `@ayingott/theme`
 - `@ayingott/theme/index.css`
+- `@ayingott/theme/brutal.css`
 - `@ayingott/theme/fonts.css`
 - `@ayingott/theme/fonts/*`
 
-`@ayingott/theme` imports the theme CSS layers. It does not import `fonts.css`.
+`@ayingott/theme` imports the default Paper/Ink CSS layers. It does not import `fonts.css` or `brutal.css`.
+
+`brutal.css` is an opt-in additive entry imported after `@ayingott/theme`. It adds the `.brutal` family selector, Neo Light/Dark semantic mappings, hard-shadow variables/utilities, structure roles, and the scoped `pressable` utility. `.dark` remains the scheme selector. The executable boundary lives in [`docs/spec/brutal-theme-contract.json`](../spec/brutal-theme-contract.json).
 
 `fonts.css` is opt-in and contains only `@font-face` declarations that point to package-local `.woff2` files.
 
@@ -38,16 +41,17 @@ The package keeps UX sections as separate CSS source files:
 
 - `foundation/*`: color, typography, spacing, sizing, radius, shadow, border, motion.
 - `layers/*`: z-index, breakpoints, containers, grid, layout, aspect, opacity, transitions, touch target.
-- `semantic/*`: light and dark runtime variables.
-- `utilities/*`: small reusable utilities such as focus ring and touch target.
+- `semantic/*`: Paper/Ink runtime variables plus the opt-in `semantic/brutal.css` family mapping.
+- `utilities/*`: small reusable utilities such as focus ring and touch target, plus the opt-in `utilities/pressable.css` interaction.
 - `base.css`: base document styles.
-- `index.css`: aggregate import entry.
+- `index.css`: default Paper/Ink aggregate import entry.
+- `brutal.css`: opt-in family aggregate entry; it is never imported by `index.css`.
 
 ## Tailwind Boundary
 
 Foundation and layer tokens use `@theme static` so the package emits the full token CSS variable contract while still generating Tailwind utilities.
 
-Runtime semantic aliases use `:root` and `.dark`. V0 does not promise semantic utility classes such as `bg-surface-canvas` or `text-primary`.
+Runtime semantic aliases use `:root` and `.dark` by default; the additive family entry uses `.brutal` and `.brutal.dark`. The package does not promise semantic utility classes such as `bg-surface-canvas` or `text-primary`.
 
 Consumers may choose to map runtime variables into Tailwind utilities in their own app CSS later, but that is outside the V0 package contract.
 

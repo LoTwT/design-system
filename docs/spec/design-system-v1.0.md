@@ -191,7 +191,7 @@ Opt-in `brutal.css` 追加 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、ze
 --border-style-solid / -dashed / -dotted                       (3 style)
 ```
 
-Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 使用 `var(--border-width-control, var(--border-width-thin))` 回退。
+Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。
 
 ### 1.15 Motion（5 duration + 4 ease + 2 named animation + 2 keyframes）
 
@@ -561,12 +561,12 @@ consumer 不 import `@ayingott/theme` 主入口时不会拿到这些 base 样式
 | 场景 | V0 token 组合 |
 |---|---|
 | Primary CTA 按钮 | `bg: var(--accent-primary)` / `color: var(--accent-contrast)`；hover / active 同步使用对应 accent background + contrast foreground |
-| Secondary 按钮 | `bg: var(--surface-elevated)` / `color: var(--text-primary)` / `border: 1px solid var(--border-default)` |
-| Outline accent button | `bg: transparent` / `color: var(--text-accent)` / `border: 1.5px solid var(--accent-primary)` |
+| Secondary 按钮 | `bg: var(--surface-elevated)` / `color: var(--text-primary)` / `border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default)` |
+| Outline accent button | `bg: transparent` / `color: var(--text-accent)` / `border: var(--border-width-control, var(--border-width-thin)) solid var(--accent-primary)` |
 | 链接（inline）| `color: var(--text-accent)` |
 | 装饰几何元素 | `fill: var(--accent-primary)` 或 neutral-300 |
 | Tag chip 默认 | `bg: var(--accent-soft)` / `color: var(--text-primary)`（**不**用 text-accent，避免对比度低于 AA — 见 §8.1）|
-| Card border | `border: 1px solid var(--border-subtle)`（默认）/ `var(--border-default)` 强调 / `var(--border-strong)` focus |
+| Card border | `border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle)`（默认）/ `var(--border-default)` 强调 / `var(--border-strong)` focus |
 | Card hover | `box-shadow: var(--shadow-md)` |
 | Heading（H1-H6）| `color: var(--text-primary)` |
 | Body text | `color: var(--text-primary)` 默认 / `var(--text-secondary)` 次级 / `var(--text-muted)` meta |
