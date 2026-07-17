@@ -101,6 +101,10 @@
   height: 18px;
 }
 
+.VPLocalNavOutlineDropdown button {
+  min-height: var(--touch-target-min);
+}
+
 .dark .VPSwitch.VPSwitchAppearance .check {
   transform: translateX(18px);
 }
@@ -352,16 +356,39 @@
 }
 
 .theme-state--saved {
-  grid-template-columns: 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   align-content: center;
+  gap: var(--spacing-2);
 }
 
-.theme-state--saved h3 {
+.theme-state--saved .theme-state__copy h3 {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
   overflow: hidden;
   clip-path: inset(50%);
+}
+
+.theme-state__copy,
+.theme-status__copy {
+  display: grid;
+  gap: 0;
+  min-inline-size: 0;
+}
+
+.theme-icon {
+  display: inline-block;
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  background-color: currentColor;
+  -webkit-mask: var(--theme-icon-url) center / contain no-repeat;
+  mask: var(--theme-icon-url) center / contain no-repeat;
+}
+
+.theme-state--saved .theme-icon {
+  color: var(--status-success-fg);
 }
 
 .theme-inline-link {
@@ -520,7 +547,10 @@
 
 .theme-status {
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
   gap: 0;
+  column-gap: var(--spacing-2);
   min-inline-size: 0;
   padding: 6px var(--spacing-3);
   border: 1px solid;
@@ -535,6 +565,10 @@
 .theme-status strong {
   font-size: 13px;
   line-height: 18px;
+}
+
+.theme-status .theme-icon {
+  margin-block-start: 1px;
 }
 
 .theme-status p {
@@ -648,10 +682,10 @@
   }
 
   .theme-state--saved {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .theme-state--saved h3 {
+  .theme-state--saved .theme-state__copy h3 {
     position: static;
     inline-size: auto;
     block-size: auto;

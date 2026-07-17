@@ -36,9 +36,14 @@ both modes. The built preview was checked separately in a fresh tab.
 - Success, warning, and danger examples each retain distinct foreground,
   background, border, and text labels.
 - Primary, disabled, and input controls remain at least 44 px high on mobile.
+- The mobile `On this page` control itself is 44 px high at 390 and 320 px.
+- Saved and all four status roles use distinct Lucide icons with one shared
+  16 px anatomy in both modes.
 - Paper and Ink have no horizontal overflow at 1440, 1280, 390, or 320 px.
 - A fresh built-preview tab reported zero console errors.
-- Package fallbacks cover forced colors, increased contrast, and reduced motion.
+- Package fallbacks cover forced colors and increased contrast. Reduced-motion
+  behavior remains consumer-owned; the VitePress consumer retains its exact
+  appearance/action override.
 
 ## Iteration history
 
@@ -48,6 +53,7 @@ both modes. The built preview was checked separately in a fresh tab.
 | 1 | P1: main-column x/y rhythm and section density were misaligned; P2: the brand mark was undersized | Matched the source gutter, rules, section rhythm, and 44 x 29 logo treatment |
 | 2 | P1: Interaction and Token source did not fully enter the 1440 reference frame | Compacted the action/status matrix and aligned the source-size vertical rhythm |
 | 3 | P1: the 320 px header overflowed to 369 px | Hid only the long brand label below 350 px while retaining the `Lo` mark; Paper and Ink now report `scrollWidth === 320` |
+| 4 | Quality P1: package reduced-motion scope contradicted the public spec; mapping/pair verification trusted self-reported data. Experience P2: saved/status icons were missing and the mobile `On this page` button was only 24 px high | Removed the package override, pinned the exact required ID sets and payload digests with deletion/wrong-value negatives, restored five Lucide icons, and made the actual mobile button 44 px. Fresh Chrome checks passed at 390/320 in both modes with visible focus, zero overflow, and zero console warnings/errors |
 
 No P0, P1, or P2 finding remains after the final comparison pass. Intentional
 differences are limited to the repository's current documentation navigation,
@@ -79,7 +85,7 @@ The final evidence directory contains:
 - Fail-closed text, focus, action, status, disabled, state, forced-colors,
   increased-contrast, and reduced-motion coverage
 - Actual package tarball SHA-256:
-  `6bfdb95302593cbba6dc9a89625701354f6eb224c767d9596cde62a96b0e7843`
+  `44b6f4577c21d996f83dc748f3e99e1334692bb9c4382ae6a696fd017112ace8`
 - The same tarball built successfully in temporary copies of exact-main MIRU
   `90474f265e3038d87db1b7fe08a16370abbafa42` and ayingott.me
   `e423626af77df2a291f7c572f31a7d453c20942e`; neither consumer repository was

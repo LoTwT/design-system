@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -7,9 +8,83 @@ const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const contractFile = "docs/spec/paper-ink-theme-contract.json"
 const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 
+const requiredStateMappingIds = [
+  "primary-default",
+  "primary-hover",
+  "primary-active",
+  "disabled",
+  "focus-neutral",
+  "focus-accent",
+  "input",
+  "status-success",
+  "status-warning",
+  "status-danger",
+  "status-info",
+]
+const requiredLegalPairIds = [
+  "paper-primary-canvas",
+  "paper-secondary-canvas",
+  "paper-muted-canvas",
+  "paper-link-canvas",
+  "paper-action-default",
+  "paper-action-hover",
+  "paper-action-active",
+  "ink-primary-canvas",
+  "ink-secondary-canvas",
+  "ink-muted-canvas",
+  "ink-link-canvas",
+  "ink-action-default",
+  "ink-action-hover",
+  "ink-action-active",
+  "paper-focus-canvas",
+  "paper-focus-panel",
+  "paper-focus-elevated",
+  "paper-focus-subtle",
+  "paper-focus-muted",
+  "paper-focus-accent",
+  "ink-focus-canvas",
+  "ink-focus-panel",
+  "ink-focus-elevated",
+  "ink-focus-subtle",
+  "ink-focus-muted",
+  "ink-focus-accent",
+  "paper-reading",
+  "paper-reading-muted",
+  "paper-reading-link",
+  "ink-reading",
+  "ink-reading-muted",
+  "ink-reading-link",
+  "paper-success-text",
+  "paper-warning-text",
+  "paper-danger-text",
+  "paper-info-text",
+  "ink-success-text",
+  "ink-warning-text",
+  "ink-danger-text",
+  "ink-info-text",
+  "paper-success-border",
+  "paper-warning-border",
+  "paper-danger-border",
+  "paper-info-border",
+  "ink-success-border",
+  "ink-warning-border",
+  "ink-danger-border",
+  "ink-info-border",
+]
+const requiredStateMappingsSha256 = "235f87738e12826d74009aed396c34ec985b6fad0a2aaa31c3188f70e06d2f80"
+const requiredLegalPairsSha256 = "ff9b5bef71425b430680161a0cb62cbe119620bdbfd062babd3dd7a84ad59cf5"
+
 function expect(condition, message) {
   if (!condition)
     throw new Error(message)
+}
+
+function sha256Json(value) {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex")
+}
+
+function sameStringSet(actual, expected) {
+  return actual.length === expected.length && expected.every(value => actual.includes(value))
 }
 
 function readSource(file) {
@@ -110,8 +185,13 @@ function validateContractShape(value) {
   expect(value.defaultMode === "paper", "Paper must remain the default mode")
   expect(value.selectors.paper === ":root", "Paper selector must remain :root")
   expect(value.selectors.ink === ".dark", "Ink selector must remain .dark")
+  const stateMappingIds = Object.keys(value.stateMappings)
+  expect(sameStringSet(stateMappingIds, requiredStateMappingIds), "State mapping id set drifted")
+  expect(sha256Json(value.stateMappings) === requiredStateMappingsSha256, "State mapping values drifted")
   const ids = value.legalPairs.map(pair => pair.id)
   expect(new Set(ids).size === ids.length, "Duplicate legal pair id")
+  expect(sameStringSet(ids, requiredLegalPairIds), "Legal pair id set drifted")
+  expect(sha256Json(value.legalPairs) === requiredLegalPairsSha256, "Legal pair values drifted")
   for (const pair of value.legalPairs) {
     expect(["paper", "ink"].includes(pair.mode), `Unsupported mode in ${pair.id}`)
     expect(["text", "focus", "non-text"].includes(pair.kind), `Unsupported pair kind in ${pair.id}`)
@@ -157,10 +237,50 @@ function verifyPair(pair, maps) {
 }
 
 validateContractShape(contract)
+const stateMappingsWithoutPrimary = { ...contract.stateMappings }
+delete stateMappingsWithoutPrimary["primary-default"]
+expectFailure(
+  "deleted required state mapping",
+  () => validateContractShape({ ...contract, stateMappings: stateMappingsWithoutPrimary }),
+  "State mapping id set drifted",
+)
+expectFailure(
+  "wrong required state mapping value",
+  () => validateContractShape({
+    ...contract,
+    stateMappings: {
+      ...contract.stateMappings,
+      "primary-default": {
+        ...contract.stateMappings["primary-default"],
+        declarations: {
+          ...contract.stateMappings["primary-default"].declarations,
+          background: "var(--surface-panel)",
+        },
+      },
+    },
+  }),
+  "State mapping values drifted",
+)
 expectFailure(
   "duplicate pair id",
   () => validateContractShape({ ...contract, legalPairs: [contract.legalPairs[0], contract.legalPairs[0]] }),
   "Duplicate legal pair id",
+)
+expectFailure(
+  "deleted required legal pair",
+  () => validateContractShape({ ...contract, legalPairs: contract.legalPairs.slice(1) }),
+  "Legal pair id set drifted",
+)
+expectFailure(
+  "wrong required legal pair value",
+  () => validateContractShape({
+    ...contract,
+    legalPairs: [
+      { ...contract.legalPairs[0], foreground: "text-secondary" },
+      ...contract.legalPairs.slice(1),
+    ],
+  }),
+  "Legal pair values drifted",
 )
 expectFailure(
   "unsupported color value",

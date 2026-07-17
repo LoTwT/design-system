@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemeIcon from "./ThemeIcon.vue"
 import ThemeStatusRoles from "./ThemeStatusRoles.vue"
 </script>
 
@@ -30,8 +31,11 @@ import ThemeStatusRoles from "./ThemeStatusRoles.vue"
       </article>
 
       <article class="theme-state theme-state--saved">
-        <h3>Saved</h3>
-        <p>All changes saved.</p>
+        <ThemeIcon name="circle-check" />
+        <div class="theme-state__copy">
+          <h3>Saved</h3>
+          <p>All changes saved.</p>
+        </div>
       </article>
     </div>
 

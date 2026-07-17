@@ -69,7 +69,6 @@ const requiredOutput = [
   ["info status foreground var", "--status-info-fg"],
   ["dark selector", ".dark"],
   ["increased contrast override", "@media (prefers-contrast: more)"],
-  ["reduced motion override", "@media (prefers-reduced-motion: reduce)"],
   ["forced colors override", "@media (forced-colors: active)"],
   ["forced colors focus", "Highlight"],
   ["forced colors link", "LinkText"],
@@ -83,6 +82,9 @@ const requiredOutput = [
 ]
 
 const missing = requiredOutput.filter(([, needle]) => !css.includes(needle))
+const forbiddenPackageOutput = [
+  ["package-level reduced motion override", "@media (prefers-reduced-motion: reduce)"],
+].filter(([, needle]) => css.includes(needle))
 const forbiddenThemeOnlyOutput = [
   ["font-face declaration", "@font-face"],
   ["bundled font asset", ".woff2"],
@@ -163,7 +165,7 @@ const contrastFailures = contrastChecks
   .map(([label, foreground, background]) => [label, foreground, background, contrastRatio(foreground, background)])
   .filter(([, , , ratio]) => ratio < 4.5)
 
-if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenThemeOnlyOutput.length) {
+if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenPackageOutput.length || forbiddenThemeOnlyOutput.length) {
   for (const [label, needle] of missing) {
     console.error(`Missing ${label}: ${needle}`)
   }
@@ -172,6 +174,9 @@ if (missing.length || missingTokenVars.length || requiredFiles.length || forbidd
   }
   for (const file of requiredFiles) {
     console.error(`Missing required package file: ${file}`)
+  }
+  for (const [label, needle] of forbiddenPackageOutput) {
+    console.error(`Package build unexpectedly contains ${label}: ${needle}`)
   }
   for (const [label, needle] of forbiddenThemeOnlyOutput) {
     console.error(`Theme-only build unexpectedly contains ${label}: ${needle}`)

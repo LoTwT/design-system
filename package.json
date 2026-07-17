@@ -38,6 +38,7 @@
     "@types/node": "^24.12.4",
     "bumpp": "11.1.0",
     "git-cliff": "2.13.1",
+    "lucide-static": "1.24.0",
     "postcss": "8.5.14",
     "simple-git-hooks": "2.13.1",
     "tailwindcss": "4.3.2",
