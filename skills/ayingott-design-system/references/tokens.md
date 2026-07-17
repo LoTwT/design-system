@@ -34,7 +34,7 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | --- | --- | --- |
 | `--text-primary` | `--color-neutral-950` `#191713` | `#f7f1e6` |
 | `--text-secondary` | `--color-neutral-700` `#514a3e` | `#d7cdbc` |
-| `--text-muted` | `--color-neutral-600` `#736a5c` | `#aa9e8b` |
+| `--text-muted` | semantic literal `#6b6252` | `#aa9e8b` |
 | `--text-inverse` | `--color-surface-2` `#ffffff` | `--color-neutral-950` `#191713` |
 | `--text-accent` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 

@@ -9,7 +9,7 @@
 
   --text-primary: var(--color-neutral-950);
   --text-secondary: var(--color-neutral-700);
-  --text-muted: var(--color-neutral-600);
+  --text-muted: #6b6252;
   --text-inverse: var(--color-surface-2);
   --text-accent: var(--color-lavender-700);
 
