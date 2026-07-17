@@ -388,7 +388,7 @@
 }
 
 .theme-state--saved .theme-icon {
-  color: var(--status-success-fg);
+  color: var(--text-accent);
 }
 
 .theme-inline-link {

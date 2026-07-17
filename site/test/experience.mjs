@@ -151,6 +151,16 @@ function verifyReducedAppearanceMotion(source, file) {
   expectDeclaration(motion, "transition-duration", "0s", true)
 }
 
+function verifySavedIconRole(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const savedIcon = readDeclarations(findRule(
+    css,
+    [".theme-state--saved .theme-icon"],
+    "saved icon semantic role",
+  ))
+  expectDeclaration(savedIcon, "color", "var(--text-accent)")
+}
+
 function sha256(file) {
   return createHash("sha256").update(readFileSync(join(rootDir, file))).digest("hex")
 }
@@ -253,6 +263,17 @@ expectDeclaration(appearance, "height", "var(--touch-target-min)")
 
 const localOutline = readDeclarations(findRule(css, [".VPLocalNavOutlineDropdown button"], "local outline touch target"))
 expectDeclaration(localOutline, "min-height", "var(--touch-target-min)")
+
+expectFailure(
+  "wrong saved icon semantic role",
+  () => verifySavedIconRole(`
+    .theme-state--saved .theme-icon {
+      color: var(--status-success-fg);
+    }
+  `, "<wrong-saved-icon-role-fixture>"),
+  "Expected color: var(--text-accent)",
+)
+verifySavedIconRole(readSource(cssFile), cssFile)
 
 const themeIconSource = readSource("site/.vitepress/theme/components/theme-overview/ThemeIcon.vue")
 for (const icon of ["circle-check", "circle-x", "info", "triangle-alert"]) {
