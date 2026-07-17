@@ -19,14 +19,15 @@ The exact executable mapping is [`paper-ink-theme-contract.json`](./paper-ink-th
 
 - foundation and mode declarations;
 - legal text, focus, status, and non-text contrast pairs;
+- explicit contrast exemptions with their applicable state, modes, reason, and standards references;
 - showcase state selectors and their required semantic declarations; and
 - the source files checked by `pnpm site:check`.
 
-The verifier fails closed on an unknown mode, duplicate legal pair, unsupported color syntax, missing state selector, declaration drift, or contrast below the declared threshold.
+The verifier fails closed on an unknown mode, duplicate legal pair or exemption, missing or modified required exemption, unsupported color syntax, missing state selector, declaration drift, or contrast below the declared threshold.
 
 ## State model
 
-Primary actions use separate foreground roles for default, hover, and active states. Neutral surfaces use `--focus-ring-*`; accent surfaces use `--focus-ring-on-accent-*`. Disabled controls use text, surface, and border roles without relying on opacity alone.
+Primary actions use separate foreground roles for default, hover, and active states. Neutral surfaces use `--focus-ring-*`; accent surfaces use `--focus-ring-on-accent-*`. Disabled controls use native disabled semantics plus text, surface, and border roles without relying on opacity alone. Their text and non-text contrast is explicitly recorded as an inactive-component exemption under WCAG 2.2 Success Criteria 1.4.3 and 1.4.11 rather than silently omitted from the legal-pair set.
 
 Status treatments use a five-part contract for each status: legacy accent, foreground, background, border, and a non-color text label in the consuming interface.
 

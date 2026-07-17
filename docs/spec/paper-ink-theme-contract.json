@@ -229,6 +229,22 @@
       }
     }
   },
+  "contrastExemptions": [
+    {
+      "id": "disabled-action",
+      "modes": ["paper", "ink"],
+      "stateMapping": "disabled",
+      "selector": ".theme-action:disabled",
+      "foreground": "text-muted",
+      "background": "surface-muted",
+      "kind": "inactive-component",
+      "reason": "Inactive user interface components are exempt from WCAG 2.2 Success Criteria 1.4.3 and 1.4.11.",
+      "standardRefs": [
+        "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+        "https://www.w3.org/TR/WCAG22/#non-text-contrast"
+      ]
+    }
+  ],
   "legalPairs": [
     { "id": "paper-primary-canvas", "mode": "paper", "foreground": "text-primary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
     { "id": "paper-secondary-canvas", "mode": "paper", "foreground": "text-secondary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },

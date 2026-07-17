@@ -71,8 +71,10 @@ const requiredLegalPairIds = [
   "ink-danger-border",
   "ink-info-border",
 ]
+const requiredContrastExemptionIds = ["disabled-action"]
 const requiredStateMappingsSha256 = "235f87738e12826d74009aed396c34ec985b6fad0a2aaa31c3188f70e06d2f80"
 const requiredLegalPairsSha256 = "ff9b5bef71425b430680161a0cb62cbe119620bdbfd062babd3dd7a84ad59cf5"
+const requiredContrastExemptionsSha256 = "20d9abd4f87114673b955184bcee2534d0bd2d1f39f66b2feb3188315c2324a7"
 
 function expect(condition, message) {
   if (!condition)
@@ -197,6 +199,25 @@ function validateContractShape(value) {
     expect(["text", "focus", "non-text"].includes(pair.kind), `Unsupported pair kind in ${pair.id}`)
     expect(pair.minimum === (pair.kind === "text" ? 4.5 : 3), `Invalid minimum in ${pair.id}`)
   }
+  expect(Array.isArray(value.contrastExemptions), "Contrast exemptions must be an array")
+  const exemptionIds = value.contrastExemptions.map(exemption => exemption.id)
+  expect(new Set(exemptionIds).size === exemptionIds.length, "Duplicate contrast exemption id")
+  expect(sameStringSet(exemptionIds, requiredContrastExemptionIds), "Contrast exemption id set drifted")
+  for (const exemption of value.contrastExemptions) {
+    expect(exemption.kind === "inactive-component", `Unsupported contrast exemption kind in ${exemption.id}`)
+    expect(Array.isArray(exemption.modes) && exemption.modes.length > 0, `Missing modes in ${exemption.id}`)
+    expect(new Set(exemption.modes).size === exemption.modes.length, `Duplicate mode in ${exemption.id}`)
+    expect(exemption.modes.every(mode => ["paper", "ink"].includes(mode)), `Unsupported mode in ${exemption.id}`)
+    expect(typeof exemption.reason === "string" && exemption.reason.length > 0, `Missing reason in ${exemption.id}`)
+    expect(Array.isArray(exemption.standardRefs) && exemption.standardRefs.length > 0, `Missing standard refs in ${exemption.id}`)
+    expect(exemption.standardRefs.every(ref => /^https:\/\/www\.w3\.org\//.test(ref)), `Unsupported standard ref in ${exemption.id}`)
+    const mapping = value.stateMappings[exemption.stateMapping]
+    expect(mapping !== undefined, `Missing state mapping for ${exemption.id}`)
+    expect(mapping.selector === exemption.selector, `Selector mismatch in ${exemption.id}`)
+    expect(mapping.declarations.color === `var(--${exemption.foreground})`, `Foreground mismatch in ${exemption.id}`)
+    expect(mapping.declarations.background === `var(--${exemption.background})`, `Background mismatch in ${exemption.id}`)
+  }
+  expect(sha256Json(value.contrastExemptions) === requiredContrastExemptionsSha256, "Contrast exemption values drifted")
 }
 
 function findRule(root, selector, label) {
@@ -283,6 +304,21 @@ expectFailure(
   "Legal pair values drifted",
 )
 expectFailure(
+  "deleted required contrast exemption",
+  () => validateContractShape({ ...contract, contrastExemptions: [] }),
+  "Contrast exemption id set drifted",
+)
+expectFailure(
+  "wrong required contrast exemption value",
+  () => validateContractShape({
+    ...contract,
+    contrastExemptions: [
+      { ...contract.contrastExemptions[0], reason: "Inactive component." },
+    ],
+  }),
+  "Contrast exemption values drifted",
+)
+expectFailure(
   "unsupported color value",
   () => resolveVariable("foreground", [{ foreground: "rgb(0 0 0)" }]),
   "Unsupported color value",
@@ -321,5 +357,8 @@ for (const pair of contract.legalPairs) {
   const ratio = verifyPair(pair, modeMaps[pair.mode])
   console.log(`${pair.id}: ${ratio.toFixed(2)}:1`)
 }
+
+for (const exemption of contract.contrastExemptions)
+  console.log(`${exemption.id}: contrast exempt in ${exemption.modes.join(", ")} (${exemption.kind})`)
 
 console.log("Paper & Ink theme contract passed")
