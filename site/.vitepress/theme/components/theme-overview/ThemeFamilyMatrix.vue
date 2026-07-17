@@ -8,14 +8,30 @@ import ThemeIcon from "./ThemeIcon.vue"
       <h2 id="theme-family-matrix">Theme matrix</h2>
     </div>
 
-    <div class="theme-mode-matrix" aria-label="Effective theme selectors">
-      <div class="theme-mode-matrix__heading">Default family</div>
-      <div><strong>Paper</strong><code>:root</code></div>
-      <div><strong>Ink</strong><code>.dark</code></div>
-      <div class="theme-mode-matrix__heading">Neo-Brutal family</div>
-      <div><strong>Neo Light</strong><code>.brutal</code></div>
-      <div><strong>Neo Dark</strong><code>.brutal.dark</code></div>
-    </div>
+    <dl class="theme-mode-matrix" aria-label="Effective theme selectors">
+      <div class="theme-mode-matrix__row">
+        <dt class="theme-mode-matrix__heading">Default family</dt>
+        <dd class="theme-mode-matrix__option">
+          <span class="theme-mode-matrix__scheme">Light</span>
+          <span class="theme-mode-matrix__value"><strong>Paper</strong><code>:root</code></span>
+        </dd>
+        <dd class="theme-mode-matrix__option">
+          <span class="theme-mode-matrix__scheme">Dark</span>
+          <span class="theme-mode-matrix__value"><strong>Ink</strong><code>.dark</code></span>
+        </dd>
+      </div>
+      <div class="theme-mode-matrix__row">
+        <dt class="theme-mode-matrix__heading">Neo-Brutal family</dt>
+        <dd class="theme-mode-matrix__option">
+          <span class="theme-mode-matrix__scheme">Light</span>
+          <span class="theme-mode-matrix__value"><strong>Neo Light</strong><code>.brutal</code></span>
+        </dd>
+        <dd class="theme-mode-matrix__option">
+          <span class="theme-mode-matrix__scheme">Dark</span>
+          <span class="theme-mode-matrix__value"><strong>Neo Dark</strong><code>.brutal.dark</code></span>
+        </dd>
+      </div>
+    </dl>
 
     <div class="theme-brutal-grid">
       <article class="theme-brutal-specimen brutal" data-visual-mode="brutal-light">

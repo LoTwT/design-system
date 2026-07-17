@@ -368,8 +368,29 @@ function verifyShowcase() {
 
   const overview = readSource(rootDir, contract.sources.overview)
   expect(overview.includes("<ThemeFamilyMatrix />"), "Theme overview must include the family matrix")
+  expect(
+    overview.includes('<ThemeReadingSpecimen class="theme-section--reading" />'),
+    "Theme overview must bind Reading spacing semantically",
+  )
+  const readingSection = propertyMap(
+    topLevelRule(css, ".theme-section.theme-section--reading", contract.sources.showcase),
+    "Reading section spacing",
+  )
+  expect(readingSection["padding-block"] === "32px 14px", "Reading section spacing drifted")
+  const positionalSections = []
+  css.walkRules((rule) => {
+    if (rule.selectors.some(selector => selector.includes(".theme-section:nth-child")))
+      positionalSections.push(...rule.selectors)
+  })
+  expect(positionalSections.length === 0, "Theme section spacing must not depend on child position")
+
   const matrix = readSource(rootDir, "site/.vitepress/theme/components/theme-overview/ThemeFamilyMatrix.vue")
   for (const needle of [
+    '<dl class="theme-mode-matrix"',
+    '<dt class="theme-mode-matrix__heading">',
+    '<dd class="theme-mode-matrix__option">',
+    '<span class="theme-mode-matrix__scheme">Light</span>',
+    '<span class="theme-mode-matrix__scheme">Dark</span>',
     'data-visual-mode="brutal-light"',
     'data-visual-mode="brutal-dark"',
     'class="theme-brutal-specimen brutal dark"',

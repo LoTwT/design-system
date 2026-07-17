@@ -17,7 +17,7 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
     </section>
 
     <ThemeFamilyMatrix />
-    <ThemeReadingSpecimen />
+    <ThemeReadingSpecimen class="theme-section--reading" />
     <ThemeInteractionStates />
 
     <section class="theme-section theme-section--source" data-index="§ 4.0" aria-labelledby="token-source">
