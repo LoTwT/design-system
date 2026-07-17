@@ -23,6 +23,8 @@
 
 所有 foundation token 在 `packages/theme/src/foundation/*.css` 通过 `@theme static` 暴露，强制输出完整 token CSS variables，并自动生成 Tailwind utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` 等）。
 
+Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./paper-ink-theme.md#ink-dependency-policy)：只有可脱离特定 mode、供 consumer 直接组合或生成 utility 的稳定物理 token 才进入 `@theme static`。仅服务 mode-local semantic mapping 的值继续由 semantic contract 以 direct literal 持有。
+
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
 ```css
@@ -796,6 +798,8 @@ Consumer-side recipe（**必需**，consumer 自实施）：
 - **major (1.x → 2.0)**：删除 / 重命名 token / 大幅重构
 - **minor (1.0 → 1.1)**：新增 token / 新增 hue / 新增 utility
 - **patch (1.0.0 → 1.0.1)**：hex 微调 / 阴影数值 / 修 bug / 文档修订
+
+未来新增 public foundation token / hue / utility 必须遵循 [Paper & Ink dependency policy](./paper-ink-theme.md#ink-dependency-policy)，作为 additive minor 发布，并同时提供 CHANGELOG 与显式 migration note（即使 consumer 无需操作也要说明）。不得静默重释现有 decorative `--color-ink-*` 的名字、值或 utility 语义。
 
 ### 9.2 视觉回归 token 清单（QA 用）
 
