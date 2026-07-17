@@ -60,7 +60,18 @@ const requiredOutput = [
   ["reading foreground var", "--reading-fg"],
   ["reading link var", "--reading-link"],
   ["reading measure var", "--reading-measure"],
+  ["reading letter spacing var", "--reading-letter-spacing"],
+  ["reading focus var", "--reading-focus"],
+  ["focus on accent var", "--focus-ring-on-accent-color"],
+  ["success status foreground var", "--status-success-fg"],
+  ["warning status background var", "--status-warning-bg"],
+  ["danger status border var", "--status-danger-border"],
+  ["info status foreground var", "--status-info-fg"],
   ["dark selector", ".dark"],
+  ["increased contrast override", "@media (prefers-contrast: more)"],
+  ["forced colors override", "@media (forced-colors: active)"],
+  ["forced colors focus", "Highlight"],
+  ["forced colors link", "LinkText"],
   ["font face", "@font-face"],
   ["Space Grotesk latin font", "space-grotesk-latin-wght-normal.woff2"],
   ["Space Grotesk latin-ext font", "space-grotesk-latin-ext-wght-normal.woff2"],
@@ -71,6 +82,9 @@ const requiredOutput = [
 ]
 
 const missing = requiredOutput.filter(([, needle]) => !css.includes(needle))
+const forbiddenPackageOutput = [
+  ["package-level reduced motion override", "@media (prefers-reduced-motion: reduce)"],
+].filter(([, needle]) => css.includes(needle))
 const forbiddenThemeOnlyOutput = [
   ["font-face declaration", "@font-face"],
   ["bundled font asset", ".woff2"],
@@ -151,7 +165,7 @@ const contrastFailures = contrastChecks
   .map(([label, foreground, background]) => [label, foreground, background, contrastRatio(foreground, background)])
   .filter(([, , , ratio]) => ratio < 4.5)
 
-if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenThemeOnlyOutput.length) {
+if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenPackageOutput.length || forbiddenThemeOnlyOutput.length) {
   for (const [label, needle] of missing) {
     console.error(`Missing ${label}: ${needle}`)
   }
@@ -160,6 +174,9 @@ if (missing.length || missingTokenVars.length || requiredFiles.length || forbidd
   }
   for (const file of requiredFiles) {
     console.error(`Missing required package file: ${file}`)
+  }
+  for (const [label, needle] of forbiddenPackageOutput) {
+    console.error(`Package build unexpectedly contains ${label}: ${needle}`)
   }
   for (const [label, needle] of forbiddenThemeOnlyOutput) {
     console.error(`Theme-only build unexpectedly contains ${label}: ${needle}`)

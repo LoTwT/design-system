@@ -31,10 +31,24 @@ Opt in to bundled fonts:
 reading layer uses the `--font-reading` token, but the webfont file is still
 loaded only when the consumer imports `fonts.css`.
 
+## Paper & Ink
+
+Paper is the default semantic theme on `:root`. Ink is its `.dark` companion:
+
+```html
+<html class="dark">
+  ...
+</html>
+```
+
+The pair keeps typography, spacing, layout, component anatomy, radius, icons, copy, and interaction structure unchanged. Semantic color, border, accent, focus, status, reading, and depth roles respond to the active mode.
+
 ## Contract
 
 - Foundation tokens use `@theme static` so all token CSS variables are emitted and Tailwind utilities are generated.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables.
+- Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
+- Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases.
 - Long-form reading variables such as `--reading-measure`, `--reading-line-height`, and `--reading-link` live in the semantic layer and inherit light/dark runtime variables.
 - `--container-reading` / `--layout-prose-width` are layout width tokens. `--reading-measure` is the font-relative measure for long-form body copy.
 - V0 does not publish component primitives or framework adapters.

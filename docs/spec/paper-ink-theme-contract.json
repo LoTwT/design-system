@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "name": "Paper & Ink",
+  "defaultMode": "paper",
+  "selectors": {
+    "paper": ":root",
+    "ink": ".dark"
+  },
+  "sources": {
+    "foundation": "packages/theme/src/foundation/colors.css",
+    "paper": "packages/theme/src/semantic/light.css",
+    "ink": "packages/theme/src/semantic/dark.css",
+    "reading": "packages/theme/src/semantic/reading.css",
+    "showcase": "site/.vitepress/theme/style.css"
+  },
+  "foundationDeclarations": {
+    "color-surface-0": "#fbf7ee",
+    "color-surface-1": "#fffcf6",
+    "color-surface-2": "#ffffff",
+    "color-surface-3": "#f1ebdd",
+    "color-surface-4": "#e4ddcf",
+    "color-neutral-600": "#736a5c",
+    "color-neutral-700": "#514a3e",
+    "color-neutral-950": "#191713"
+  },
+  "modeDeclarations": {
+    "paper": {
+      "surface-canvas": "var(--color-surface-0)",
+      "surface-panel": "var(--color-surface-1)",
+      "surface-elevated": "var(--color-surface-2)",
+      "surface-subtle": "var(--color-surface-3)",
+      "surface-muted": "var(--color-surface-4)",
+      "text-primary": "var(--color-neutral-950)",
+      "text-secondary": "var(--color-neutral-700)",
+      "text-muted": "var(--color-neutral-600)",
+      "text-inverse": "var(--color-surface-2)",
+      "text-accent": "var(--color-lavender-700)",
+      "border-subtle": "rgb(25 23 19 / 0.1)",
+      "border-default": "rgb(25 23 19 / 0.16)",
+      "border-strong": "rgb(25 23 19 / 0.28)",
+      "accent-primary": "var(--color-lavender-500)",
+      "accent-primary-hover": "var(--color-lavender-700)",
+      "accent-primary-active": "var(--color-lavender-800)",
+      "accent-soft": "var(--color-lavender-100)",
+      "accent-contrast": "var(--color-lavender-950)",
+      "accent-contrast-hover": "var(--text-inverse)",
+      "accent-contrast-active": "var(--text-inverse)",
+      "focus-ring-color": "var(--color-lavender-700)",
+      "focus-ring-shadow": "0 0 0 4px rgb(102 86 157 / 0.18)",
+      "focus-ring-on-accent-color": "var(--accent-contrast)",
+      "focus-ring-on-accent-shadow": "0 0 0 4px rgb(37 31 58 / 0.18)",
+      "status-success": "var(--color-success-500)",
+      "status-success-fg": "var(--color-success-700)",
+      "status-success-bg": "var(--color-success-50)",
+      "status-success-border": "var(--color-success-700)",
+      "status-warning": "var(--color-warning-500)",
+      "status-warning-fg": "var(--color-warning-700)",
+      "status-warning-bg": "var(--color-warning-50)",
+      "status-warning-border": "var(--color-warning-700)",
+      "status-danger": "var(--color-danger-500)",
+      "status-danger-fg": "var(--color-danger-700)",
+      "status-danger-bg": "var(--color-danger-50)",
+      "status-danger-border": "var(--color-danger-700)",
+      "status-info": "var(--color-info-500)",
+      "status-info-fg": "var(--color-info-700)",
+      "status-info-bg": "var(--color-info-50)",
+      "status-info-border": "var(--color-info-700)"
+    },
+    "ink": {
+      "surface-canvas": "#121019",
+      "surface-panel": "#191623",
+      "surface-elevated": "#211d2e",
+      "surface-subtle": "#2a2635",
+      "surface-muted": "#373142",
+      "text-primary": "#f7f1e6",
+      "text-secondary": "#d7cdbc",
+      "text-muted": "#aa9e8b",
+      "text-inverse": "var(--color-neutral-950)",
+      "text-accent": "var(--color-lavender-300)",
+      "border-subtle": "rgb(247 241 230 / 0.1)",
+      "border-default": "rgb(247 241 230 / 0.16)",
+      "border-strong": "rgb(247 241 230 / 0.28)",
+      "accent-primary": "var(--color-lavender-300)",
+      "accent-primary-hover": "var(--color-lavender-200)",
+      "accent-primary-active": "var(--color-lavender-100)",
+      "accent-soft": "rgb(156 143 217 / 0.18)",
+      "accent-contrast": "var(--color-lavender-950)",
+      "accent-contrast-hover": "var(--accent-contrast)",
+      "accent-contrast-active": "var(--accent-contrast)",
+      "focus-ring-color": "var(--color-lavender-300)",
+      "focus-ring-shadow": "0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18)",
+      "focus-ring-on-accent-color": "var(--accent-contrast)",
+      "focus-ring-on-accent-shadow": "0 0 0 4px rgb(37 31 58 / 0.22)",
+      "status-success": "#84dfbd",
+      "status-success-fg": "#84dfbd",
+      "status-success-bg": "var(--color-success-950)",
+      "status-success-border": "var(--color-success-500)",
+      "status-warning": "#ffdc7a",
+      "status-warning-fg": "#ffdc7a",
+      "status-warning-bg": "var(--color-warning-950)",
+      "status-warning-border": "var(--color-warning-500)",
+      "status-danger": "#ff9ab6",
+      "status-danger-fg": "#ff9ab6",
+      "status-danger-bg": "var(--color-danger-950)",
+      "status-danger-border": "var(--color-danger-500)",
+      "status-info": "#8dc5ff",
+      "status-info-fg": "#8dc5ff",
+      "status-info-bg": "var(--color-info-950)",
+      "status-info-border": "var(--color-info-500)",
+      "shadow-card": "var(--shadow-none)",
+      "shadow-panel": "var(--shadow-none)"
+    }
+  },
+  "readingDeclarations": {
+    "reading-font-body": "var(--font-reading)",
+    "reading-font-heading": "var(--font-reading)",
+    "reading-font-mono": "var(--font-mono)",
+    "reading-measure": "65ch",
+    "reading-font-size": "var(--text-lg)",
+    "reading-line-height": "var(--leading-reading)",
+    "reading-letter-spacing": "var(--tracking-normal)",
+    "reading-paragraph-gap": "1.2em",
+    "reading-fg": "var(--text-primary)",
+    "reading-bg": "var(--surface-canvas)",
+    "reading-fg-muted": "var(--text-secondary)",
+    "reading-link": "var(--text-accent)",
+    "reading-link-hover": "var(--accent-primary-active)",
+    "reading-accent": "var(--accent-primary)",
+    "reading-code-fg": "var(--text-primary)",
+    "reading-code-bg": "var(--surface-subtle)",
+    "reading-rule": "var(--border-subtle)",
+    "reading-focus": "var(--focus-ring-color)",
+    "reading-focus-shadow": "var(--focus-ring-shadow)",
+    "reading-scale-h1": "var(--text-3xl)",
+    "reading-scale-h2": "var(--text-2xl)",
+    "reading-scale-h3": "var(--text-xl)",
+    "reading-scale-h4": "var(--text-lg)"
+  },
+  "readingModeOverrides": {
+    "ink": {
+      "reading-link-hover": "var(--color-lavender-200)"
+    }
+  },
+  "stateMappings": {
+    "primary-default": {
+      "selector": ".theme-action--primary",
+      "declarations": {
+        "color": "var(--accent-contrast)",
+        "background": "var(--accent-primary)",
+        "border-color": "var(--accent-primary)"
+      }
+    },
+    "primary-hover": {
+      "selector": ".theme-action--primary:hover",
+      "declarations": {
+        "color": "var(--accent-contrast-hover)",
+        "background": "var(--accent-primary-hover)",
+        "border-color": "var(--accent-primary-hover)"
+      }
+    },
+    "primary-active": {
+      "selector": ".theme-action--primary:active",
+      "declarations": {
+        "color": "var(--accent-contrast-active)",
+        "background": "var(--accent-primary-active)",
+        "border-color": "var(--accent-primary-active)"
+      }
+    },
+    "disabled": {
+      "selector": ".theme-action:disabled",
+      "declarations": {
+        "color": "var(--text-muted)",
+        "background": "var(--surface-muted)",
+        "border-color": "var(--border-subtle)"
+      }
+    },
+    "focus-neutral": {
+      "selector": ".theme-focus-preview",
+      "declarations": {
+        "outline": "2px solid var(--focus-ring-color)",
+        "box-shadow": "var(--focus-ring-shadow)"
+      }
+    },
+    "focus-accent": {
+      "selector": ".theme-focus-on-accent",
+      "declarations": {
+        "outline": "2px solid var(--focus-ring-on-accent-color)",
+        "box-shadow": "var(--focus-ring-on-accent-shadow)"
+      }
+    },
+    "input": {
+      "selector": ".theme-input",
+      "declarations": {
+        "color": "var(--text-primary)",
+        "background": "var(--surface-elevated)",
+        "border-color": "var(--border-default)"
+      }
+    },
+    "status-success": {
+      "selector": ".theme-status--success",
+      "declarations": {
+        "color": "var(--status-success-fg)",
+        "background": "var(--status-success-bg)",
+        "border-color": "var(--status-success-border)"
+      }
+    },
+    "status-warning": {
+      "selector": ".theme-status--warning",
+      "declarations": {
+        "color": "var(--status-warning-fg)",
+        "background": "var(--status-warning-bg)",
+        "border-color": "var(--status-warning-border)"
+      }
+    },
+    "status-danger": {
+      "selector": ".theme-status--danger",
+      "declarations": {
+        "color": "var(--status-danger-fg)",
+        "background": "var(--status-danger-bg)",
+        "border-color": "var(--status-danger-border)"
+      }
+    },
+    "status-info": {
+      "selector": ".theme-status--info",
+      "declarations": {
+        "color": "var(--status-info-fg)",
+        "background": "var(--status-info-bg)",
+        "border-color": "var(--status-info-border)"
+      }
+    }
+  },
+  "contrastExemptions": [
+    {
+      "id": "disabled-action",
+      "modes": ["paper", "ink"],
+      "stateMapping": "disabled",
+      "selector": ".theme-action:disabled",
+      "foreground": "text-muted",
+      "background": "surface-muted",
+      "kind": "inactive-component",
+      "reason": "Inactive user interface components are exempt from WCAG 2.2 Success Criteria 1.4.3 and 1.4.11.",
+      "standardRefs": [
+        "https://www.w3.org/TR/WCAG22/#contrast-minimum",
+        "https://www.w3.org/TR/WCAG22/#non-text-contrast"
+      ]
+    }
+  ],
+  "legalPairs": [
+    { "id": "paper-primary-canvas", "mode": "paper", "foreground": "text-primary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-secondary-canvas", "mode": "paper", "foreground": "text-secondary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-muted-canvas", "mode": "paper", "foreground": "text-muted", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-link-canvas", "mode": "paper", "foreground": "text-accent", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-action-default", "mode": "paper", "foreground": "accent-contrast", "background": "accent-primary", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-action-hover", "mode": "paper", "foreground": "accent-contrast-hover", "background": "accent-primary-hover", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-action-active", "mode": "paper", "foreground": "accent-contrast-active", "background": "accent-primary-active", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-primary-canvas", "mode": "ink", "foreground": "text-primary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-secondary-canvas", "mode": "ink", "foreground": "text-secondary", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-muted-canvas", "mode": "ink", "foreground": "text-muted", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-link-canvas", "mode": "ink", "foreground": "text-accent", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-action-default", "mode": "ink", "foreground": "accent-contrast", "background": "accent-primary", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-action-hover", "mode": "ink", "foreground": "accent-contrast-hover", "background": "accent-primary-hover", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-action-active", "mode": "ink", "foreground": "accent-contrast-active", "background": "accent-primary-active", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-focus-canvas", "mode": "paper", "foreground": "focus-ring-color", "background": "surface-canvas", "minimum": 3, "kind": "focus" },
+    { "id": "paper-focus-panel", "mode": "paper", "foreground": "focus-ring-color", "background": "surface-panel", "minimum": 3, "kind": "focus" },
+    { "id": "paper-focus-elevated", "mode": "paper", "foreground": "focus-ring-color", "background": "surface-elevated", "minimum": 3, "kind": "focus" },
+    { "id": "paper-focus-subtle", "mode": "paper", "foreground": "focus-ring-color", "background": "surface-subtle", "minimum": 3, "kind": "focus" },
+    { "id": "paper-focus-muted", "mode": "paper", "foreground": "focus-ring-color", "background": "surface-muted", "minimum": 3, "kind": "focus" },
+    { "id": "paper-focus-accent", "mode": "paper", "foreground": "focus-ring-on-accent-color", "background": "accent-primary", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-canvas", "mode": "ink", "foreground": "focus-ring-color", "background": "surface-canvas", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-panel", "mode": "ink", "foreground": "focus-ring-color", "background": "surface-panel", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-elevated", "mode": "ink", "foreground": "focus-ring-color", "background": "surface-elevated", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-subtle", "mode": "ink", "foreground": "focus-ring-color", "background": "surface-subtle", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-muted", "mode": "ink", "foreground": "focus-ring-color", "background": "surface-muted", "minimum": 3, "kind": "focus" },
+    { "id": "ink-focus-accent", "mode": "ink", "foreground": "focus-ring-on-accent-color", "background": "accent-primary", "minimum": 3, "kind": "focus" },
+    { "id": "paper-reading", "mode": "paper", "foreground": "reading-fg", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-reading-muted", "mode": "paper", "foreground": "reading-fg-muted", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-reading-link", "mode": "paper", "foreground": "reading-link", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-reading", "mode": "ink", "foreground": "reading-fg", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-reading-muted", "mode": "ink", "foreground": "reading-fg-muted", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-reading-link", "mode": "ink", "foreground": "reading-link", "background": "reading-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-success-text", "mode": "paper", "foreground": "status-success-fg", "background": "status-success-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-warning-text", "mode": "paper", "foreground": "status-warning-fg", "background": "status-warning-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-danger-text", "mode": "paper", "foreground": "status-danger-fg", "background": "status-danger-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-info-text", "mode": "paper", "foreground": "status-info-fg", "background": "status-info-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-success-text", "mode": "ink", "foreground": "status-success-fg", "background": "status-success-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-warning-text", "mode": "ink", "foreground": "status-warning-fg", "background": "status-warning-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-danger-text", "mode": "ink", "foreground": "status-danger-fg", "background": "status-danger-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "ink-info-text", "mode": "ink", "foreground": "status-info-fg", "background": "status-info-bg", "minimum": 4.5, "kind": "text" },
+    { "id": "paper-success-border", "mode": "paper", "foreground": "status-success-border", "background": "status-success-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "paper-warning-border", "mode": "paper", "foreground": "status-warning-border", "background": "status-warning-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "paper-danger-border", "mode": "paper", "foreground": "status-danger-border", "background": "status-danger-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "paper-info-border", "mode": "paper", "foreground": "status-info-border", "background": "status-info-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "ink-success-border", "mode": "ink", "foreground": "status-success-border", "background": "status-success-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "ink-warning-border", "mode": "ink", "foreground": "status-warning-border", "background": "status-warning-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "ink-danger-border", "mode": "ink", "foreground": "status-danger-border", "background": "status-danger-bg", "minimum": 3, "kind": "non-text" },
+    { "id": "ink-info-border", "mode": "ink", "foreground": "status-info-border", "background": "status-info-bg", "minimum": 3, "kind": "non-text" }
+  ]
+}

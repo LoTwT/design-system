@@ -112,8 +112,8 @@ Always reach for semantic vars first. Drop down to foundation tokens only when t
 /* Wrong: hardcoded hex bypasses the dark-mode flip */
 .card {
   background: #ffffff;
-  color: #151310;
-  border: 1px solid rgb(36 33 28 / 0.1);
+  color: #191713;
+  border: 1px solid rgb(25 23 19 / 0.1);
 }
 ```
 

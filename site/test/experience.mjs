@@ -151,6 +151,16 @@ function verifyReducedAppearanceMotion(source, file) {
   expectDeclaration(motion, "transition-duration", "0s", true)
 }
 
+function verifySavedIconRole(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const savedIcon = readDeclarations(findRule(
+    css,
+    [".theme-state--saved .theme-icon"],
+    "saved icon semantic role",
+  ))
+  expectDeclaration(savedIcon, "color", "var(--text-accent)")
+}
+
 function sha256(file) {
   return createHash("sha256").update(readFileSync(join(rootDir, file))).digest("hex")
 }
@@ -161,7 +171,10 @@ expect(stringValue(property(config, "lang"), "lang") === "en", "VitePress lang m
 expect(stringValue(property(config, "title"), "title") === "Ayingott Design System", "VitePress title must remain Ayingott Design System")
 
 const themeConfig = objectValue(property(config, "themeConfig"), "themeConfig")
-expect(optionalProperty(themeConfig, "logo") === undefined, "themeConfig.logo must remain absent")
+const logo = objectValue(property(themeConfig, "logo"), "themeConfig.logo")
+expect(stringValue(property(logo, "light"), "themeConfig.logo.light") === "/lo.svg", "Light logo must use /lo.svg")
+expect(stringValue(property(logo, "dark"), "themeConfig.logo.dark") === "/lo-white.svg", "Dark logo must use /lo-white.svg")
+expect(stringValue(property(logo, "alt"), "themeConfig.logo.alt") === "Lo", "Logo alt text must remain Lo")
 
 const head = arrayValue(property(config, "head"), "head")
 const iconLinks = head.elements.flatMap((entry) => {
@@ -224,6 +237,20 @@ expectFailure(
   `, "<missing-reduced-motion-icon-fixture>"),
   "Expected exactly one CSS rule for reduced appearance motion",
 )
+expectFailure(
+  "wrong reduced-motion duration",
+  () => verifyReducedAppearanceMotion(`
+    @media (prefers-reduced-motion: reduce) {
+      .VPSwitch.VPSwitchAppearance,
+      .VPSwitch.VPSwitchAppearance .check,
+      .dark .VPSwitch.VPSwitchAppearance .icon .sun,
+      .dark .VPSwitch.VPSwitchAppearance .icon .moon {
+        transition-duration: 0.01s !important;
+      }
+    }
+  `, "<wrong-reduced-motion-duration-fixture>"),
+  "Expected transition-duration: 0s",
+)
 verifyReducedAppearanceMotion(readSource(cssFile), cssFile)
 
 const cta = readDeclarations(findRule(css, [".VPButton.brand", ".VPButton.alt"], "CTA touch targets"))
@@ -233,6 +260,36 @@ expectDeclaration(cta, "min-height", "var(--touch-target-min)")
 const appearance = readDeclarations(findRule(css, [".VPSwitch.VPSwitchAppearance"], "appearance touch target"))
 expectDeclaration(appearance, "width", "var(--touch-target-min)")
 expectDeclaration(appearance, "height", "var(--touch-target-min)")
+
+const localOutline = readDeclarations(findRule(css, [".VPLocalNavOutlineDropdown button"], "local outline touch target"))
+expectDeclaration(localOutline, "min-height", "var(--touch-target-min)")
+
+expectFailure(
+  "wrong saved icon semantic role",
+  () => verifySavedIconRole(`
+    .theme-state--saved .theme-icon {
+      color: var(--status-success-fg);
+    }
+  `, "<wrong-saved-icon-role-fixture>"),
+  "Expected color: var(--text-accent)",
+)
+verifySavedIconRole(readSource(cssFile), cssFile)
+
+const themeIconSource = readSource("site/.vitepress/theme/components/theme-overview/ThemeIcon.vue")
+for (const icon of ["circle-check", "circle-x", "info", "triangle-alert"]) {
+  expect(
+    themeIconSource.includes(`lucide-static/icons/${icon}.svg?url`),
+    `ThemeIcon must use the Lucide ${icon} asset`,
+  )
+}
+
+const interactionStatesSource = readSource("site/.vitepress/theme/components/theme-overview/ThemeInteractionStates.vue")
+expect(interactionStatesSource.includes('<ThemeIcon name="circle-check" />'), "Saved state must use the Lucide circle-check icon")
+
+const statusRolesSource = readSource("site/.vitepress/theme/components/theme-overview/ThemeStatusRoles.vue")
+for (const icon of ["circle-check", "triangle-alert", "circle-x", "info"]) {
+  expect(statusRolesSource.includes(`<ThemeIcon name="${icon}" />`), `Status roles must use the Lucide ${icon} icon`)
+}
 
 const track = readDeclarations(findRule(css, [".VPSwitch.VPSwitchAppearance::before"], "appearance visual track"))
 expectDeclaration(track, "top", "11px")

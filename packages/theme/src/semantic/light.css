@@ -13,21 +13,37 @@
   --text-inverse: var(--color-surface-2);
   --text-accent: var(--color-lavender-700);
 
-  --border-subtle: rgb(36 33 28 / 0.1);
-  --border-default: rgb(36 33 28 / 0.16);
-  --border-strong: rgb(36 33 28 / 0.28);
+  --border-subtle: rgb(25 23 19 / 0.1);
+  --border-default: rgb(25 23 19 / 0.16);
+  --border-strong: rgb(25 23 19 / 0.28);
 
   --accent-primary: var(--color-lavender-500);
-  --accent-primary-hover: var(--color-lavender-600);
-  --accent-primary-active: var(--color-lavender-700);
+  --accent-primary-hover: var(--color-lavender-700);
+  --accent-primary-active: var(--color-lavender-800);
   --accent-soft: var(--color-lavender-100);
   --accent-contrast: var(--color-lavender-950);
+  --accent-contrast-hover: var(--text-inverse);
+  --accent-contrast-active: var(--text-inverse);
 
-  --focus-ring-color: var(--color-lavender-500);
-  --focus-ring-shadow: 0 0 0 4px rgb(156 143 217 / 0.24);
+  --focus-ring-color: var(--color-lavender-700);
+  --focus-ring-shadow: 0 0 0 4px rgb(102 86 157 / 0.18);
+  --focus-ring-on-accent-color: var(--accent-contrast);
+  --focus-ring-on-accent-shadow: 0 0 0 4px rgb(37 31 58 / 0.18);
 
   --status-success: var(--color-success-500);
+  --status-success-fg: var(--color-success-700);
+  --status-success-bg: var(--color-success-50);
+  --status-success-border: var(--color-success-700);
   --status-warning: var(--color-warning-500);
+  --status-warning-fg: var(--color-warning-700);
+  --status-warning-bg: var(--color-warning-50);
+  --status-warning-border: var(--color-warning-700);
   --status-danger: var(--color-danger-500);
+  --status-danger-fg: var(--color-danger-700);
+  --status-danger-bg: var(--color-danger-50);
+  --status-danger-border: var(--color-danger-700);
   --status-info: var(--color-info-500);
+  --status-info-fg: var(--color-info-700);
+  --status-info-bg: var(--color-info-50);
+  --status-info-border: var(--color-info-700);
 }

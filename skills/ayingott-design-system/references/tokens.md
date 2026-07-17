@@ -14,52 +14,58 @@ base.css     → minimal element resets
 
 Consumers should reach for **semantic vars** first.
 
-## Semantic variables (light + `.dark`)
+## Semantic variables (Paper + Ink)
+
+Paper is the default `:root` mapping. Ink overrides the same names under `.dark`.
 
 ### Surfaces
 
 | Variable | Light source | Dark value |
 | --- | --- | --- |
-| `--surface-canvas` | `var(--color-surface-0)` `#fffaef` | `#121019` |
-| `--surface-panel` | `var(--color-surface-1)` `#fffdf7` | `#191623` |
+| `--surface-canvas` | `var(--color-surface-0)` `#fbf7ee` | `#121019` |
+| `--surface-panel` | `var(--color-surface-1)` `#fffcf6` | `#191623` |
 | `--surface-elevated` | `var(--color-surface-2)` `#ffffff` | `#211d2e` |
-| `--surface-subtle` | `var(--color-surface-3)` `#f5efe0` | `#2a2635` |
-| `--surface-muted` | `var(--color-surface-4)` `#ebe5d6` | `#373142` |
+| `--surface-subtle` | `var(--color-surface-3)` `#f1ebdd` | `#2a2635` |
+| `--surface-muted` | `var(--color-surface-4)` `#e4ddcf` | `#373142` |
 
 ### Text
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--text-primary` | `--color-neutral-950` `#151310` | `#f7f1e6` |
-| `--text-secondary` | `--color-neutral-700` `#524a3c` | `#d7cdbc` |
-| `--text-muted` | `--color-neutral-600` `#6d624f` | `#aa9e8b` |
-| `--text-inverse` | `--color-surface-2` `#ffffff` | `#151310` |
+| `--text-primary` | `--color-neutral-950` `#191713` | `#f7f1e6` |
+| `--text-secondary` | `--color-neutral-700` `#514a3e` | `#d7cdbc` |
+| `--text-muted` | `--color-neutral-600` `#736a5c` | `#aa9e8b` |
+| `--text-inverse` | `--color-surface-2` `#ffffff` | `--color-neutral-950` `#191713` |
 | `--text-accent` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 
 ### Borders
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--border-subtle` | `rgb(36 33 28 / 0.10)` | `rgb(247 241 230 / 0.10)` |
-| `--border-default` | `rgb(36 33 28 / 0.16)` | `rgb(247 241 230 / 0.16)` |
-| `--border-strong` | `rgb(36 33 28 / 0.28)` | `rgb(247 241 230 / 0.28)` |
+| `--border-subtle` | `rgb(25 23 19 / 0.10)` | `rgb(247 241 230 / 0.10)` |
+| `--border-default` | `rgb(25 23 19 / 0.16)` | `rgb(247 241 230 / 0.16)` |
+| `--border-strong` | `rgb(25 23 19 / 0.28)` | `rgb(247 241 230 / 0.28)` |
 
 ### Accent (lavender brand)
 
 | Variable | Light | Dark |
 | --- | --- | --- |
 | `--accent-primary` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-300` `#c7b6f5` |
-| `--accent-primary-hover` | `--color-lavender-600` `#7f70bf` | `--color-lavender-200` `#ded4ff` |
-| `--accent-primary-active` | `--color-lavender-700` `#66569d` | `--color-lavender-100` `#eee8ff` |
+| `--accent-primary-hover` | `--color-lavender-700` `#66569d` | `--color-lavender-200` `#ded4ff` |
+| `--accent-primary-active` | `--color-lavender-800` `#51457c` | `--color-lavender-100` `#eee8ff` |
 | `--accent-soft` | `--color-lavender-100` `#eee8ff` | `rgb(156 143 217 / 0.18)` |
 | `--accent-contrast` | `--color-lavender-950` `#251f3a` | `--color-lavender-950` `#251f3a` |
+| `--accent-contrast-hover` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
+| `--accent-contrast-active` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
 
 ### Focus
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--focus-ring-color` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-300` `#c7b6f5` |
-| `--focus-ring-shadow` | `0 0 0 4px rgb(156 143 217 / 0.24)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18)` |
+| `--focus-ring-color` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
+| `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18)` |
+| `--focus-ring-on-accent-color` | `--accent-contrast` `#251f3a` | `--accent-contrast` `#251f3a` |
+| `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(37 31 58 / 0.22)` |
 
 ### Status
 
@@ -69,6 +75,8 @@ Consumers should reach for **semantic vars** first.
 | `--status-warning` | `--color-warning-500` `#e29a13` | `#ffdc7a` |
 | `--status-danger` | `--color-danger-500` `#df3d63` | `#ff9ab6` |
 | `--status-info` | `--color-info-500` `#2f82df` | `#8dc5ff` |
+
+Each status also exposes `-fg`, `-bg`, and `-border` roles. Paper uses the `700` foreground/border on the `50` background; Ink uses the bright foreground on the `950` background with the `500` border.
 
 ### Reading
 
@@ -80,6 +88,7 @@ Consumers should reach for **semantic vars** first.
 | `--reading-measure` | `65ch` |
 | `--reading-font-size` | `var(--text-lg)` |
 | `--reading-line-height` | `var(--leading-reading)` |
+| `--reading-letter-spacing` | `var(--tracking-normal)` |
 | `--reading-paragraph-gap` | `1.2em` |
 | `--reading-fg` | `var(--text-primary)` |
 | `--reading-bg` | `var(--surface-canvas)` |
@@ -90,6 +99,8 @@ Consumers should reach for **semantic vars** first.
 | `--reading-code-fg` | `var(--text-primary)` |
 | `--reading-code-bg` | `var(--surface-subtle)` |
 | `--reading-rule` | `var(--border-subtle)` |
+| `--reading-focus` | `var(--focus-ring-color)` |
+| `--reading-focus-shadow` | `var(--focus-ring-shadow)` |
 | `--reading-scale-h1` | `var(--text-3xl)` |
 | `--reading-scale-h2` | `var(--text-2xl)` |
 | `--reading-scale-h3` | `var(--text-xl)` |
@@ -99,7 +110,7 @@ Consumers should reach for **semantic vars** first.
 
 ## Foundation palettes (use only when semantic vars do not fit)
 
-- **Surface** (warm cream ramp): `--color-surface-0` `#fffaef` → `--color-surface-5` `#d8d1bf`. 6 steps.
+- **Surface** (warm paper ramp): `--color-surface-0` `#fbf7ee` → `--color-surface-5` `#d8d1bf`. 6 steps.
 - **Lavender** (brand): `--color-lavender-50` → `--color-lavender-950`. 11 steps.
 - **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
