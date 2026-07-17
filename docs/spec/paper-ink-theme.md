@@ -31,6 +31,8 @@ Primary actions use separate foreground roles for default, hover, and active sta
 
 Status treatments use a five-part contract for each status: legacy accent, foreground, background, border, and a non-color text label in the consuming interface.
 
+Ink warning intentionally retains the shipped `#ffdc7a` value (equal to decorative `--color-amber-200`). Matching numeric steps across decorative hue ramps is not a status contract invariant; each status foreground is instead verified against its paired background.
+
 ## Reading model
 
 The reading layer keeps its existing Newsreader opt-in, `65ch` measure, scale, and paragraph rhythm. It adds explicit letter-spacing and focus aliases so long-form content can use the same Paper/Ink mode response without local values.
