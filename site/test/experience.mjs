@@ -161,7 +161,10 @@ expect(stringValue(property(config, "lang"), "lang") === "en", "VitePress lang m
 expect(stringValue(property(config, "title"), "title") === "Ayingott Design System", "VitePress title must remain Ayingott Design System")
 
 const themeConfig = objectValue(property(config, "themeConfig"), "themeConfig")
-expect(optionalProperty(themeConfig, "logo") === undefined, "themeConfig.logo must remain absent")
+const logo = objectValue(property(themeConfig, "logo"), "themeConfig.logo")
+expect(stringValue(property(logo, "light"), "themeConfig.logo.light") === "/lo.svg", "Light logo must use /lo.svg")
+expect(stringValue(property(logo, "dark"), "themeConfig.logo.dark") === "/lo-white.svg", "Dark logo must use /lo-white.svg")
+expect(stringValue(property(logo, "alt"), "themeConfig.logo.alt") === "Lo", "Logo alt text must remain Lo")
 
 const head = arrayValue(property(config, "head"), "head")
 const iconLinks = head.elements.flatMap((entry) => {

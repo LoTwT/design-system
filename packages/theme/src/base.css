@@ -39,3 +39,34 @@
     outline-offset: 2px;
   }
 }
+
+@media (forced-colors: active) {
+  @layer base {
+    ::selection {
+      color: HighlightText;
+      background: Highlight;
+    }
+
+    a {
+      color: LinkText;
+    }
+
+    :focus-visible {
+      outline-color: Highlight;
+      box-shadow: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer base {
+    a {
+      text-decoration-thickness: 0.12em;
+    }
+
+    :focus-visible {
+      outline-width: 3px;
+      box-shadow: none;
+    }
+  }
+}

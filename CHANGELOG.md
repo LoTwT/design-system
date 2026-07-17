@@ -1,3 +1,15 @@
+## Unreleased
+
+### Added
+
+- Add the executable Paper & Ink paired-theme contract, legal contrast pairs, and showcase state coverage.
+- Add semantic foreground/background/border status roles, accent-surface focus roles, and reading focus/letter-spacing aliases.
+
+### Changed
+
+- Refine the default Paper foundation ramp and semantic action states while preserving `:root`, `.dark`, public token names, package exports, and opt-in fonts.
+- Flatten semantic card and panel depth in Ink and add a responsive paired-theme showcase.
+
 ## 0.1.0 - 2026-05-20
 
 ### Added

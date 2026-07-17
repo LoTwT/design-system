@@ -21,9 +21,9 @@ Opt in to bundled fonts when the project should use Space Grotesk, Space Mono, a
 @import "@ayingott/theme";
 ```
 
-## Dark Mode
+## Paper & Ink
 
-V0 uses a `.dark` class:
+Paper is active by default. Apply `.dark` to activate Ink:
 
 ```html
 <html class="dark">
@@ -31,4 +31,4 @@ V0 uses a `.dark` class:
 </html>
 ```
 
-The semantic variables update through CSS cascade. Consumers do not need a framework adapter.
+The same semantic variables update through CSS cascade. Typography, spacing, layout, component anatomy, radius, icons, copy, and interaction structure remain unchanged. Consumers do not need a framework adapter.

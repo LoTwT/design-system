@@ -137,26 +137,27 @@ const siteLight = readVariables("site/.vitepress/theme/style.css", ":root")
 const siteDark = readVariables("site/.vitepress/theme/style.css", ".dark")
 
 const modes = [
-  ["light", [foundation, lightSemantic, siteLight]],
-  ["dark", [foundation, lightSemantic, darkSemantic, siteLight, siteDark]],
+  ["paper", [foundation, lightSemantic, siteLight]],
+  ["ink", [foundation, lightSemantic, darkSemantic, siteLight, siteDark]],
 ]
 const states = [
-  ["default", "vp-button-brand-text", "vp-button-brand-bg", "vp-button-brand-border", "color-lavender-700", "color-lavender-300"],
-  ["hover", "vp-button-brand-hover-text", "vp-button-brand-hover-bg", "vp-button-brand-hover-border", "color-lavender-800", "color-lavender-200"],
-  ["active", "vp-button-brand-active-text", "vp-button-brand-active-bg", "vp-button-brand-active-border", "color-lavender-900", "color-lavender-100"],
+  ["default", "vp-button-brand-text", "vp-button-brand-bg", "vp-button-brand-border", "accent-contrast", "accent-primary"],
+  ["hover", "vp-button-brand-hover-text", "vp-button-brand-hover-bg", "vp-button-brand-hover-border", "accent-contrast-hover", "accent-primary-hover"],
+  ["active", "vp-button-brand-active-text", "vp-button-brand-active-bg", "vp-button-brand-active-border", "accent-contrast-active", "accent-primary-active"],
 ]
 
 const failures = []
-for (const [state, textVariable, backgroundVariable, borderVariable, lightToken, darkToken] of states) {
-  for (const [mode, map, colorToken] of [["light", siteLight, lightToken], ["dark", siteDark, darkToken]]) {
-    const expectedColor = `var(--${colorToken})`
-    if (map[textVariable] !== "var(--text-inverse)")
-      failures.push(`${mode} ${state} text must map to var(--text-inverse)`)
-    if (map[backgroundVariable] !== expectedColor)
-      failures.push(`${mode} ${state} background must map to ${expectedColor}`)
-    if (map[borderVariable] !== expectedColor)
-      failures.push(`${mode} ${state} border must map to ${expectedColor}`)
-  }
+for (const [state, textVariable, backgroundVariable, borderVariable, textToken, colorToken] of states) {
+  const expectedText = `var(--${textToken})`
+  const expectedColor = `var(--${colorToken})`
+  if (siteLight[textVariable] !== expectedText)
+    failures.push(`${state} text must map to ${expectedText}`)
+  if (siteLight[backgroundVariable] !== expectedColor)
+    failures.push(`${state} background must map to ${expectedColor}`)
+  if (siteLight[borderVariable] !== expectedColor)
+    failures.push(`${state} border must map to ${expectedColor}`)
+  if (siteDark[textVariable] !== undefined || siteDark[backgroundVariable] !== undefined || siteDark[borderVariable] !== undefined)
+    failures.push(`${state} must inherit the same semantic mapping in Ink without a site-specific override`)
 }
 
 for (const [mode, maps] of modes) {

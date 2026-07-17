@@ -1,9 +1,9 @@
 @theme static {
-  --color-surface-0: #fffaef;
-  --color-surface-1: #fffdf7;
+  --color-surface-0: #fbf7ee;
+  --color-surface-1: #fffcf6;
   --color-surface-2: #ffffff;
-  --color-surface-3: #f5efe0;
-  --color-surface-4: #ebe5d6;
+  --color-surface-3: #f1ebdd;
+  --color-surface-4: #e4ddcf;
   --color-surface-5: #d8d1bf;
 
   --color-lavender-50: #f7f4ff;
@@ -24,11 +24,11 @@
   --color-neutral-300: #cbc2ad;
   --color-neutral-400: #a99d84;
   --color-neutral-500: #8b7f68;
-  --color-neutral-600: #6d624f;
-  --color-neutral-700: #524a3c;
+  --color-neutral-600: #736a5c;
+  --color-neutral-700: #514a3e;
   --color-neutral-800: #39342b;
   --color-neutral-900: #24211c;
-  --color-neutral-950: #151310;
+  --color-neutral-950: #191713;
 
   --color-mint-50: #effcf7;
   --color-mint-100: #d9f7ea;

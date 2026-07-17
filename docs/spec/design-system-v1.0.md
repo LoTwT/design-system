@@ -1,11 +1,11 @@
-# lotwt Design System · v1.0 Spec + V0.1 Reading Update
+# lotwt Design System · v1.0 Spec + Paper & Ink Update
 
 - 起草人：@UX · 2026-05-06
 - 项目：`@ayingott/theme` V0 design system + V0.1 additive reading layer
-- 状态：v1.1 update（V0.1 reading token layer；spec 与当前 `packages/theme/src/**/*.css` 1:1 对齐 source of truth）
+- 状态：v1.2 update（Paper & Ink paired semantic theme；spec 与当前 `packages/theme/src/**/*.css` 1:1 对齐 source of truth）
 - Source of truth：**当前已实施的 `packages/theme/src/**/*.css` + `package.json#exports`**
 - 锁定输入：DS-D-01~04 / DS-D-11 / RFC 0001 v0.3 final / RFC 0002 reading token layer
-- 配套：`docs/decisions/index.md`（Product 决策日志，PR #3 已合）
+- 配套：`docs/spec/paper-ink-theme.md` + `docs/spec/paper-ink-theme-contract.json`
 
 > **重要约定**：本 spec 是 V0 契约与 V0.1 additive reading layer 的设计意图文档。token 值 / semantic 命名 / utility 实现 / 公共 exports **与当前 source of truth 1:1 对齐**；任何 UX 关于后续演进的想法移到 §A 标为 future / non-contract。
 
@@ -26,11 +26,11 @@
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
 ```css
---color-surface-0: #fffaef;   /* 暖米白主底（page bg）*/
---color-surface-1: #fffdf7;
+--color-surface-0: #fbf7ee;   /* Paper 主底（page bg）*/
+--color-surface-1: #fffcf6;
 --color-surface-2: #ffffff;   /* 卡片底色 */
---color-surface-3: #f5efe0;   /* code block / quote / 装饰二级背景 */
---color-surface-4: #ebe5d6;
+--color-surface-3: #f1ebdd;   /* code block / quote / 装饰二级背景 */
+--color-surface-4: #e4ddcf;
 --color-surface-5: #d8d1bf;   /* 弱化 / disabled 背景 */
 ```
 
@@ -61,11 +61,11 @@
 --color-neutral-300: #cbc2ad
 --color-neutral-400: #a99d84
 --color-neutral-500: #8b7f68
---color-neutral-600: #6d624f   /* text-muted */
---color-neutral-700: #524a3c   /* text-secondary */
+--color-neutral-600: #736a5c   /* text-muted */
+--color-neutral-700: #514a3e   /* text-secondary */
 --color-neutral-800: #39342b
 --color-neutral-900: #24211c
---color-neutral-950: #151310   /* ⭐ text-primary */
+--color-neutral-950: #191713   /* ⭐ text-primary */
 ```
 
 设计意图：与暖米色 surface 协调的暖棕灰，比纯灰更"自然"；text-primary 用 `neutral-950` 在 surface-0 上对比度极强。
@@ -101,7 +101,7 @@
 --color-syntax-function:  #1d65bd  /* sky-600 派生 */
 --color-syntax-number:    #dc8a08  /* amber-500 派生 */
 --color-syntax-comment:   #8b7f68  /* neutral-500 派生 */
---color-syntax-operator:  #6d624f  /* neutral-600 派生 */
+--color-syntax-operator:  #6d624f  /* legacy syntax neutral */
 ```
 
 > [FUTURE]：UX baseline 曾提议 14 syntax token（含 boolean / class-name / tag / attr-* / punct / bg / line-num 等）；V0 仅 6 个。后续按真实代码高亮库需要扩。
@@ -282,7 +282,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 
 `@apply` **不可直接用于 semantic vars**（因为没有对应 utility）。如果 consumer 想要 utility 形式，必须按 §6 Consumer-side Recipe 在自己 app 里加 `@theme inline` 提升。
 
-### 3.2 Light mode 映射（V0 `packages/theme/src/semantic/light.css`）
+### 3.2 Paper mode 映射（默认 `:root`，`packages/theme/src/semantic/light.css`）
 
 ```css
 :root {
@@ -302,31 +302,47 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --text-inverse:      var(--color-surface-2);
   --text-accent:       var(--color-lavender-700);
 
-  /* Border (rgb + alpha 派生 neutral-900) */
-  --border-subtle:     rgb(36 33 28 / 0.10);
-  --border-default:    rgb(36 33 28 / 0.16);
-  --border-strong:     rgb(36 33 28 / 0.28);
+  /* Border (rgb + alpha 派生 Paper text-primary) */
+  --border-subtle:     rgb(25 23 19 / 0.10);
+  --border-default:    rgb(25 23 19 / 0.16);
+  --border-strong:     rgb(25 23 19 / 0.28);
 
   /* Accent */
   --accent-primary:        var(--color-lavender-500);
-  --accent-primary-hover:  var(--color-lavender-600);
-  --accent-primary-active: var(--color-lavender-700);
+  --accent-primary-hover:  var(--color-lavender-700);
+  --accent-primary-active: var(--color-lavender-800);
   --accent-soft:           var(--color-lavender-100);
   --accent-contrast:       var(--color-lavender-950);
+  --accent-contrast-hover: var(--text-inverse);
+  --accent-contrast-active: var(--text-inverse);
 
   /* Focus ring */
-  --focus-ring-color:  var(--color-lavender-500);
-  --focus-ring-shadow: 0 0 0 4px rgb(156 143 217 / 0.24);
+  --focus-ring-color:  var(--color-lavender-700);
+  --focus-ring-shadow: 0 0 0 4px rgb(102 86 157 / 0.18);
+  --focus-ring-on-accent-color: var(--accent-contrast);
+  --focus-ring-on-accent-shadow: 0 0 0 4px rgb(37 31 58 / 0.18);
 
   /* Status */
   --status-success:    var(--color-success-500);
+  --status-success-fg: var(--color-success-700);
+  --status-success-bg: var(--color-success-50);
+  --status-success-border: var(--color-success-700);
   --status-warning:    var(--color-warning-500);
+  --status-warning-fg: var(--color-warning-700);
+  --status-warning-bg: var(--color-warning-50);
+  --status-warning-border: var(--color-warning-700);
   --status-danger:     var(--color-danger-500);
+  --status-danger-fg: var(--color-danger-700);
+  --status-danger-bg: var(--color-danger-50);
+  --status-danger-border: var(--color-danger-700);
   --status-info:       var(--color-info-500);
+  --status-info-fg: var(--color-info-700);
+  --status-info-bg: var(--color-info-50);
+  --status-info-border: var(--color-info-700);
 }
 ```
 
-### 3.3 Dark mode 映射（V0 `packages/theme/src/semantic/dark.css`）
+### 3.3 Ink mode 映射（`.dark`，`packages/theme/src/semantic/dark.css`）
 
 ```css
 @custom-variant dark (&:where(.dark, .dark *));
@@ -343,7 +359,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --text-primary:      #f7f1e6;
   --text-secondary:    #d7cdbc;
   --text-muted:        #aa9e8b;
-  --text-inverse:      #151310;
+  --text-inverse:      var(--color-neutral-950);
   --text-accent:       var(--color-lavender-300);
 
   --border-subtle:     rgb(247 241 230 / 0.10);
@@ -355,24 +371,44 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --accent-primary-active: var(--color-lavender-100);
   --accent-soft:           rgb(156 143 217 / 0.18);
   --accent-contrast:       var(--color-lavender-950);
+  --accent-contrast-hover: var(--accent-contrast);
+  --accent-contrast-active: var(--accent-contrast);
 
   --focus-ring-color:  var(--color-lavender-300);
   --focus-ring-shadow: 0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18);
+  --focus-ring-on-accent-color: var(--accent-contrast);
+  --focus-ring-on-accent-shadow: 0 0 0 4px rgb(37 31 58 / 0.22);
 
   --status-success:    #84dfbd;
+  --status-success-fg: #84dfbd;
+  --status-success-bg: var(--color-success-950);
+  --status-success-border: var(--color-success-500);
   --status-warning:    #ffdc7a;
+  --status-warning-fg: #ffdc7a;
+  --status-warning-bg: var(--color-warning-950);
+  --status-warning-border: var(--color-warning-500);
   --status-danger:     #ff9ab6;
+  --status-danger-fg: #ff9ab6;
+  --status-danger-bg: var(--color-danger-950);
+  --status-danger-border: var(--color-danger-500);
   --status-info:       #8dc5ff;
+  --status-info-fg: #8dc5ff;
+  --status-info-bg: var(--color-info-950);
+  --status-info-border: var(--color-info-500);
+
+  --shadow-card: var(--shadow-none);
+  --shadow-panel: var(--shadow-none);
 }
 ```
 
-### 3.4 Dark mode 实施细则
+### 3.4 Ink mode 实施细则
 
 1. **选择子**：`@custom-variant dark (&:where(.dark, .dark *))` 配 `.dark` class 触发（与 Tailwind v4 / shadcn 主流一致）
 2. **不简单反相**：dark surface 用偏深紫黑（`#121019` 系列）而非纯黑；text 用暖白 `#f7f1e6` 而非纯白；保持温度感
 3. **accent 提亮**：dark 模式用 `lavender-300` 而非 `lavender-500`（避免暗底刺眼，参考 §3.3 `--accent-primary` 映射）
 4. **focus ring 双层**：dark 下 outer ring 用更亮的 lavender + inner thin ring 用 text-primary alpha（参考 §3.3 `--focus-ring-shadow` 实测值）
-5. **status 暗色调亮**：success/warning/danger/info 在 dark 用各 hue 的 300 阶，避免高饱和深底刺眼
+5. **status 使用成组角色**：foreground/background/border 组合均通过 contract contrast gate；状态文本不得只靠颜色表达
+6. **depth 收平**：Ink 将 `--shadow-card` / `--shadow-panel` 映射为 `--shadow-none`，保持 Paper/Ink anatomy 一致但降低暗色深度噪音
 
 > [FUTURE]：UX baseline 曾提议 `--text-tertiary` / `--text-disabled` / `--text-link` / `--bg-accent-soft` / `--bg-accent` / `--bg-accent-strong` / `--text-on-accent` / `--text-link-hover` 等 token，V0 不 ship。consumer 当前用 V0 提供的 `--text-muted` / `--accent-primary` / `--accent-soft` 等组合。
 
@@ -388,6 +424,7 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
   --reading-measure: 65ch;
   --reading-font-size: var(--text-lg);
   --reading-line-height: var(--leading-reading);
+  --reading-letter-spacing: var(--tracking-normal);
   --reading-paragraph-gap: 1.2em;
   --reading-fg: var(--text-primary);
   --reading-bg: var(--surface-canvas);
@@ -398,6 +435,8 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
   --reading-code-fg: var(--text-primary);
   --reading-code-bg: var(--surface-subtle);
   --reading-rule: var(--border-subtle);
+  --reading-focus: var(--focus-ring-color);
+  --reading-focus-shadow: var(--focus-ring-shadow);
   --reading-scale-h1: var(--text-3xl);
   --reading-scale-h2: var(--text-2xl);
   --reading-scale-h3: var(--text-xl);
@@ -486,7 +525,7 @@ consumer 不 import `@ayingott/theme` 主入口时不会拿到这些 base 样式
 
 | 场景 | V0 token 组合 |
 |---|---|
-| Primary CTA 按钮 | `bg: var(--accent-primary)` / `color: var(--text-inverse)` / `:hover bg=accent-primary-hover` |
+| Primary CTA 按钮 | `bg: var(--accent-primary)` / `color: var(--accent-contrast)`；hover / active 同步使用对应 accent background + contrast foreground |
 | Secondary 按钮 | `bg: var(--surface-elevated)` / `color: var(--text-primary)` / `border: 1px solid var(--border-default)` |
 | Outline accent button | `bg: transparent` / `color: var(--text-accent)` / `border: 1.5px solid var(--accent-primary)` |
 | 链接（inline）| `color: var(--text-accent)` |
@@ -686,13 +725,13 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 ### 8.1 对比度（WCAG AA）
 
-实际值按 V0 实施 hex 值计算（surface-0 `#fffaef`，neutral-950 `#151310`，lavender 标准阶）。**任何 hex 值修改后必须用 `axe` / WebAIM contrast checker 重算**。
+实际值按当前 Paper 实施 hex 值计算（surface-0 `#fbf7ee`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。
 
 | 文本类型 | 最小比 | 实测比（V0 hex）| 适用范围 |
 |---|---|---|---|
-| `--text-primary` (#151310) on `--surface-canvas` (#fffaef) | ≥ 4.5:1 | **~17.8:1** ✅ 远超 | 所有正文 / heading / body |
-| `--text-secondary` (neutral-700 #524a3c) on canvas | ≥ 4.5:1 | **~9.0:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
-| `--text-muted` (neutral-600 #6d624f) on canvas | ≥ 4.5:1 | **~6.0:1** ✅ | meta / caption / placeholder |
+| `--text-primary` (#191713) on `--surface-canvas` (#fbf7ee) | ≥ 4.5:1 | **16.74:1** ✅ | 所有正文 / heading / body |
+| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.19:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
+| `--text-muted` (neutral-600 #736a5c) on canvas | ≥ 4.5:1 | **4.98:1** ✅ | meta / caption / placeholder |
 | `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.6:1** ✅ | 内联链接 |
 | `--text-accent` on `--accent-soft` (lavender-100 #eee8ff) | ≥ 4.5:1 普通 / 3:1 大字 | **~5.0:1** ✅ | chip 上文字（接近 AA 阈值）|
 

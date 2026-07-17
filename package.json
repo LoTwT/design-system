@@ -11,7 +11,7 @@
     "pack:consumer": "node packages/theme/test/pack-consumer.mjs",
     "site:dev": "vitepress dev site",
     "site:build": "vitepress build site",
-    "site:check": "node site/test/cta-contrast.mjs && node site/test/experience.mjs",
+    "site:check": "node site/test/theme-contract.mjs && node site/test/cta-contrast.mjs && node site/test/experience.mjs",
     "site:typecheck": "vue-tsc --noEmit -p site/tsconfig.json && node site/test/typecheck-negative.mjs",
     "site:preview": "vitepress preview site",
     "site:cf-preview": "pnpm site:build && wrangler dev",

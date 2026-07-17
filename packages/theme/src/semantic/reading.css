@@ -5,6 +5,7 @@
   --reading-measure: 65ch;
   --reading-font-size: var(--text-lg);
   --reading-line-height: var(--leading-reading);
+  --reading-letter-spacing: var(--tracking-normal);
   --reading-paragraph-gap: 1.2em;
   --reading-fg: var(--text-primary);
   --reading-bg: var(--surface-canvas);
@@ -15,6 +16,8 @@
   --reading-code-fg: var(--text-primary);
   --reading-code-bg: var(--surface-subtle);
   --reading-rule: var(--border-subtle);
+  --reading-focus: var(--focus-ring-color);
+  --reading-focus-shadow: var(--focus-ring-shadow);
   --reading-scale-h1: var(--text-3xl);
   --reading-scale-h2: var(--text-2xl);
   --reading-scale-h3: var(--text-xl);

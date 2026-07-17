@@ -16,6 +16,11 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   themeConfig: {
+    logo: {
+      light: "/lo.svg",
+      dark: "/lo-white.svg",
+      alt: "Lo",
+    },
     nav: [
       { text: "Guide", link: "/guide/getting-started" },
       { text: "Tokens", link: "/tokens/colors" },
@@ -25,6 +30,7 @@ export default defineConfig({
       {
         text: "Guide",
         items: [
+          { text: "Theme Overview", link: "/guide/theme-overview" },
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Package Contract", link: "/guide/package-contract" },
         ],
