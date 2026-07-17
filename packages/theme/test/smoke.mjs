@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process"
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs"
+import { createHash } from "node:crypto"
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -9,11 +10,23 @@ const input = join(packageDir, "test", "smoke.package.css")
 const output = join(tmpDir, "smoke.css")
 const themeOnlyInput = join(packageDir, "test", "smoke.theme-only.css")
 const themeOnlyOutput = join(tmpDir, "smoke.theme-only.css")
+const brutalInput = join(tmpDir, "smoke.brutal.css")
+const brutalOutput = join(tmpDir, "smoke.brutal.output.css")
 
 rmSync(tmpDir, { recursive: true, force: true })
 mkdirSync(tmpDir, { recursive: true })
+writeFileSync(brutalInput, `@import "tailwindcss";
+@import "@ayingott/theme";
+@import "@ayingott/theme/brutal.css";
 
-for (const [fixtureInput, fixtureOutput] of [[input, output], [themeOnlyInput, themeOnlyOutput]]) {
+@source inline("pressable shadow-hard-sm shadow-hard-md shadow-hard-lg focus-ring touch-target");
+`)
+
+for (const [fixtureInput, fixtureOutput] of [
+  [input, output],
+  [themeOnlyInput, themeOnlyOutput],
+  [brutalInput, brutalOutput],
+]) {
   execFileSync("pnpm", ["exec", "tailwindcss", "-i", fixtureInput, "-o", fixtureOutput], {
     cwd: packageDir,
     stdio: "inherit",
@@ -22,6 +35,9 @@ for (const [fixtureInput, fixtureOutput] of [[input, output], [themeOnlyInput, t
 
 const css = readFileSync(output, "utf8")
 const themeOnlyCss = readFileSync(themeOnlyOutput, "utf8")
+const brutalCss = readFileSync(brutalOutput, "utf8")
+const themeOnlySha256 = createHash("sha256").update(themeOnlyCss).digest("hex")
+const requiredThemeOnlySha256 = "449b8a3d5da925afca80e0a126d6744ae963f5d9ee4d3580fc4dda4c391e5c77"
 
 const readCssVars = (file) => {
   const source = readFileSync(join(packageDir, file), "utf8")
@@ -39,7 +55,9 @@ const readCssVarMap = (file) => {
 const tokenSourceFiles = [
   ...readdirSync(join(packageDir, "src", "foundation")).map((file) => `src/foundation/${file}`),
   ...readdirSync(join(packageDir, "src", "layers")).map((file) => `src/layers/${file}`),
-  ...readdirSync(join(packageDir, "src", "semantic")).map((file) => `src/semantic/${file}`),
+  ...readdirSync(join(packageDir, "src", "semantic"))
+    .filter(file => file !== "brutal.css")
+    .map(file => `src/semantic/${file}`),
 ]
 
 const missingTokenVars = [...new Set(tokenSourceFiles.flatMap(readCssVars))]
@@ -88,10 +106,28 @@ const forbiddenPackageOutput = [
 const forbiddenThemeOnlyOutput = [
   ["font-face declaration", "@font-face"],
   ["bundled font asset", ".woff2"],
+  ["Brutal selector", ".brutal"],
+  ["hard shadow token", "--shadow-hard-"],
+  ["pressable utility", ".pressable"],
+  ["package-level reduced motion override", "@media (prefers-reduced-motion: reduce)"],
 ].filter(([, needle]) => themeOnlyCss.includes(needle))
+const requiredBrutalOutput = [
+  ["Brutal Light selector", ".brutal"],
+  ["Brutal Dark selector", ".brutal.dark"],
+  ["hard shadow token", "--shadow-hard-md"],
+  ["hard shadow utility", ".shadow-hard-md"],
+  ["surface border role", "--border-width-surface"],
+  ["control border role", "--border-width-control"],
+  ["pressable utility", ".pressable"],
+  ["local reduced motion override", "@media (prefers-reduced-motion: reduce)"],
+  ["forced colors override", "@media (forced-colors: active)"],
+].filter(([, needle]) => !brutalCss.includes(needle))
 
 const requiredFiles = [
   "src/index.css",
+  "src/brutal.css",
+  "src/semantic/brutal.css",
+  "src/utilities/pressable.css",
   "src/fonts.css",
   "src/fonts/space-grotesk-latin-wght-normal.woff2",
   "src/fonts/space-grotesk-latin-ext-wght-normal.woff2",
@@ -165,7 +201,15 @@ const contrastFailures = contrastChecks
   .map(([label, foreground, background]) => [label, foreground, background, contrastRatio(foreground, background)])
   .filter(([, , , ratio]) => ratio < 4.5)
 
-if (missing.length || missingTokenVars.length || requiredFiles.length || forbiddenPackageOutput.length || forbiddenThemeOnlyOutput.length) {
+if (
+  missing.length
+  || missingTokenVars.length
+  || requiredFiles.length
+  || forbiddenPackageOutput.length
+  || forbiddenThemeOnlyOutput.length
+  || requiredBrutalOutput.length
+  || themeOnlySha256 !== requiredThemeOnlySha256
+) {
   for (const [label, needle] of missing) {
     console.error(`Missing ${label}: ${needle}`)
   }
@@ -181,6 +225,11 @@ if (missing.length || missingTokenVars.length || requiredFiles.length || forbidd
   for (const [label, needle] of forbiddenThemeOnlyOutput) {
     console.error(`Theme-only build unexpectedly contains ${label}: ${needle}`)
   }
+  for (const [label, needle] of requiredBrutalOutput) {
+    console.error(`Brutal build is missing ${label}: ${needle}`)
+  }
+  if (themeOnlySha256 !== requiredThemeOnlySha256)
+    console.error(`Default compiled CSS drifted: expected ${requiredThemeOnlySha256}; received ${themeOnlySha256}`)
   for (const [label, foreground, background, ratio] of contrastFailures) {
     console.error(`Reading contrast below 4.5:1 for ${label}: ${foreground} on ${background} = ${ratio.toFixed(2)}:1`)
   }

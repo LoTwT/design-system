@@ -1,0 +1,50 @@
+@utility pressable {
+  &:where(.brutal, .brutal *) {
+    box-shadow: var(--shadow-card);
+    transition:
+      transform var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  &:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--shadow-hard-color);
+  }
+
+  &:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):active {
+    transform: translate(6px, 6px);
+    box-shadow: 0 0 0 var(--shadow-hard-color);
+  }
+
+  &:where(.brutal, .brutal *):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+    transform: none;
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brutal.pressable,
+  .brutal .pressable {
+    transition-duration: var(--duration-instant);
+  }
+
+  .brutal.pressable:hover,
+  .brutal.pressable:active,
+  .brutal .pressable:hover,
+  .brutal .pressable:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .brutal.pressable,
+  .brutal .pressable {
+    border-color: ButtonText;
+    box-shadow: 4px 4px 0 ButtonText;
+  }
+
+  .brutal.pressable:focus-visible,
+  .brutal .pressable:focus-visible {
+    outline-color: Highlight;
+  }
+}

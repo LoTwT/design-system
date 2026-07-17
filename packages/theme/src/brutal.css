@@ -1,0 +1,21 @@
+@import "./semantic/brutal.css";
+@import "./utilities/pressable.css";
+
+:root {
+  --shadow-hard-color: currentcolor;
+  --shadow-hard-sm: 4px 4px 0 var(--shadow-hard-color);
+  --shadow-hard-md: 6px 6px 0 var(--shadow-hard-color);
+  --shadow-hard-lg: 8px 8px 0 var(--shadow-hard-color);
+}
+
+@utility shadow-hard-sm {
+  box-shadow: var(--shadow-hard-sm);
+}
+
+@utility shadow-hard-md {
+  box-shadow: var(--shadow-hard-md);
+}
+
+@utility shadow-hard-lg {
+  box-shadow: var(--shadow-hard-lg);
+}

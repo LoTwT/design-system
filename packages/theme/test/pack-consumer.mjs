@@ -88,6 +88,7 @@ try {
   const expectedExports = {
     ".": "./src/index.css",
     "./index.css": "./src/index.css",
+    "./brutal.css": "./src/brutal.css",
     "./fonts.css": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*",
   }
@@ -112,6 +113,9 @@ try {
     "README.md",
     "THIRD_PARTY_NOTICES.md",
     "src/index.css",
+    "src/brutal.css",
+    "src/semantic/brutal.css",
+    "src/utilities/pressable.css",
     "src/fonts.css",
     "src/fonts/space-grotesk-latin-wght-normal.woff2",
     "src/fonts/space-grotesk-latin-ext-wght-normal.woff2",
@@ -132,6 +136,7 @@ import { fileURLToPath } from "node:url"
 const expected = ${JSON.stringify({
   "@ayingott/theme": "src/index.css",
   "@ayingott/theme/index.css": "src/index.css",
+  "@ayingott/theme/brutal.css": "src/brutal.css",
   "@ayingott/theme/fonts.css": "src/fonts.css",
   "@ayingott/theme/fonts/space-mono-latin-400-normal.woff2": "src/fonts/space-mono-latin-400-normal.woff2",
 }, null, 2)}
@@ -144,13 +149,33 @@ for (const [specifier, suffix] of Object.entries(expected)) {
 `)
   execFileSync("node", [basename(exportCheck)], { cwd: consumerDir, stdio: "inherit" })
 
-  const input = join(consumerDir, "input.css")
-  const output = join(consumerDir, "output.css")
-  writeFileSync(input, `
+  const defaultInput = join(consumerDir, "input.default.css")
+  const defaultOutput = join(consumerDir, "output.default.css")
+  writeFileSync(defaultInput, `
 @import "tailwindcss";
 @import "@ayingott/theme/fonts.css";
 @import "@ayingott/theme";
 @source inline("bg-lavender-500 text-neutral-950 font-display font-reading font-mono rounded-card shadow-card focus-ring touch-target");
+`)
+  execFileSync("pnpm", ["exec", "tailwindcss", "-i", defaultInput, "-o", defaultOutput], {
+    cwd: consumerDir,
+    stdio: "inherit",
+  })
+
+  const defaultCss = readFileSync(defaultOutput, "utf8")
+  for (const forbidden of [".brutal", "--shadow-hard-", ".pressable", "@media (prefers-reduced-motion: reduce)"]) {
+    if (defaultCss.includes(forbidden))
+      throw new Error(`Default consumer compile unexpectedly contains: ${forbidden}`)
+  }
+
+  const input = join(consumerDir, "input.brutal.css")
+  const output = join(consumerDir, "output.brutal.css")
+  writeFileSync(input, `
+@import "tailwindcss";
+@import "@ayingott/theme/fonts.css";
+@import "@ayingott/theme";
+@import "@ayingott/theme/brutal.css";
+@source inline("bg-lavender-500 text-neutral-950 font-display font-reading font-mono rounded-card shadow-card shadow-hard-md focus-ring touch-target pressable");
 `)
   execFileSync("pnpm", ["exec", "tailwindcss", "-i", input, "-o", output], {
     cwd: consumerDir,
@@ -167,8 +192,14 @@ for (const [specifier, suffix] of Object.entries(expected)) {
     ".font-mono",
     ".rounded-card",
     ".shadow-card",
+    ".shadow-hard-md",
     ".focus-ring",
     ".touch-target",
+    ".pressable",
+    ".brutal",
+    ".brutal.dark",
+    "--border-width-surface",
+    "@media (prefers-reduced-motion: reduce)",
     "@font-face",
     "space-grotesk-latin-wght-normal.woff2",
     "space-grotesk-latin-ext-wght-normal.woff2",

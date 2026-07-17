@@ -1,11 +1,11 @@
-# lotwt Design System · v1.0 Spec + Paper & Ink Update
+# lotwt Design System · v1.0 Spec + Theme Family Update
 
 - 起草人：@UX · 2026-05-06
 - 项目：`@ayingott/theme` V0 design system + V0.1 additive reading layer
-- 状态：v1.2 update（Paper & Ink paired semantic theme；spec 与当前 `packages/theme/src/**/*.css` 1:1 对齐 source of truth）
+- 状态：v1.3 update（Paper & Ink default pair + opt-in Neo-Brutalism family；spec 与当前 `packages/theme/src/**/*.css` 1:1 对齐 source of truth）
 - Source of truth：**当前已实施的 `packages/theme/src/**/*.css` + `package.json#exports`**
 - 锁定输入：DS-D-01~04 / DS-D-11 / RFC 0001 v0.3 final / RFC 0002 reading token layer
-- 配套：`docs/spec/paper-ink-theme.md` + `docs/spec/paper-ink-theme-contract.json`
+- 配套：`docs/spec/paper-ink-theme.md` + `docs/spec/paper-ink-theme-contract.json` + `docs/spec/rfc-brutal-theme.md` + `docs/spec/brutal-theme-contract.json`
 
 > **重要约定**：本 spec 是 V0 契约与 V0.1 additive reading layer 的设计意图文档。token 值 / semantic 命名 / utility 实现 / 公共 exports **与当前 source of truth 1:1 对齐**；任何 UX 关于后续演进的想法移到 §A 标为 future / non-contract。
 
@@ -22,6 +22,8 @@
 ## §1 · Foundation Tokens（V0 已 ship）
 
 所有 foundation token 在 `packages/theme/src/foundation/*.css` 通过 `@theme static` 暴露，强制输出完整 token CSS variables，并自动生成 Tailwind utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` 等）。
+
+例外：Neo-Brutalism 的 `--shadow-hard-*` 物理族位于 opt-in `brutal.css` import chain，不进入默认 `index.css`。该入口同时声明匹配的 `shadow-hard-sm/md/lg` utilities；只有 consumer 明确 import 第五入口时才出现。
 
 Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./paper-ink-theme.md#ink-dependency-policy)：只有可脱离特定 mode、供 consumer 直接组合或生成 utility 的稳定物理 token 才进入 `@theme static`。仅服务 mode-local semantic mapping 的值继续由 semantic contract 以 direct literal 持有。
 
@@ -180,12 +182,16 @@ V0 token：`--spacing-px / -0 / -0-5 / -1 / -1-5 / -2 / -2-5 / -3 / -3-5 / -4 / 
 
 设计意图：multi-layer 阴影（每个含 2 层）提质感；语义阴影 (`--shadow-card`, `--shadow-panel`) 让 consumer 不直接绑 size。
 
+Opt-in `brutal.css` 追加 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、zero blur），并在 `.brutal` 下重映射 semantic shadow aliases；默认 soft-shadow scale 与编译输出不变。
+
 ### 1.14 Border（5 width + 3 style）
 
 ```css
 --border-width-hairline / -thin / -medium / -thick / -heavy   (5 width: 0.5px ~ 3px)
 --border-style-solid / -dashed / -dotted                       (3 style)
 ```
+
+Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 使用 `var(--border-width-control, var(--border-width-thin))` 回退。
 
 ### 1.15 Motion（5 duration + 4 ease + 2 named animation + 2 keyframes）
 
@@ -452,9 +458,24 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
 
 `--reading-link` 必须使用 `--text-accent`。不要绑定 `--accent-primary`；light 模式下当前 `--accent-primary` 在 `--surface-canvas` 上只有 2.75:1，不满足正文链接 AA。V0.1 smoke gate 会验证 reading fg / muted / link / code foreground 在 light 和 dark 下均达到 4.5:1。
 
+### 3.6 Neo-Brutalism opt-in family
+
+`@ayingott/theme/brutal.css` 在同一 semantic API 上增加 family 轴：
+
+| `.brutal` | `.dark` | effective theme |
+| --- | --- | --- |
+| absent | absent | Paper |
+| absent | present | Ink |
+| present | absent | Neo-Brutal Light |
+| present | present | Neo-Brutal Dark |
+
+`.dark` 仍是 scheme selector；`.brutal` 只选择 family。Neo Light/Dark 使用等价 declaration key set，完整覆盖 surface / text / border / accent / focus / status / reading，并重映射 card/control radius、card/panel shadow 与 surface/control border width。移除 `.brutal` 或额外 import 即回退 Paper/Ink。
+
+Neo sticker palette 使用 family-local direct literals，由 `brutal-theme-contract.json` digest 持有。Blue `#3D5AFE` 的 foreground 固定 pure white `#FFFFFF`（5.132:1），不得绑定会随 scheme 翻转的 paper ink。
+
 ---
 
-## §4 · Theme Utilities（V0 已 ship 4 个）
+## §4 · Theme Utilities（default 4 + opt-in 1）
 
 ### 4.1 `focus-ring` / `focus-ring-inset`
 
@@ -505,7 +526,19 @@ V0 `packages/theme/src/utilities/touch-target.css`：
 
 > [FUTURE]：UX baseline 曾在 utility 内置 `display: inline-flex; align-items / justify-content`；V0 不 ship 这些（避免 utility 越界做 layout，consumer 自决）。
 
-### 4.3 V0 Base CSS（`packages/theme/src/base.css`）
+### 4.3 `pressable`（opt-in `brutal.css`）
+
+`packages/theme/src/utilities/pressable.css` 只在 `.brutal` self/descendant 生效。Hover `translate(-2px, -2px)` + `--shadow-hard-lg`；active `translate(6px, 6px)` + zero-offset shadow；native / ARIA / data-disabled 均保持 `transform: none`。duration 使用现有 `--duration-fast`（120ms）。
+
+使用时组合现有 a11y utilities：
+
+```html
+<button class="pressable focus-ring touch-target">Action</button>
+```
+
+该 opt-in utility 自带局部 `prefers-reduced-motion` transform fallback 与 forced-colors boundary/focus fallback；它不改变默认入口无全局 reduced-motion 注入的承诺。
+
+### 4.4 V0 Base CSS（`packages/theme/src/base.css`）
 
 V0 在 `@layer base` 提供：
 - `*, ::before, ::after { box-sizing: border-box }`
@@ -768,11 +801,11 @@ QA 用 `axe` 实测 + light/dark 切换 visual diff。
 
 ### 8.5 Reduced motion 处理
 
-V0 theme **不**包含任何 `prefers-reduced-motion` media query。V0 仅暴露 motion token（`--animate-fade-in` / `--animate-pop-in` / `--duration-*` / `--ease-*`），**不在 theme 包内做全局动画禁用注入**（避免越界影响 consumer app 动画）。
+默认 `@ayingott/theme` entry **不**包含任何 `prefers-reduced-motion` media query。它仅暴露 motion token（`--animate-fade-in` / `--animate-pop-in` / `--duration-*` / `--ease-*`），**不做全局动画禁用注入**（避免越界影响 consumer app 动画）。唯一窄例外是 opt-in `brutal.css` 的 `.pressable` utility：它只移除自身 hover/active transform 并把自身 transition duration 归零。
 
 V0 a11y 验收范围（QA 用）：
 - ✅ V0 theme motion token 命名清晰（consumer 引用时能识别用途）
-- ❌ NOT in V0 gate：reduced-motion 处理由 consumer app 层负责；**consumer 使用 V0 `--animate-*` 或自定义动画时必须在 consumer app 层自行实施 `prefers-reduced-motion`**
+- ❌ NOT in default gate：其他 reduced-motion 处理仍由 consumer app 层负责；**consumer 使用 `--animate-*` 或自定义动画时必须在 consumer app 层自行实施 `prefers-reduced-motion`**
 
 Consumer-side recipe（**必需**，consumer 自实施）：
 
@@ -804,6 +837,8 @@ Consumer-side recipe（**必需**，consumer 自实施）：
 - **patch (1.0.0 → 1.0.1)**：hex 微调 / 阴影数值 / 修 bug / 文档修订
 
 未来新增 public foundation token / hue / utility 必须遵循 [Paper & Ink dependency policy](./paper-ink-theme.md#ink-dependency-policy)，作为 additive minor 发布，并同时提供 CHANGELOG 与显式 migration note（即使 consumer 无需操作也要说明）。不得静默重释现有 decorative `--color-ink-*` 的名字、值或 utility 语义。
+
+新增 public export 同样是 additive minor。`./brutal.css` 不改变默认 entry，但 release 必须记录 import order、selector matrix、fallback 与 utility-local reduced-motion 边界。
 
 ### 9.2 视觉回归 token 清单（QA 用）
 
@@ -882,13 +917,13 @@ pnpm add @ayingott/theme
 | Tailwind v4 CSS-first `@theme static` | foundation/layers 全部用 `@theme static` | §1 + §2 都标 V0 token |
 | 独立仓 `LoTwT/design-system` | repo 已 bootstrap | §10.1 npm package 消费 |
 | Semantic vars CSS-only | semantic/light.css + dark.css 用 `:root` / `.dark` | §3 全部 |
-| Public exports minimal | `.` / `./index.css` / `./fonts.css` / `./fonts/*` (4 项)| §10.1 + §7.1 |
+| Public exports minimal | `.` / `./index.css` / `./brutal.css` / `./fonts.css` / `./fonts/*` (5 项)| §10.1 + §7.1 + §3.6 |
 | Surface 命名 | V0 用 `--color-surface-0` ~ `-5` (numbered) | §1.1 |
 | Semantic vars 命名 | V0 用 `--text-muted` / `--text-accent` / `--accent-primary` 等 | §3.2 + §3.3 |
 | Font: Space Grotesk Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
 | `THIRD_PARTY_NOTICES.md` 包内 | `packages/theme/THIRD_PARTY_NOTICES.md` | §7.1 |
 | 框架无关 (DS-D-04) | 仅 CSS variables，无 framework 绑定 | §10 |
-| `focus-ring` / `focus-ring-inset` / `touch-target` / `touch-target-inline` | utilities/ 实现 | §4.1 + §4.2 |
+| `focus-ring` / `focus-ring-inset` / `touch-target` / `touch-target-inline` + opt-in `pressable` | utilities/ 实现 | §4.1 + §4.2 + §4.3 |
 
 ---
 

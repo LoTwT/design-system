@@ -22,6 +22,7 @@ const required = [
   "README.md",
   "THIRD_PARTY_NOTICES.md",
   "src/index.css",
+  "src/brutal.css",
   "src/fonts.css",
   "src/fonts/space-grotesk-latin-wght-normal.woff2",
   "src/fonts/space-grotesk-latin-ext-wght-normal.woff2",
@@ -33,9 +34,11 @@ const required = [
   "src/foundation/typography.css",
   "src/semantic/light.css",
   "src/semantic/dark.css",
+  "src/semantic/brutal.css",
   "src/semantic/reading.css",
   "src/utilities/focus.css",
   "src/utilities/touch-target.css",
+  "src/utilities/pressable.css",
 ]
 
 const forbidden = [

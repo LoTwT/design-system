@@ -7,6 +7,6 @@ pageClass: theme-overview-page
 
 # Theme overview
 
-<p class="theme-page-lede">Paper is the light-default theme and Ink is its dark companion. Both are built entirely with semantic tokens and distributed as CSS.</p>
+<p class="theme-page-lede">Paper and Ink remain the default pair. Neo-Brutal Light and Dark are an opt-in family on the same semantic anatomy.</p>
 
 <ThemeOverview />
