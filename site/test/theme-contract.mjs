@@ -25,6 +25,8 @@ const requiredLegalPairIds = [
   "paper-primary-canvas",
   "paper-secondary-canvas",
   "paper-muted-canvas",
+  "paper-muted-panel",
+  "paper-muted-elevated",
   "paper-link-canvas",
   "paper-action-default",
   "paper-action-hover",
@@ -32,6 +34,8 @@ const requiredLegalPairIds = [
   "ink-primary-canvas",
   "ink-secondary-canvas",
   "ink-muted-canvas",
+  "ink-muted-panel",
+  "ink-muted-elevated",
   "ink-link-canvas",
   "ink-action-default",
   "ink-action-hover",
@@ -71,9 +75,17 @@ const requiredLegalPairIds = [
   "ink-danger-border",
   "ink-info-border",
 ]
+const requiredTargetPairIds = [
+  "paper-muted-canvas",
+  "paper-muted-panel",
+  "paper-muted-elevated",
+  "ink-muted-canvas",
+  "ink-muted-panel",
+  "ink-muted-elevated",
+]
 const requiredContrastExemptionIds = ["disabled-action"]
 const requiredStateMappingsSha256 = "235f87738e12826d74009aed396c34ec985b6fad0a2aaa31c3188f70e06d2f80"
-const requiredLegalPairsSha256 = "ff9b5bef71425b430680161a0cb62cbe119620bdbfd062babd3dd7a84ad59cf5"
+const requiredLegalPairsSha256 = "fd2e8b1c08694d2cdf07d5112185c936aab35bd8e64da2a55d9d6d2bf35f5c50"
 const requiredContrastExemptionsSha256 = "20d9abd4f87114673b955184bcee2534d0bd2d1f39f66b2feb3188315c2324a7"
 
 function expect(condition, message) {
@@ -193,12 +205,20 @@ function validateContractShape(value) {
   const ids = value.legalPairs.map(pair => pair.id)
   expect(new Set(ids).size === ids.length, "Duplicate legal pair id")
   expect(sameStringSet(ids, requiredLegalPairIds), "Legal pair id set drifted")
-  expect(sha256Json(value.legalPairs) === requiredLegalPairsSha256, "Legal pair values drifted")
   for (const pair of value.legalPairs) {
     expect(["paper", "ink"].includes(pair.mode), `Unsupported mode in ${pair.id}`)
     expect(["text", "focus", "non-text"].includes(pair.kind), `Unsupported pair kind in ${pair.id}`)
     expect(pair.minimum === (pair.kind === "text" ? 4.5 : 3), `Invalid minimum in ${pair.id}`)
+    if (requiredTargetPairIds.includes(pair.id)) {
+      expect(typeof pair.target === "number", `Missing target in ${pair.id}`)
+      expect(pair.target >= pair.minimum, `Target below minimum in ${pair.id}`)
+      expect(pair.target === 5, `Target in ${pair.id} must be 5`)
+    }
+    else {
+      expect(pair.target === undefined, `Unexpected target in ${pair.id}`)
+    }
   }
+  expect(sha256Json(value.legalPairs) === requiredLegalPairsSha256, "Legal pair values drifted")
   expect(Array.isArray(value.contrastExemptions), "Contrast exemptions must be an array")
   const exemptionIds = value.contrastExemptions.map(exemption => exemption.id)
   expect(new Set(exemptionIds).size === exemptionIds.length, "Duplicate contrast exemption id")
@@ -254,6 +274,8 @@ function verifyPair(pair, maps) {
   const background = resolveVariable(pair.background, maps)
   const ratio = contrastRatio(foreground, background)
   expect(ratio >= pair.minimum, `${pair.id} contrast ${foreground} on ${background} = ${ratio.toFixed(2)}:1 below ${pair.minimum}:1`)
+  if (pair.target !== undefined)
+    expect(ratio >= pair.target, `${pair.id} contrast ${foreground} on ${background} = ${ratio.toFixed(2)}:1 below target ${pair.target}:1`)
   return ratio
 }
 
@@ -303,6 +325,34 @@ expectFailure(
   }),
   "Legal pair values drifted",
 )
+const paperMutedCanvas = contract.legalPairs.find(pair => pair.id === "paper-muted-canvas")
+expect(paperMutedCanvas !== undefined, "Missing paper-muted-canvas fixture")
+const paperMutedCanvasWithoutTarget = { ...paperMutedCanvas }
+delete paperMutedCanvasWithoutTarget.target
+expectFailure(
+  "missing required target",
+  () => validateContractShape({
+    ...contract,
+    legalPairs: contract.legalPairs.map(pair => pair.id === paperMutedCanvas.id ? paperMutedCanvasWithoutTarget : pair),
+  }),
+  "Missing target in paper-muted-canvas",
+)
+expectFailure(
+  "target below minimum",
+  () => validateContractShape({
+    ...contract,
+    legalPairs: contract.legalPairs.map(pair => pair.id === paperMutedCanvas.id ? { ...pair, target: 4 } : pair),
+  }),
+  "Target below minimum in paper-muted-canvas",
+)
+expectFailure(
+  "wrong required target",
+  () => validateContractShape({
+    ...contract,
+    legalPairs: contract.legalPairs.map(pair => pair.id === paperMutedCanvas.id ? { ...pair, target: 5.1 } : pair),
+  }),
+  "Target in paper-muted-canvas must be 5",
+)
 expectFailure(
   "deleted required contrast exemption",
   () => validateContractShape({ ...contract, contrastExemptions: [] }),
@@ -327,6 +377,11 @@ expectFailure(
   "contrast threshold",
   () => verifyPair({ id: "bad-pair", foreground: "foreground", background: "background", minimum: 4.5 }, [{ foreground: "#777777", background: "#ffffff" }]),
   "bad-pair contrast",
+)
+expectFailure(
+  "contrast release target",
+  () => verifyPair({ id: "under-target-pair", foreground: "foreground", background: "background", minimum: 4.5, target: 5 }, [{ foreground: "#737373", background: "#ffffff" }]),
+  "under-target-pair contrast #737373 on #ffffff = 4.74:1 below target 5:1",
 )
 expectFailure(
   "missing mapped selector",

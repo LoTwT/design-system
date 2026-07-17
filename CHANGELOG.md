@@ -9,6 +9,7 @@
 
 - Refine the default Paper foundation ramp and semantic action states while preserving `:root`, `.dark`, public token names, package exports, and opt-in fonts.
 - Flatten semantic card and panel depth in Ink and add a responsive paired-theme showcase.
+- Increase Paper active muted-text headroom with a semantic direct literal and enforce a separate `5:1` release target across canvas, panel, and elevated surfaces in both modes.
 
 ## 0.1.0 - 2026-05-20
 

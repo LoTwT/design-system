@@ -18,16 +18,20 @@ Paper & Ink is a paired semantic theme for `@ayingott/theme`. Paper is the defau
 The exact executable mapping is [`paper-ink-theme-contract.json`](./paper-ink-theme-contract.json). It defines:
 
 - foundation and mode declarations;
-- legal text, focus, status, and non-text contrast pairs;
+- legal text, focus, status, and non-text contrast pairs, including separate conformance floors and release targets where required;
 - explicit contrast exemptions with their applicable state, modes, reason, and standards references;
 - showcase state selectors and their required semantic declarations; and
 - the source files checked by `pnpm site:check`.
 
-The verifier fails closed on an unknown mode, duplicate legal pair or exemption, missing or modified required exemption, unsupported color syntax, missing state selector, declaration drift, or contrast below the declared threshold.
+The verifier fails closed on an unknown mode, duplicate legal pair or exemption, missing or modified required exemption, missing or invalid required release target, unsupported color syntax, missing state selector, declaration drift, or contrast below the declared minimum or target.
 
 ## State model
 
 Primary actions use separate foreground roles for default, hover, and active states. Neutral surfaces use `--focus-ring-*`; accent surfaces use `--focus-ring-on-accent-*`. Disabled controls use native disabled semantics plus text, surface, and border roles without relying on opacity alone. Their text and non-text contrast is explicitly recorded as an inactive-component exemption under WCAG 2.2 Success Criteria 1.4.3 and 1.4.11 rather than silently omitted from the legal-pair set.
+
+Active normal-size `--text-muted` retains the WCAG 2.2 minimum of `4.5:1` and adds an internal release target of `5:1`, evaluated without rounding. The executable contract applies both thresholds to the current real active backgrounds: canvas, panel, and elevated in Paper and Ink. Paper uses the semantic direct literal `#6b6252`, producing `5.621166:1`, `5.869062:1`, and `6.010179:1`; Ink remains `#aa9e8b`, producing `7.157697:1`, `6.754477:1`, and `6.229389:1`.
+
+`surface-subtle` is not a declared active muted pair until a real component needs it. `text-muted` on `surface-muted` remains limited to the native disabled state and its inactive-component exemption. The reading layer keeps its separate `--reading-fg-muted` mapping and is not governed by this role-specific target.
 
 Status treatments use a five-part contract for each status: legacy accent, foreground, background, border, and a non-color text label in the consuming interface.
 
@@ -42,6 +46,8 @@ Ink mode values follow these dependency rules:
 3. Equal values do not create a dependency. A semantic role may reference a decorative or foundation token only when both are intentionally versioned together and a change to either should update the other.
 4. Public foundation names describe a stable physical family or scale and do not include the Paper or Ink mode name. The existing decorative `--color-ink-50` through `--color-ink-950` names and values remain unchanged.
 5. A mode-agnostic foundation RFC is reconsidered only when a second mode or a real consumer needs the same raw physical colors or utilities and can define how those values should change together.
+
+The Paper `--text-muted` literal does not change or alias public `--color-neutral-600`; the foundation ramp and generated utilities remain stable.
 
 ## Reading model
 

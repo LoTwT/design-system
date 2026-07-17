@@ -45,6 +45,20 @@ both modes. The built preview was checked separately in a fresh tab.
   behavior remains consumer-owned; the VitePress consumer retains its exact
   appearance/action override.
 
+## Active muted-text headroom
+
+- Normal-size active `--text-muted` keeps the WCAG `4.5:1` conformance floor
+  and adds a separate unrounded `5:1` release target.
+- Paper `#6b6252` passes canvas, panel, and elevated at `5.621166:1`,
+  `5.869062:1`, and `6.010179:1`. Ink is unchanged and passes the same
+  surfaces at `7.157697:1`, `6.754477:1`, and `6.229389:1`.
+- Paper/Ink desktop and mobile before/after captures cover muted page metadata,
+  placeholders, and the disabled control. Paper retains a clear hierarchy
+  below secondary text; Ink is pixel-identical before/after.
+- `surface-subtle` is not declared as an active muted pair. The native disabled
+  muted-on-muted state remains an inactive-component exemption, and reading
+  tokens remain unchanged.
+
 ## Iteration history
 
 | Iteration | Finding | Resolution |
@@ -54,6 +68,7 @@ both modes. The built preview was checked separately in a fresh tab.
 | 2 | P1: Interaction and Token source did not fully enter the 1440 reference frame | Compacted the action/status matrix and aligned the source-size vertical rhythm |
 | 3 | P1: the 320 px header overflowed to 369 px | Hid only the long brand label below 350 px while retaining the `Lo` mark; Paper and Ink now report `scrollWidth === 320` |
 | 4 | Quality P1: package reduced-motion scope contradicted the public spec; mapping/pair verification trusted self-reported data. Experience P2: saved/status icons were missing and the mobile `On this page` button was only 24 px high | Removed the package override, pinned the exact required ID sets and payload digests with deletion/wrong-value negatives, restored five Lucide icons, and made the actual mobile button 44 px. Fresh Chrome checks passed at 390/320 in both modes with visible focus, zero overflow, and zero console warnings/errors |
+| 5 | Paper active muted text met WCAG AA but missed the internal `5:1` headroom target on canvas; panel/elevated use was not declared | Moved only Paper `--text-muted` to semantic literal `#6b6252`, declared Paper/Ink muted pairs on canvas/panel/elevated, and added fail-closed minimum/target checks while preserving foundation, Ink, reading, and disabled contracts |
 
 No P0, P1, or P2 finding remains after the final comparison pass. Intentional
 differences are limited to the repository's current documentation navigation,
@@ -74,6 +89,10 @@ The final evidence directory contains:
 - `paper-320x844.png`, `ink-320x844.png`
 - `paper-320-full.png`, `ink-320-full.png`
 - `built-preview-ink-1512x771.png`
+- `before-paper-1280x800.png`, `after-paper-1280x800.png`
+- `before-ink-1280x800.png`, `after-ink-1280x800.png`
+- `before-paper-390x844.png`, `after-paper-390x844.png`
+- `before-ink-390x844.png`, `after-ink-390x844.png`
 
 ## Engineering gates
 
@@ -85,7 +104,7 @@ The final evidence directory contains:
 - Fail-closed text, focus, action, status, disabled, state, forced-colors,
   increased-contrast, and reduced-motion coverage
 - Actual package tarball SHA-256:
-  `44b6f4577c21d996f83dc748f3e99e1334692bb9c4382ae6a696fd017112ace8`
+  `cd3621fdfc853fb76579c714e05e36108b67120f9a1f024db36faea45b63d2ac`
 - The same tarball built successfully in temporary copies of exact-main MIRU
   `90474f265e3038d87db1b7fe08a16370abbafa42` and ayingott.me
   `e423626af77df2a291f7c572f31a7d453c20942e`; neither consumer repository was
