@@ -19,6 +19,7 @@
   "exports": {
     ".": "./src/index.css",
     "./index.css": "./src/index.css",
+    "./brutal.css": "./src/brutal.css",
     "./fonts.css": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*"
   },

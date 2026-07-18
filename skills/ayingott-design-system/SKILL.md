@@ -1,6 +1,6 @@
 ---
 name: ayingott-design-system
-description: Use this skill whenever you are building, mocking, or prototyping any UI surface — pages, components, slides, marketing one-pagers, blog layouts, settings screens, dashboards — that consumes `@ayingott/theme` or follows the Ayingott design language (calm, geometric, warm-cream-and-lavender). Trigger this skill any time the user mentions @ayingott/theme, ayingott design, ayingott.me, the lavender accent, or asks for an interface that should match the Ayingott brand voice — even when they do not explicitly ask for "the design system". The skill captures the V0 token contract, dark mode behavior, font opt-in, and voice rules so the output stays consistent across consumers.
+description: Use this skill whenever you are building, mocking, or prototyping any UI surface — pages, components, slides, marketing one-pagers, blog layouts, settings screens, dashboards — that consumes `@ayingott/theme` or follows the Ayingott design language. Trigger this skill any time the user mentions @ayingott/theme, ayingott design, ayingott.me, the default Paper/Ink family, the opt-in Neo-Brutalism family, or asks for an interface that should match the Ayingott brand voice. The skill captures the theme-only contract, scheme and family selectors, font opt-in, and voice rules so output stays consistent across consumers.
 ---
 
 # Ayingott Design System
@@ -32,12 +32,13 @@ Public CSS exports:
 | Path | What it is |
 | --- | --- |
 | `@ayingott/theme` (or `@ayingott/theme/index.css`) | All foundation tokens, layer tokens, semantic vars (`:root` + `.dark`), focus and touch-target utilities, and base styles. Does **not** auto-import fonts. |
+| `@ayingott/theme/brutal.css` | Opt-in Neo-Brutal Light/Dark semantic mappings, zero-blur hard shadows, structure roles, and the scoped `pressable` utility. Import after the default entry. |
 | `@ayingott/theme/fonts.css` | `@font-face` declarations for Space Grotesk (variable, latin + latin-ext), Space Mono (400/700), and Newsreader (variable opsz/wght, latin + latin-ext). Opt-in. |
 | `@ayingott/theme/fonts/<file>.woff2` | The woff2 files referenced by `fonts.css`. |
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
 
-Package contract details live in `packages/theme/README.md` and `AGENTS.md`. Read those if a task requires touching the package itself.
+Package contract details live in `packages/theme/README.md` and `CLAUDE.md`. Read those if a task requires touching the package itself.
 
 ## Token layers
 
@@ -53,7 +54,7 @@ Defined in `packages/theme/src/layers/`. Names like `--z-header`, `--breakpoint-
 
 ### Semantic CSS variables (the primary API)
 
-Defined in `packages/theme/src/semantic/`. These are the variables you should reach for in 90% of consumer code, because they flip automatically under `.dark`.
+Defined in `packages/theme/src/semantic/`. These are the variables you should reach for in 90% of consumer code. `.dark` changes the scheme; the optional `.brutal` class changes the family.
 
 | Variable | Use for |
 | --- | --- |
@@ -104,7 +105,7 @@ Always reach for semantic vars first. Drop down to foundation tokens only when t
 .card {
   background: var(--surface-elevated);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
 }
@@ -140,6 +141,43 @@ document.documentElement.classList.toggle("dark");
 If the consumer wants to honor system preference, write that wiring on the consumer side. Do not modify the package.
 
 When you write component styles, you almost never need a `.dark` block of your own. Semantic vars flip automatically. Only write a `.dark` override when a specific property cannot use a semantic var (rare).
+
+## Neo-Brutalism family (opt-in)
+
+Import the family after the default theme:
+
+```css
+@import "tailwindcss";
+@import "@ayingott/theme";
+@import "@ayingott/theme/brutal.css";
+```
+
+The selector matrix is orthogonal:
+
+| Family | Scheme | Effective theme |
+| --- | --- | --- |
+| default | light | Paper |
+| default | `.dark` | Ink |
+| `.brutal` | light | Neo Light |
+| `.brutal` | `.dark` | Neo Dark |
+
+The family keeps the semantic API and component anatomy. It maps card/control radius to zero, card/panel depth to zero-blur hard shadows, and exposes `--border-width-surface` / `--border-width-control`. Use fallbacks when the same consumer CSS must work without the family:
+
+```css
+.card {
+  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-default);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+```
+
+Use `pressable` only with the opt-in entry and compose accessibility utilities:
+
+```html
+<button class="pressable focus-ring touch-target">Action</button>
+```
+
+`pressable` excludes disabled movement and owns a local reduced-motion and forced-colors fallback. Consumers still own family persistence and initial class placement. Removing `.brutal` is the clean fallback to Paper or Ink.
 
 ## Fonts (opt-in)
 
@@ -178,12 +216,12 @@ If output reads like product marketing copy, rewrite it.
 When producing visual artifacts (mockups, slides, prototype HTML), follow these defaults. They mirror what the V0 deployment at https://design.ayingott.me demonstrates.
 
 - **Page background is warm cream**, not grey, not pure white. Use `var(--surface-canvas)`.
-- **Cards** sit on `var(--surface-elevated)` with `border: 1px solid var(--border-subtle)` and `border-radius: var(--radius-card)` (`0.5rem`). Default shadow is `var(--shadow-card)`.
+- **Cards** sit on `var(--surface-elevated)` with `border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle)`, `border-radius: var(--radius-card)`, and `box-shadow: var(--shadow-card)`. Paper/Ink resolve to the existing soft anatomy; Neo resolves to a 3px border, zero radius, and hard depth.
 - **Primary buttons** use `background: var(--accent-primary)` + `color: var(--text-inverse)`, `border-radius: var(--radius-control)` (`0.375rem`), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`.
-- **Hover** lifts: `transform: translateY(-1px); box-shadow: var(--shadow-md);`
-- **Press** settles: `transform: translateY(0); box-shadow: var(--shadow-sm);`
+- **Paper/Ink hover** may lift by `translateY(-1px)` with `var(--shadow-md)` when the consumer owns that interaction.
+- **Neo press feedback** uses the shipped `pressable` utility; do not reproduce its movement locally.
 - **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Never strip the outline.
-- **Borders** are alpha derivatives, never solid grey. Default thickness is 1px (`thin`).
+- **Paper/Ink borders** are alpha derivatives at the default 1px (`thin`) thickness. **Neo borders** use the opt-in structure width roles and semantic ink color.
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
 - **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
 - **Display headlines** (Space Grotesk) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.
@@ -199,7 +237,7 @@ V0 deliberately excludes the following. If the user asks for something here, sur
 - **Logo / wordmark / brand mark.** Not part of the design system. ayingott personal branding lives in the ayingott.me project, not in `@ayingott/theme`.
 - **Framework adapter.** No `@ayingott/theme/vue`, `/react`, `/svelte`. Consumers wire the CSS imports themselves.
 - **Imagery, illustrations, gradients, patterns.** The visual rhythm is type + space + sparse geometry only.
-- **`prefers-reduced-motion` injection at the base layer.** The theme exposes motion tokens; the consumer applies reduced-motion media queries as appropriate.
+- **Global `prefers-reduced-motion` injection at the base layer.** The default entry exposes motion tokens; the consumer handles its own animations. The scoped Neo `pressable` fallback is the only package-owned exception.
 - **Component-level type-role tokens.** The theme ships family, scale, leading, and reading tokens. It does not ship `--type-h1`, `--type-meta`, or component-specific typography bundles.
 
 When you find yourself wanting to add one of these inside `@ayingott/theme`, stop and check with the user. The right move is almost always "implement it in the consumer project, not in the theme".
@@ -215,6 +253,7 @@ The order matters: import Tailwind first, then `fonts.css` if fonts are wanted, 
 @import "tailwindcss";
 @import "@ayingott/theme/fonts.css";
 @import "@ayingott/theme";
+/* Optional family: @import "@ayingott/theme/brutal.css"; */
 
 body { padding: var(--layout-page-gutter); }
 
@@ -261,10 +300,12 @@ These live in the design-system repository. Read them when the skill is not enou
 - `docs/spec/design-system-v1.0.md` — the V0 contract, including the §8 contrast table and §13 alignment notes.
 - `docs/rfc/0001-theme-v0.md` — the implementation RFC.
 - `docs/rfc/0002-reading-token-layer-v0.1.md` — the reading token layer RFC.
+- `docs/spec/rfc-brutal-theme.md` — the accepted Neo-Brutalism family RFC.
+- `docs/spec/brutal-theme-contract.json` — the executable family declarations, invariants, and legal pairs.
 - `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.
 - `packages/theme/THIRD_PARTY_NOTICES.md` — font licensing.
-- `AGENTS.md` and `CLAUDE.md` — repository-level agent guidance.
+- `CLAUDE.md` — repository-level agent guidance.
 - Live showcase: https://design.ayingott.me
 
 When the spec and this skill ever disagree, the spec wins. File a change to this skill.

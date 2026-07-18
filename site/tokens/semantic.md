@@ -24,6 +24,12 @@ The same semantic names are overridden under `.dark`. Ink also flattens semantic
   <ColorSwatchGrid title="Dark accent" prefix="accent-" source="semantic-dark" />
 </div>
 
+## Neo-Brutal Light and Dark
+
+Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue.
+
+The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and adds the opt-in `--border-width-surface` / `--border-width-control` roles. It does not alter the default Paper/Ink entry.
+
 ## Interaction and status roles
 
 | Intent | Variables |

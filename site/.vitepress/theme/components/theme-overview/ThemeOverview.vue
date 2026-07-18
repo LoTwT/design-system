@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemeFamilyMatrix from "./ThemeFamilyMatrix.vue"
 import ThemeInteractionStates from "./ThemeInteractionStates.vue"
 import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
 </script>
@@ -15,7 +16,8 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
       </div>
     </section>
 
-    <ThemeReadingSpecimen />
+    <ThemeFamilyMatrix />
+    <ThemeReadingSpecimen class="theme-section--reading" />
     <ThemeInteractionStates />
 
     <section class="theme-section theme-section--source" data-index="§ 4.0" aria-labelledby="token-source">
@@ -24,7 +26,8 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
       </div>
       <div class="theme-token-source">
         <code>@import "@ayingott/theme";</code>
-        <span><code>:root</code> = Paper (default) · <code>.dark</code> = Ink</span>
+        <code>@import "@ayingott/theme/brutal.css";</code>
+        <span><code>.dark</code> controls scheme · <code>.brutal</code> opts into the family</span>
       </div>
     </section>
 
