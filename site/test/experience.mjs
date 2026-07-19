@@ -277,8 +277,76 @@ expect(iconLinks.some(link =>
   && link.href === "/lo-white.svg"
   && link.media === "(prefers-color-scheme: dark)"), "Missing exact dark favicon link")
 
+const themeFamilyScripts = head.elements.filter((entry) => {
+  if (!ts.isArrayLiteralExpression(entry) || entry.elements.length !== 3)
+    return false
+  return ts.isStringLiteral(entry.elements[0])
+    && entry.elements[0].text === "script"
+    && ts.isObjectLiteralExpression(entry.elements[1])
+    && ts.isIdentifier(entry.elements[2])
+    && entry.elements[2].text === "THEME_FAMILY_INIT_SCRIPT"
+})
+expect(themeFamilyScripts.length === 1, "Expected exactly one early Theme Family initialization script")
+
+expectSourceIncludes("site/.vitepress/config.ts", [
+  'import { THEME_FAMILY_INIT_SCRIPT } from "./theme/theme-family"',
+  '["script", {}, THEME_FAMILY_INIT_SCRIPT]',
+])
+expectSourceIncludes("site/.vitepress/theme/index.ts", [
+  'import Layout from "./Layout.vue"',
+  "Layout,",
+])
+expectSourceIncludes("site/.vitepress/theme/Layout.vue", [
+  '<ThemeFamilyControl placement="header" />',
+  '<ThemeFamilyControl placement="screen" />',
+  '#nav-bar-content-after',
+  '#nav-screen-content-after',
+])
+const themeFamilyInitSource = expectSourceIncludes("site/.vitepress/theme/theme-family.ts", [
+  'export const THEME_FAMILY_ROOT_CLASS = "brutal"',
+  'export const THEME_FAMILY_STORAGE_KEY = "ayingott:theme-family"',
+  "localStorage.getItem",
+  "root.classList.toggle",
+  "root.dataset.themeFamily = family",
+])
+expect(!themeFamilyInitSource.includes('classList.toggle("dark"'), "Theme Family initialization must not control the scheme class")
+
+const themeFamilyComposableSource = expectSourceIncludes("site/.vitepress/theme/composables/useThemeFamily.ts", [
+  "root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)",
+  "localStorage.setItem(THEME_FAMILY_STORAGE_KEY, family)",
+  "document.documentElement.classList.contains(THEME_FAMILY_ROOT_CLASS)",
+  '"Neo" : "Default"',
+  'isDark.value ? "Dark" : "Light"',
+])
+expect(!themeFamilyComposableSource.includes('classList.toggle("dark"'), "Theme Family composable must not control the scheme class")
+
+expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
+  'role="switch"',
+  'aria-label="Neo theme family"',
+  ':aria-checked="isNeo"',
+  'aria-live="polite"',
+  'isReady ? effectiveState : "Default · Light"',
+  "min-width: var(--touch-target-min)",
+  "touch-action: manipulation",
+  ".theme-family-switch:focus-visible",
+  "@media (prefers-reduced-motion: reduce)",
+])
+
 const cssFile = "site/.vitepress/theme/style.css"
-const css = postcss.parse(readSource(cssFile), { from: cssFile })
+const cssSource = readSource(cssFile)
+expect(
+  (cssSource.match(/@import "@ayingott\/theme\/brutal\.css";/g) ?? []).length === 1,
+  "Site theme must import the existing Neo opt-in entry exactly once",
+)
+for (const fragment of [
+  ".VPNavScreen > .container",
+  ".VPNavScreen .appearance",
+  ".VPNavScreen .theme-family-control--screen",
+  ".VPNavScreen .social-links",
+]) {
+  expect(cssSource.includes(fragment), `Mobile Theme Family order must include: ${fragment}`)
+}
+const css = postcss.parse(cssSource, { from: cssFile })
 
 expectFailure(
   "missing touch target minimum",
