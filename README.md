@@ -28,11 +28,21 @@ Opt in to self-hosted font files when the consumer wants the bundled Space Grote
 ## Development
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm check
 ```
 
 `pnpm check` runs the source smoke, package dry-run, real-tarball consumer install/compile, and site contrast gates.
+
+### Network-restricted pnpm 10 environments
+
+Use the normal install command above whenever the registry is reachable. If pnpm 10 cannot download the repository-pinned `pnpm@10.33.0` in a network-restricted environment, run this one-time fallback:
+
+```bash
+pnpm --config.manage-package-manager-versions=false install --frozen-lockfile
+```
+
+The override makes the installed pnpm 10 version continue instead of selecting the exact pinned version. It loosens the repository's package-manager pin for that invocation only, so return to the normal command when network access is available. Keep the override on the command line; do not add it to `.npmrc` or user configuration. See pnpm's [`managePackageManagerVersions` setting](https://pnpm.io/10.x/settings#managepackagemanagerversions) for its pnpm 10 behavior.
 
 ## Release
 
