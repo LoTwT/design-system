@@ -53,7 +53,7 @@ Import the family entry after the default theme:
 @import "@ayingott/theme/brutal.css";
 ```
 
-Apply `.brutal` to the root. Keep using `.dark` for the scheme:
+Apply `.brutal` to the theme root. Keep using `.dark` for the scheme, and place both classes on that same root:
 
 ```html
 <html class="brutal dark">
@@ -62,6 +62,10 @@ Apply `.brutal` to the root. Keep using `.dark` for the scheme:
 ```
 
 The entry remaps the complete semantic and reading role set, maps card/control radius to zero, exposes `--border-width-surface` and `--border-width-control`, and adds zero-blur hard shadows. Removing `.brutal` falls back to Paper or Ink without changing the `.dark` mechanism.
+
+V0 supports the four co-located root states: no classes for Paper, `.dark` for Ink, `.brutal` for Neo Light, and `.brutal.dark` for Neo Dark. Arbitrary mixed nested theme islands are unsupported because splitting the family and scheme axes across nested scopes can produce hybrid mappings.
+
+Keep consumer styles on semantic roles and the two opt-in structure roles. Importing `brutal.css` makes `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens available at `:root`; the `--border-width-surface` and `--border-width-control` roles exist only inside `.brutal`. Use `var(--border-width-control, var(--border-width-thin))` when a declaration must work across families. The family-local `--brutal-*` palette variables are contract-owned implementation details, not a consumer direct-use API.
 
 Use the scoped interaction utility with the existing accessibility utilities:
 

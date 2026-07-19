@@ -21,6 +21,8 @@
 - Opt-in Neo-Brutal Light/Dark semantic mappings, hard shadows, structure roles, and the scoped pressable utility through `brutal.css`.
 - Optional self-hosted font assets for Space Grotesk, Space Mono, and Newsreader.
 
+The semantic roles and the opt-in `--border-width-surface` / `--border-width-control` structure roles are consumer-facing. The family-local `--brutal-*` palette variables are contract-owned implementation details and are not a consumer direct-use API.
+
 ## Out of Scope
 
 - Component primitives.

@@ -30,6 +30,10 @@ Neo-Brutalism uses the same semantic and reading names through the opt-in `bruta
 
 The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and adds the opt-in `--border-width-surface` / `--border-width-control` roles. It does not alter the default Paper/Ink entry.
 
+Use `--text-muted` for active muted UI copy such as helper text and metadata. A physical color utility such as `text-neutral-600` can still serve decorative or explicitly fixed-color work, but it is not the default for semantic copy.
+
+Names such as `--surface-subtle`, `--surface-muted`, and `--accent-soft` express family-relative intent. They do not promise the same alpha, literal color, or visual weight across Paper, Ink, Neo Light, and Neo Dark.
+
 ## Interaction and status roles
 
 | Intent | Variables |
