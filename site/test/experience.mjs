@@ -334,13 +334,9 @@ function readScopedStyle(source, file) {
   return matches[0][1]
 }
 
-function declarationsForSelector(css, selector, property) {
+function declarationsForProperty(css, property) {
   const declarations = []
-  css.walkDecls(property, (declaration) => {
-    const rule = declaration.parent
-    if (rule?.type === "rule" && rule.selectors.some(candidate => candidate.trim() === selector))
-      declarations.push(declaration)
-  })
+  css.walkDecls(property, declaration => declarations.push(declaration))
   return declarations
 }
 
@@ -353,6 +349,10 @@ function mediaAncestors(node) {
     current = current.parent
   }
   return media
+}
+
+function normalizedCssValue(value) {
+  return value.trim().replace(/\s+/g, " ")
 }
 
 function verifyThemeFamilyReducedMotion(source, file) {
@@ -370,8 +370,28 @@ function verifyThemeFamilyReducedMotion(source, file) {
   ))
   expectDeclaration(thumb, "transition-duration", "0s")
 
-  const durations = declarationsForSelector(css, ".theme-family-switch__thumb", "transition-duration")
+  const transitions = declarationsForProperty(css, "transition")
+  expect(transitions.length === 1, `Expected exactly one family transition declaration in ${file}`)
+  expect(
+    transitions[0].parent?.type === "rule"
+    && sameSet(selectorSet(transitions[0].parent), new Set([".theme-family-switch__thumb"])),
+    `Family transition must only target the canonical thumb selector in ${file}`,
+  )
+  expect(
+    normalizedCssValue(transitions[0].value)
+    === "background-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard)",
+    `Unexpected family transition value in ${file}: ${normalizedCssValue(transitions[0].value)}`,
+  )
+  expect(!transitions[0].important, "Expected family transition important=false")
+  expect(mediaAncestors(transitions[0]).length === 0, `Family transition must be outside media queries in ${file}`)
+
+  const durations = declarationsForProperty(css, "transition-duration")
   expect(durations.length === 1, `Expected exactly one family transition-duration declaration in ${file}`)
+  expect(
+    durations[0].parent?.type === "rule"
+    && sameSet(selectorSet(durations[0].parent), new Set([".theme-family-switch__thumb"])),
+    `Family transition-duration must only target the canonical thumb selector in ${file}`,
+  )
   expect(durations[0].value.trim() === "0s", `Expected family transition-duration: 0s; received ${durations[0].value.trim()}`)
   expect(!durations[0].important, "Expected family transition-duration important=false")
   expect(
@@ -406,11 +426,20 @@ function verifyMobileThemeFamilyOrder(source, file) {
   expectDeclaration(container, "display", "flex")
   expectDeclaration(container, "flex-direction", "column")
 
+  const allOrderDeclarations = declarationsForProperty(css, "order")
+  expect(
+    allOrderDeclarations.length === mobileNavOrder.length,
+    `Expected exactly ${mobileNavOrder.length} canonical mobile order declarations in ${file}`,
+  )
+
   for (const [selector, order] of mobileNavOrder) {
     const declarations = readDeclarations(findRule(mobile[0], [selector], `mobile order ${selector}`))
     expectDeclaration(declarations, "order", order)
 
-    const orderDeclarations = declarationsForSelector(css, selector, "order")
+    const orderDeclarations = allOrderDeclarations.filter(declaration =>
+      declaration.parent?.type === "rule"
+      && sameSet(selectorSet(declaration.parent), new Set([selector])),
+    )
     expect(orderDeclarations.length === 1, `Expected exactly one order declaration for ${selector} in ${file}`)
     expect(orderDeclarations[0].value.trim() === order, `Expected ${selector} order: ${order}; received ${orderDeclarations[0].value.trim()}`)
     expect(!orderDeclarations[0].important, `Expected ${selector} order important=false`)
@@ -661,9 +690,16 @@ const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/com
   ".theme-family-switch:focus-visible",
   "@media (prefers-reduced-motion: reduce)",
 ])
+const familyTransitionFixture = `
+  .theme-family-switch__thumb {
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+`
 expectFailure(
   "wrong family reduced-motion duration",
-  () => verifyThemeFamilyReducedMotion(`
+  () => verifyThemeFamilyReducedMotion(`${familyTransitionFixture}
     @media (prefers-reduced-motion: reduce) {
       .theme-family-switch__thumb {
         transition-duration: 1s;
@@ -674,7 +710,7 @@ expectFailure(
 )
 expectFailure(
   "late family reduced-motion override",
-  () => verifyThemeFamilyReducedMotion(`
+  () => verifyThemeFamilyReducedMotion(`${familyTransitionFixture}
     @media (prefers-reduced-motion: reduce) {
       .theme-family-switch__thumb {
         transition-duration: 0s;
@@ -684,6 +720,20 @@ expectFailure(
       transition-duration: 1s !important;
     }
   `, "<late-family-reduced-motion-override-fixture>"),
+  "Expected exactly one family transition-duration declaration",
+)
+expectFailure(
+  "higher-specificity family reduced-motion override",
+  () => verifyThemeFamilyReducedMotion(`${familyTransitionFixture}
+    @media (prefers-reduced-motion: reduce) {
+      .theme-family-switch__thumb {
+        transition-duration: 0s;
+      }
+      .theme-family-control .theme-family-switch__thumb {
+        transition-duration: 1s !important;
+      }
+    }
+  `, "<higher-specificity-family-reduced-motion-override-fixture>"),
   "Expected exactly one family transition-duration declaration",
 )
 verifyThemeFamilyReducedMotion(
@@ -726,7 +776,22 @@ expectFailure(
       .VPNavScreen .theme-family-control--screen { order: 2 !important; }
     }
   `, "<equivalent-mobile-family-order-override-fixture>"),
-  "Expected exactly one order declaration for .VPNavScreen .theme-family-control--screen",
+  "Expected exactly 5 canonical mobile order declarations",
+)
+expectFailure(
+  "higher-specificity mobile Theme Family order override",
+  () => verifyMobileThemeFamilyOrder(`
+    @media (max-width: 767px) {
+      .VPNavScreen > .container { display: flex; flex-direction: column; }
+      .VPNavScreen .menu { order: 1; }
+      .VPNavScreen .translations { order: 2; }
+      .VPNavScreen .appearance { order: 3; }
+      .VPNavScreen .theme-family-control--screen { order: 4; }
+      .VPNavScreen .social-links { order: 5; }
+      .VPNavScreen > .container .theme-family-control--screen { order: 2 !important; }
+    }
+  `, "<higher-specificity-mobile-family-order-override-fixture>"),
+  "Expected exactly 5 canonical mobile order declarations",
 )
 verifyMobileThemeFamilyOrder(cssSource, cssFile)
 const css = postcss.parse(cssSource, { from: cssFile })
