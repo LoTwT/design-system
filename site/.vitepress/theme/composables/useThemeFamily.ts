@@ -9,6 +9,7 @@ import {
   type ThemeFamily,
 } from "../theme-family"
 
+// Header and mobile controls intentionally share one family state across both placements.
 const selectedFamily = shallowRef<ThemeFamily>(DEFAULT_THEME_FAMILY)
 let hasInitialized = false
 
