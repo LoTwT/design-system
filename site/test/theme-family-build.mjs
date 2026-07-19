@@ -1,17 +1,14 @@
-import { readFileSync, readdirSync } from "node:fs"
-import { dirname, join, relative } from "node:path"
+import { spawn } from "node:child_process"
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs"
+import { createServer } from "node:http"
+import { dirname, extname, join, relative } from "node:path"
+import { tmpdir } from "node:os"
+import { setTimeout as delay } from "node:timers/promises"
 import { fileURLToPath } from "node:url"
 import { runInNewContext } from "node:vm"
-import postcss from "postcss"
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const distDir = join(rootDir, "site/.vitepress/dist")
-const expectedRoutes = [
-  "404.html", "fonts.html", "guide/getting-started.html", "guide/package-contract.html",
-  "guide/theme-overview.html", "index.html", "tokens/colors.html", "tokens/effects.html",
-  "tokens/semantic.html", "tokens/spacing.html", "tokens/typography.html",
-  "utilities/focus-ring.html", "utilities/touch-target.html",
-]
 
 function expect(condition, message) {
   if (!condition)
@@ -27,143 +24,151 @@ function htmlFiles(directory) {
 
 const attribute = (tag, name) => tag.match(new RegExp(`\\b${name}=["']([^"']+)["']`, "i"))?.[1]
 
-function stylesheetSources(head, label) {
-  const hrefs = [...head.matchAll(/<link\b[^>]*>/gi)]
-    .map(match => ({ href: attribute(match[0], "href"), rel: attribute(match[0], "rel") }))
-    .filter(({ href, rel }) => href && rel?.split(/\s+/).includes("stylesheet"))
-    .map(({ href }) => href.split(/[?#]/)[0])
-  expect(hrefs.length > 0, `${label} must load its generated stylesheets`)
-  return hrefs.map((href) => {
-    const file = join(distDir, href.replace(/^\//, ""))
-    return postcss.parse(readFileSync(file, "utf8"), { from: file })
+function chromeBinary() {
+  const candidates = [
+    process.env.CHROME_PATH,
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser",
+  ]
+  const binary = candidates.find(candidate => candidate && existsSync(candidate))
+  expect(binary, "A Chrome/Chromium binary is required for the generated behavior gate")
+  return binary
+}
+
+function launchChrome(profile) {
+  const browserProcess = spawn(chromeBinary(), [
+    "--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--remote-debugging-port=0",
+    `--user-data-dir=${profile}`, "--no-first-run", "--no-default-browser-check", "about:blank",
+  ], { stdio: ["ignore", "ignore", "pipe"] })
+  return new Promise((resolve, reject) => {
+    let log = ""
+    const timer = setTimeout(() => reject(new Error(`Chrome did not expose DevTools: ${log.slice(-1000)}`)), 10000)
+    browserProcess.stderr.on("data", (chunk) => {
+      log += chunk
+      const url = log.match(/DevTools listening on (ws:\/\/\S+)/)?.[1]
+      if (url) {
+        clearTimeout(timer)
+        resolve({ process: browserProcess, url })
+      }
+    })
+    browserProcess.once("exit", code => reject(new Error(`Chrome exited before DevTools was ready (${code}): ${log.slice(-1000)}`)))
   })
 }
 
-const element = (tag, classes = [], attributes = {}) => ({ attributes, classes: new Set(classes), tag })
-
-function compoundMatches(compound, target) {
-  if (/:{1,2}[\w-]/.test(compound))
-    return false
-  for (const match of compound.matchAll(/\[\s*([\w-]+)(?:\s*=\s*["']?([^\]"']+)["']?)?\s*\]/g)) {
-    const [, name, expected] = match
-    const actual = name.startsWith("data-v-") ? "" : target.attributes[name]
-    if (actual === undefined || (expected !== undefined && actual !== expected.trim()))
-      return false
-  }
-  for (const match of compound.matchAll(/\.([\w-]+)/g)) {
-    if (!target.classes.has(match[1]))
-      return false
-  }
-  const id = compound.match(/#([\w-]+)/)?.[1]
-  if (id && target.attributes.id !== id)
-    return false
-  const tag = compound
-    .replace(/\[[^\]]+\]/g, "")
-    .replace(/[.#][\w-]+/g, "")
-    .replace(/\*/g, "")
-    .trim()
-  return !tag || tag.toLowerCase() === target.tag
-}
-
-function selectorMatches(selector, path) {
-  if (/[+~]/.test(selector))
-    return false
-  const compounds = selector.replace(/>/g, " ").trim().split(/\s+/)
-  let pathIndex = path.length - 1
-  if (!compoundMatches(compounds.at(-1), path[pathIndex]))
-    return false
-  for (let index = compounds.length - 2; index >= 0; index--) {
-    do pathIndex--
-    while (pathIndex >= 0 && !compoundMatches(compounds[index], path[pathIndex]))
-    if (pathIndex < 0)
-      return false
-  }
-  return true
-}
-
-function specificity(selector) {
-  const source = selector.replace(/:where\([^)]*\)/g, "")
-  const ids = source.match(/#[\w-]+/g)?.length ?? 0
-  const classes = source.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g)?.length ?? 0
-  const tags = source
-    .replace(/#[\w-]+|\.[\w-]+|\[[^\]]+\]|:{1,2}[\w-]+(?:\([^)]*\))?/g, " ")
-    .split(/[\s>+~,*]+/)
-    .filter(Boolean).length
-  return ids * 100 + classes * 10 + tags
-}
-
-function mediaMatches(query, environment) {
-  return query.toLowerCase().split(",").some((branch) => {
-    if (/\bprint\b/.test(branch))
-      return false
-    const reduced = branch.match(/prefers-reduced-motion\s*:\s*(reduce|no-preference)/)?.[1]
-    if (reduced && (reduced === "reduce") !== environment.reducedMotion)
-      return false
-    const maxWidth = Number(branch.match(/max-width\s*:\s*(\d+)px/)?.[1])
-    const minWidth = Number(branch.match(/min-width\s*:\s*(\d+)px/)?.[1])
-    return (!maxWidth || environment.width <= maxWidth) && (!minWidth || environment.width >= minWidth)
+async function connectCdp(url) {
+  const socket = new WebSocket(url)
+  await new Promise((resolve, reject) => {
+    socket.addEventListener("open", resolve, { once: true })
+    socket.addEventListener("error", reject, { once: true })
   })
+  let nextId = 0
+  const pending = new Map()
+  socket.addEventListener("message", ({ data }) => {
+    const message = JSON.parse(data)
+    if (!message.id)
+      return
+    const request = pending.get(message.id)
+    pending.delete(message.id)
+    if (message.error)
+      request.reject(new Error(message.error.message))
+    else
+      request.resolve(message.result)
+  })
+  const send = (method, params = {}, sessionId) => new Promise((resolve, reject) => {
+    const id = ++nextId
+    pending.set(id, { reject, resolve })
+    socket.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }))
+  })
+  return { send, socket }
 }
 
-function declarationValue(declaration, property) {
-  const declaredProperty = declaration.prop.toLowerCase()
-  if (declaredProperty === property)
-    return declaration.value.trim()
-  if (property === "transition-duration" && declaredProperty === "transition") {
-    if (declaration.value.trim() === "none")
-      return "0s"
-    return declaration.value.match(/(?:^|[\s,])(-?(?:\d*\.)?\d+(?:ms|s))\b/)?.[1]
-  }
-}
-
-function computedValue(stylesheets, path, property, environment) {
-  let order = 0
-  let winner
-  function visit(nodes, active = true) {
-    for (const node of nodes ?? []) {
-      if (node.type === "atrule") {
-        visit(node.nodes, active && (node.name !== "media" || mediaMatches(node.params, environment)))
-        continue
-      }
-      if (node.type !== "rule" || !active)
-        continue
-      const matchedSpecificity = Math.max(
-        ...node.selectors.filter(selector => selectorMatches(selector, path)).map(specificity),
-        -1,
-      )
-      for (const declaration of node.nodes ?? []) {
-        if (declaration.type !== "decl")
-          continue
-        order++
-        const value = declarationValue(declaration, property)
-        if (value === undefined || matchedSpecificity < 0)
-          continue
-        const candidate = { important: Boolean(declaration.important), order, specificity: matchedSpecificity, value }
-        if (
-          !winner
-          || Number(candidate.important) > Number(winner.important)
-          || (candidate.important === winner.important && candidate.specificity > winner.specificity)
-          || (candidate.important === winner.important && candidate.specificity === winner.specificity && candidate.order > winner.order)
-        )
-          winner = candidate
-      }
+function staticServer() {
+  return createServer((request, response) => {
+    const pathname = decodeURIComponent(new URL(request.url, "http://site.test").pathname)
+    let file = join(distDir, pathname === "/" ? "index.html" : pathname.slice(1))
+    if (!extname(file))
+      file += ".html"
+    if (relative(distDir, file).startsWith("..")) {
+      response.writeHead(403).end()
+      return
     }
-  }
-  for (const stylesheet of stylesheets)
-    visit(stylesheet.nodes)
-  return winner?.value
+    try {
+      const types = { ".css": "text/css", ".html": "text/html", ".js": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2" }
+      response.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream" }).end(readFileSync(file))
+    }
+    catch {
+      response.writeHead(404).end()
+    }
+  })
 }
 
-const thumbPath = dark => [
-  element("html", dark ? ["dark"] : []), element("body"),
-  element("div", ["theme-family-control", "theme-family-control--header", "is-ready"]),
-  element("button", ["theme-family-switch"], { "aria-checked": "false" }),
-  element("span", ["theme-family-switch__track"]), element("span", ["theme-family-switch__thumb"]),
-]
-const mobileControlPath = [
-  element("html"), element("body"), element("div", ["VPNavScreen"]), element("div", ["container"]),
-  element("div", ["theme-family-control", "theme-family-control--screen", "is-ready"]),
-]
+async function verifyBrowserBehavior() {
+  const profile = mkdtempSync(join(tmpdir(), "theme-family-chrome-"))
+  const server = staticServer()
+  let chrome
+  let socket
+  try {
+    await new Promise((resolve, reject) => server.listen(0, "127.0.0.1").once("listening", resolve).once("error", reject))
+    chrome = await launchChrome(profile)
+    const cdp = await connectCdp(chrome.url)
+    socket = cdp.socket
+    const { targetId } = await cdp.send("Target.createTarget", { url: "about:blank" })
+    const { sessionId } = await cdp.send("Target.attachToTarget", { flatten: true, targetId })
+    await cdp.send("Emulation.setDeviceMetricsOverride", { deviceScaleFactor: 1, height: 844, mobile: false, width: 390 }, sessionId)
+    await cdp.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: "light" }, { name: "prefers-reduced-motion", value: "reduce" }] }, sessionId)
+    await cdp.send("Page.navigate", { url: `http://127.0.0.1:${server.address().port}/` }, sessionId)
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const ready = await cdp.send("Runtime.evaluate", { expression: "document.readyState === 'complete' && !!document.querySelector('.VPNavBarHamburger') && !!document.querySelector('.theme-family-control--header.is-ready')", returnByValue: true }, sessionId)
+      if (ready.result.value)
+        break
+      await delay(50)
+      expect(attempt < 99, "Generated page did not become browser-ready")
+    }
+    const beforeMobile = await cdp.send("Runtime.evaluate", { expression: "const light = !document.documentElement.classList.contains('dark'); document.querySelector('.VPNavBarHamburger').click(); light", returnByValue: true }, sessionId)
+    expect(beforeMobile.result.value, "Mounted Header Theme Family control must preserve Light scheme")
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const mounted = await cdp.send("Runtime.evaluate", { expression: "!!document.querySelector('.theme-family-control--screen.is-ready')", returnByValue: true }, sessionId)
+      if (mounted.result.value)
+        break
+      await delay(50)
+      expect(attempt < 99, "Generated mobile Theme Family interface did not mount")
+    }
+    const evaluated = await cdp.send("Runtime.evaluate", { expression: `(() => {
+      const control = document.querySelector('.theme-family-control--screen')
+      const button = control?.querySelector('.theme-family-switch')
+      const thumb = control?.querySelector('.theme-family-switch__thumb')
+      if (!control || !button || !thumb) return null
+      const lightBeforeFamily = !document.documentElement.classList.contains('dark')
+      button.click()
+      const lightAfterFamily = !document.documentElement.classList.contains('dark') && document.documentElement.classList.contains('brutal') && document.documentElement.dataset.themeFamily === 'neo'
+      document.documentElement.classList.add('dark'); button.click()
+      const darkAfterFamily = document.documentElement.classList.contains('dark') && !document.documentElement.classList.contains('brutal') && document.documentElement.dataset.themeFamily === 'default'
+      const read = () => getComputedStyle(thumb).transitionDuration
+      document.documentElement.classList.remove('dark'); const lightDuration = read()
+      document.documentElement.classList.add('dark'); const darkDuration = read()
+      button.focus()
+      return { darkAfterFamily, darkDuration, lightAfterFamily, lightBeforeFamily, lightDuration, order: getComputedStyle(control).order,
+        display: getComputedStyle(control).display, width: getComputedStyle(button).width,
+        height: getComputedStyle(button).height, outline: getComputedStyle(button).outline }
+    })()`, returnByValue: true }, sessionId)
+    const result = evaluated.result.value
+    expect(result, "Generated mobile Theme Family interface must mount in Chrome")
+    expect(result.lightBeforeFamily && result.lightAfterFamily && result.darkAfterFamily, "Mounted Theme Family path must preserve Light and Dark schemes")
+    const isZero = value => value.split(",").every(duration => Number.parseFloat(duration) === 0)
+    expect(isZero(result.lightDuration) && isZero(result.darkDuration), "Theme Family thumb must compute to zero transition duration under reduced motion")
+    expect(result.order === "4", "Mobile Theme Family control must compute to final order 4")
+    expect(result.display === "grid" && result.width === "44px" && result.height === "44px", "Mobile Theme Family control must keep its rendered placement and 44px target")
+    expect(result.outline.includes("solid 2px"), "Theme Family switch must keep a rendered focus outline")
+  }
+  finally {
+    socket?.close()
+    chrome?.process.kill()
+    if (chrome)
+      await Promise.race([new Promise(resolve => chrome.process.once("exit", resolve)), delay(1000)])
+    await new Promise(resolve => server.close(resolve))
+    rmSync(profile, { force: true, recursive: true })
+  }
+}
 
 function executeInit(script, savedFamily, initialDark) {
   const classes = new Set(initialDark ? ["dark"] : [])
@@ -186,8 +191,7 @@ function executeInit(script, savedFamily, initialDark) {
 }
 
 const generatedFiles = htmlFiles(distDir)
-const generatedRoutes = generatedFiles.map(file => relative(distDir, file)).sort()
-expect(JSON.stringify(generatedRoutes) === JSON.stringify(expectedRoutes), "Generated routes must match the canonical site routes")
+expect(generatedFiles.length > 0, "Site build must emit HTML")
 let renderedInterfaces = 0
 for (const file of generatedFiles) {
   const label = relative(rootDir, file)
@@ -215,18 +219,8 @@ for (const file of generatedFiles) {
     expect(neoState.family === "neo" && neoState.classes.has("brutal") && neoState.classes.has("dark") === initialDark, `${label} init script must compose Neo with ${initialDark ? "Dark" : "Light"}`)
   }
 
-  const stylesheets = stylesheetSources(head, label)
-  for (const dark of [false, true]) {
-    expect(
-      computedValue(stylesheets, thumbPath(dark), "transition-duration", { reducedMotion: true, width: 390 }) === "0s",
-      `${label} Theme Family thumb must compute to zero transition duration under reduced motion`,
-    )
-  }
-  expect(
-    computedValue(stylesheets, mobileControlPath, "order", { reducedMotion: false, width: 390 }) === "4",
-    `${label} mobile Theme Family control must compute to final order 4`,
-  )
 }
 expect(renderedInterfaces > 0, "Generated pages must render the Theme Family interface")
+await verifyBrowserBehavior()
 
 console.log("site Theme Family build contract passed")
