@@ -166,7 +166,7 @@ async function verifyBrowserBehavior() {
     if (chrome)
       await Promise.race([new Promise(resolve => chrome.process.once("exit", resolve)), delay(1000)])
     await new Promise(resolve => server.close(resolve))
-    rmSync(profile, { force: true, recursive: true })
+    rmSync(profile, { force: true, maxRetries: 10, recursive: true, retryDelay: 100 })
   }
 }
 
