@@ -1881,6 +1881,21 @@ expectFailure(
 )
 const themeClientSources = readThemeClientSources()
 verifyThemeClientDomInventory(themeClientSources)
+expectFailure(
+  "adapter free global DOM mutation",
+  () => verifyThemeClientDomInventory(themeClientSources.map(({ file, source }) => ({
+    file,
+    source: file === "site/.vitepress/theme/theme-family.ts"
+      ? source.replace(
+          "export function applyThemeFamilyToRoot(root: ThemeFamilyRoot, family: ThemeFamily) {",
+          `export function applyThemeFamilyToRoot(root: ThemeFamilyRoot, family: ThemeFamily) {
+  if (typeof document !== "undefined")
+    document.documentElement.classList.add("dark")`,
+        )
+      : source,
+  }))),
+  "must keep exactly the reviewed global DOM gateway inventory",
+)
 verifyThemeTemplateStyleInventory(themeClientSources)
 const siteMarkdownSources = readSiteMarkdownSources()
 verifyMarkdownClientEntrypoints(siteMarkdownSources)
