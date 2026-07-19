@@ -160,128 +160,355 @@ function verifyReducedAppearanceMotion(source, file) {
 }
 
 const classListMutators = new Set(["add", "remove", "replace", "toggle"])
+const assignmentOperators = new Set([
+  ts.SyntaxKind.EqualsToken,
+  ts.SyntaxKind.PlusEqualsToken,
+  ts.SyntaxKind.MinusEqualsToken,
+  ts.SyntaxKind.AsteriskEqualsToken,
+  ts.SyntaxKind.AsteriskAsteriskEqualsToken,
+  ts.SyntaxKind.SlashEqualsToken,
+  ts.SyntaxKind.PercentEqualsToken,
+  ts.SyntaxKind.LessThanLessThanEqualsToken,
+  ts.SyntaxKind.GreaterThanGreaterThanEqualsToken,
+  ts.SyntaxKind.GreaterThanGreaterThanGreaterThanEqualsToken,
+  ts.SyntaxKind.AmpersandEqualsToken,
+  ts.SyntaxKind.BarEqualsToken,
+  ts.SyntaxKind.CaretEqualsToken,
+  ts.SyntaxKind.BarBarEqualsToken,
+  ts.SyntaxKind.AmpersandAmpersandEqualsToken,
+  ts.SyntaxKind.QuestionQuestionEqualsToken,
+])
 
-function memberName(node) {
+function unwrapExpression(node) {
+  let current = node
+  while (
+    ts.isParenthesizedExpression(current)
+    || ts.isAsExpression(current)
+    || ts.isTypeAssertionExpression(current)
+    || ts.isNonNullExpression(current)
+    || ts.isSatisfiesExpression(current)
+  )
+    current = current.expression
+  return current
+}
+
+function staticString(node, constants) {
+  const value = unwrapExpression(node)
+  if (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value))
+    return value.text
+  if (ts.isIdentifier(value))
+    return constants.get(value.text)
+  if (
+    ts.isBinaryExpression(value)
+    && value.operatorToken.kind === ts.SyntaxKind.PlusToken
+  ) {
+    const left = staticString(value.left, constants)
+    const right = staticString(value.right, constants)
+    if (left !== undefined && right !== undefined)
+      return left + right
+  }
+}
+
+function memberName(node, constants = new Map()) {
   if (ts.isIdentifier(node) || ts.isStringLiteral(node))
     return node.text
   if (ts.isPropertyAccessExpression(node))
     return node.name.text
-  if (
-    ts.isElementAccessExpression(node)
-    && node.argumentExpression !== undefined
-    && (ts.isStringLiteral(node.argumentExpression) || ts.isNoSubstitutionTemplateLiteral(node.argumentExpression))
-  )
-    return node.argumentExpression.text
+  if (ts.isElementAccessExpression(node) && node.argumentExpression !== undefined)
+    return staticString(node.argumentExpression, constants)
 }
 
-function isNamedMember(node, name) {
+function isNamedMember(node, name, constants = new Map()) {
   return (
     (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
-    && memberName(node) === name
-  )
-}
-
-function isClassListMutatorReference(node) {
-  return (
-    (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
-    && isNamedMember(node.expression, "classList")
-    && (memberName(node) === undefined || classListMutators.has(memberName(node)))
+    && memberName(node, constants) === name
   )
 }
 
 function readClassListMutations(source, file) {
   const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
-  const aliasCandidates = []
-  const aliases = new Set()
+  const variableCandidates = []
+  const objectBindingCandidates = []
+  const constants = new Map()
+  const rootAliases = new Set()
+  const classListAliases = new Set()
+  const mutatorFunctionAliases = new Map()
   const mutations = []
+  const rootWrites = []
+  const rootCalls = []
 
-  function collectAliases(node) {
+  function collectCandidates(node) {
     if (
       ts.isVariableDeclaration(node)
       && ts.isIdentifier(node.name)
       && node.initializer !== undefined
     )
-      aliasCandidates.push({ name: node.name.text, value: node.initializer })
+      variableCandidates.push({ name: node.name.text, value: node.initializer })
 
     if (
       ts.isBinaryExpression(node)
       && node.operatorToken.kind === ts.SyntaxKind.EqualsToken
       && ts.isIdentifier(node.left)
     )
-      aliasCandidates.push({ name: node.left.text, value: node.right })
+      variableCandidates.push({ name: node.left.text, value: node.right })
 
     if (
       ts.isVariableDeclaration(node)
       && ts.isObjectBindingPattern(node.name)
-      && (
-        (node.initializer !== undefined && isNamedMember(node.initializer, "classList"))
-        || node.name.elements.some(element =>
-          memberName(element.propertyName ?? element.name) === "classList"
-          || classListMutators.has(memberName(element.propertyName ?? element.name)),
-        )
-      )
+      && node.initializer !== undefined
     )
-      aliases.add(node.name.getText(sourceFile))
+      objectBindingCandidates.push(node)
 
-    ts.forEachChild(node, collectAliases)
+    ts.forEachChild(node, collectCandidates)
   }
 
-  collectAliases(sourceFile)
+  collectCandidates(sourceFile)
 
   let changed = true
   while (changed) {
     changed = false
-    for (const candidate of aliasCandidates) {
-      if (
-        !aliases.has(candidate.name)
-        && (
-          isNamedMember(candidate.value, "classList")
-          || isClassListMutatorReference(candidate.value)
-          || (ts.isIdentifier(candidate.value) && aliases.has(candidate.value.text))
-        )
-      ) {
-        aliases.add(candidate.name)
+    for (const candidate of variableCandidates) {
+      if (!constants.has(candidate.name)) {
+        const value = staticString(candidate.value, constants)
+        if (value !== undefined) {
+          constants.set(candidate.name, value)
+          changed = true
+        }
+      }
+    }
+  }
+
+  function isRootExpression(node) {
+    const value = unwrapExpression(node)
+    return (
+      (ts.isIdentifier(value) && rootAliases.has(value.text))
+      || (
+        isNamedMember(value, "documentElement", constants)
+        && ts.isIdentifier(value.expression)
+        && value.expression.text === "document"
+      )
+    )
+  }
+
+  changed = true
+  while (changed) {
+    changed = false
+    for (const candidate of variableCandidates) {
+      if (!rootAliases.has(candidate.name) && isRootExpression(candidate.value)) {
+        rootAliases.add(candidate.name)
         changed = true
       }
     }
   }
 
-  function collectMutations(node) {
-    if (
-      ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)
-    ) {
-      const method = memberName(node)
+  changed = true
+  while (changed) {
+    changed = false
+    for (const candidate of variableCandidates) {
+      if (mutatorFunctionAliases.has(candidate.name))
+        continue
+      const value = unwrapExpression(candidate.value)
+      const method = (
+        ts.isPropertyAccessExpression(value) || ts.isElementAccessExpression(value)
+      )
+        ? memberName(value, constants)
+        : ts.isIdentifier(value)
+          ? mutatorFunctionAliases.get(value.text)
+          : undefined
+      if (classListMutators.has(method)) {
+        mutatorFunctionAliases.set(candidate.name, method)
+        changed = true
+      }
+    }
+  }
+
+  function isClassListExpression(node) {
+    const value = unwrapExpression(node)
+    return (
+      (ts.isIdentifier(value) && classListAliases.has(value.text))
+      || (
+        isNamedMember(value, "classList", constants)
+        && isRootExpression(value.expression)
+      )
+    )
+  }
+
+  function rootMemberPath(node) {
+    const value = unwrapExpression(node)
+    if (isRootExpression(value))
+      return []
+    if (ts.isPropertyAccessExpression(value) || ts.isElementAccessExpression(value)) {
+      const parentPath = rootMemberPath(value.expression)
+      const name = memberName(value, constants)
+      if (parentPath !== undefined && name !== undefined)
+        return [...parentPath, name]
+    }
+  }
+
+  changed = true
+  while (changed) {
+    changed = false
+    for (const candidate of variableCandidates) {
+      if (!classListAliases.has(candidate.name) && isClassListExpression(candidate.value)) {
+        classListAliases.add(candidate.name)
+        changed = true
+      }
+    }
+  }
+
+  for (const declaration of objectBindingCandidates) {
+    if (isRootExpression(declaration.initializer)) {
+      for (const element of declaration.name.elements) {
+        const name = memberName(element.propertyName ?? element.name, constants)
+        if (name === "classList" && ts.isIdentifier(element.name))
+          classListAliases.add(element.name.text)
+      }
+    }
+    if (isClassListExpression(declaration.initializer)) {
+      for (const element of declaration.name.elements) {
+        const method = memberName(element.propertyName ?? element.name, constants)
+        if (classListMutators.has(method)) {
+          mutations.push({
+            arguments: [],
+            directCall: false,
+            method,
+            receiver: declaration.initializer.getText(sourceFile),
+          })
+        }
+      }
+    }
+  }
+
+  changed = true
+  while (changed) {
+    changed = false
+    for (const candidate of variableCandidates) {
+      if (!classListAliases.has(candidate.name) && isClassListExpression(candidate.value)) {
+        classListAliases.add(candidate.name)
+        changed = true
+      }
+    }
+  }
+
+  function collectEffects(node) {
+    if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
+      const method = memberName(node, constants)
       const receiver = node.expression
-      const directClassListCall = isNamedMember(receiver, "classList")
-      const aliasClassListCall = ts.isIdentifier(receiver) && aliases.has(receiver.text)
-      if (
-        classListMutators.has(method)
-        || aliasClassListCall
-        || (directClassListCall && (method === undefined || classListMutators.has(method)))
-      ) {
+      if (isClassListExpression(receiver) && (method === undefined || classListMutators.has(method))) {
         const directCall = ts.isCallExpression(node.parent) && node.parent.expression === node
+        const classListValue = unwrapExpression(receiver)
         mutations.push({
           arguments: directCall ? node.parent.arguments : [],
           directCall,
           method: method ?? "<computed>",
-          receiver: directClassListCall
-            ? receiver.expression.getText(sourceFile)
-            : receiver.getText(sourceFile),
-          sourceFile,
+          receiver: (
+            (ts.isPropertyAccessExpression(classListValue) || ts.isElementAccessExpression(classListValue))
+            && isRootExpression(classListValue.expression)
+          )
+            ? classListValue.expression.getText(sourceFile)
+            : classListValue.getText(sourceFile),
         })
       }
     }
-    ts.forEachChild(node, collectMutations)
+
+    if (
+      ts.isBinaryExpression(node)
+      && assignmentOperators.has(node.operatorToken.kind)
+      && (ts.isPropertyAccessExpression(node.left) || ts.isElementAccessExpression(node.left))
+    ) {
+      const path = rootMemberPath(node.left)
+      if (path !== undefined) {
+        rootWrites.push({
+          operator: node.operatorToken.kind,
+          path,
+          right: node.right,
+        })
+      }
+    }
+
+    if (
+      ts.isCallExpression(node)
+      && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+      && isRootExpression(node.expression.expression)
+    )
+      rootCalls.push(node.getText(sourceFile))
+
+    if (
+      ts.isCallExpression(node)
+      && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+    ) {
+      const invocation = memberName(node.expression, constants)
+      const target = unwrapExpression(node.expression.expression)
+      const method = (
+        ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)
+      )
+        ? memberName(target, constants)
+        : ts.isIdentifier(target)
+          ? mutatorFunctionAliases.get(target.text)
+          : undefined
+      if (
+        ["apply", "bind", "call"].includes(invocation)
+        && classListMutators.has(method)
+        && node.arguments[0] !== undefined
+        && isClassListExpression(node.arguments[0])
+      ) {
+        mutations.push({
+          arguments: [],
+          directCall: false,
+          method,
+          receiver: node.arguments[0].getText(sourceFile),
+        })
+      }
+
+      if (
+        invocation === "apply"
+        && ts.isIdentifier(node.expression.expression)
+        && node.expression.expression.text === "Reflect"
+        && node.arguments[0] !== undefined
+        && node.arguments[1] !== undefined
+        && isClassListExpression(node.arguments[1])
+      ) {
+        const reflectTarget = unwrapExpression(node.arguments[0])
+        const reflectMethod = (
+          ts.isPropertyAccessExpression(reflectTarget) || ts.isElementAccessExpression(reflectTarget)
+        )
+          ? memberName(reflectTarget, constants)
+          : ts.isIdentifier(reflectTarget)
+            ? mutatorFunctionAliases.get(reflectTarget.text)
+            : undefined
+        if (classListMutators.has(reflectMethod)) {
+          mutations.push({
+            arguments: [],
+            directCall: false,
+            method: reflectMethod,
+            receiver: node.arguments[1].getText(sourceFile),
+          })
+        }
+      }
+    }
+
+    ts.forEachChild(node, collectEffects)
   }
 
-  collectMutations(sourceFile)
-  return { aliases, mutations }
+  collectEffects(sourceFile)
+  return { aliases: classListAliases, mutations, rootCalls, rootWrites }
 }
 
 function verifyThemeFamilyClassMutation(source, file, expected) {
-  const { aliases, mutations } = readClassListMutations(source, file)
+  const { aliases, mutations, rootCalls, rootWrites } = readClassListMutations(source, file)
   expect(aliases.size === 0, `${file} must not alias classList`)
+  expect(rootCalls.length === 0, `${file} must not call methods directly on the theme root`)
+  expect(rootWrites.length === 1, `${file} must contain exactly one canonical root metadata write`)
+  expect(
+    rootWrites[0].operator === ts.SyntaxKind.EqualsToken
+    && rootWrites[0].path.length === 2
+    && rootWrites[0].path[0] === "dataset"
+    && rootWrites[0].path[1] === "themeFamily"
+    && ts.isIdentifier(rootWrites[0].right)
+    && rootWrites[0].right.text === "family",
+    `${file} root write must be exactly root.dataset.themeFamily = family`,
+  )
   expect(mutations.length === 1, `${file} must contain exactly one classList mutation`)
 
   const mutation = mutations[0]
@@ -348,6 +575,45 @@ function readScopedStyle(source, file) {
   const matches = [...source.matchAll(/<style scoped>\s*([\s\S]*?)<\/style>/g)]
   expect(matches.length === 1, `${file} must contain exactly one scoped style block`)
   return matches[0][1]
+}
+
+function verifyThemeCssEntryImports(source, file) {
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+  const cssImports = sourceFile.statements.flatMap((statement) => {
+    if (
+      ts.isImportDeclaration(statement)
+      && ts.isStringLiteral(statement.moduleSpecifier)
+      && statement.moduleSpecifier.text.endsWith(".css")
+    )
+      return [statement.moduleSpecifier.text]
+    return []
+  })
+  expect(
+    cssImports.length === 1 && cssImports[0] === "./style.css",
+    `${file} must import exactly the reviewed ./style.css author entry`,
+  )
+}
+
+const reviewedGlobalStyleImports = [
+  '"tailwindcss"',
+  '"@ayingott/theme/fonts.css"',
+  '"@ayingott/theme"',
+  '"@ayingott/theme/brutal.css"',
+]
+
+function verifyGlobalStyleImports(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const imports = []
+  css.walkAtRules((atRule) => {
+    if (atRule.name.toLowerCase() === "import")
+      imports.push(atRule.params.trim())
+  })
+  expect(
+    imports.length === reviewedGlobalStyleImports.length
+    && imports.every((value, index) => value === reviewedGlobalStyleImports[index]),
+    `${file} must keep exactly the reviewed author-style import graph`,
+  )
 }
 
 function declarationsForProperty(css, property) {
@@ -638,10 +904,17 @@ expectSourceIncludes("site/.vitepress/config.ts", [
   'import { THEME_FAMILY_INIT_SCRIPT } from "./theme/theme-family"',
   '["script", {}, THEME_FAMILY_INIT_SCRIPT]',
 ])
-expectSourceIncludes("site/.vitepress/theme/index.ts", [
+const themeIndexFile = "site/.vitepress/theme/index.ts"
+const themeIndexSource = expectSourceIncludes(themeIndexFile, [
   'import Layout from "./Layout.vue"',
   "Layout,",
 ])
+expectFailure(
+  "additional Theme CSS entry import",
+  () => verifyThemeCssEntryImports('import "./style.css"\nimport "./override.css"', "<additional-theme-css-entry-fixture>"),
+  "must import exactly the reviewed ./style.css author entry",
+)
+verifyThemeCssEntryImports(themeIndexSource, themeIndexFile)
 expectSourceIncludes("site/.vitepress/theme/Layout.vue", [
   '<ThemeFamilyControl placement="header" />',
   '<ThemeFamilyControl placement="screen" />',
@@ -682,6 +955,7 @@ verifyThemeFamilyClassMutation(
 const familyMutationFixture = `
   const root = document.documentElement
   root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)
+  root.dataset.themeFamily = family
 `
 expectFailure(
   "family classList.add scheme mutation",
@@ -742,6 +1016,62 @@ expectFailure(
     },
   ),
   "must contain exactly one classList mutation",
+)
+expectFailure(
+  "family prototype classList mutator call",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nDOMTokenList.prototype.add.call(root.classList, 'dark')`,
+    "<family-prototype-mutator-call-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
+expectFailure(
+  "family fully computed classList mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nconst c = 'classList'\nconst m = 'add'\nroot[c][m]('dark')`,
+    "<family-fully-computed-classlist-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
+expectFailure(
+  "family root className mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.className += ' dark'`,
+    "<family-root-classname-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one canonical root metadata write",
+)
+expectFailure(
+  "family root class attribute mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.setAttribute('class', 'dark')`,
+    "<family-root-class-attribute-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must not call methods directly on the theme root",
+)
+verifyThemeFamilyClassMutation(
+  `${familyMutationFixture}\nconst observedFamilies = new Set()\nobservedFamilies.add(family)`,
+  "<neutral-set-add-fixture>",
+  {
+    classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+    stateIdentifier: "NEO_THEME_FAMILY",
+  },
 )
 
 const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
@@ -836,6 +1166,7 @@ verifyThemeFamilyReducedMotion(
 
 const cssFile = "site/.vitepress/theme/style.css"
 const cssSource = readSource(cssFile)
+const globalStyleImportFixture = reviewedGlobalStyleImports.map(value => `@import ${value};`).join("\n")
 const globalTransitionFixture = `
   .theme-action {
     transition: var(--transition-interactive);
@@ -856,6 +1187,15 @@ expect(
   (cssSource.match(/@import "@ayingott\/theme\/brutal\.css";/g) ?? []).length === 1,
   "Site theme must import the existing Neo opt-in entry exactly once",
 )
+expectFailure(
+  "additional local author-style import",
+  () => verifyGlobalStyleImports(
+    `${globalStyleImportFixture}\n@import "./theme-family-override.css";`,
+    "<additional-local-author-style-import-fixture>",
+  ),
+  "must keep exactly the reviewed author-style import graph",
+)
+verifyGlobalStyleImports(cssSource, cssFile)
 expectFailure(
   "global Theme Family transition override",
   () => verifyGlobalTransitionInventory(`${globalTransitionFixture}
