@@ -54,7 +54,7 @@ The family remaps existing `--radius-card`, `--radius-control`, `--shadow-card`,
 - `--border-width-surface`
 - `--border-width-control`
 
-Both resolve to the existing `--border-width-heavy` physical token. Existing physical radius, border, and soft-shadow scales remain unchanged. Cross-family declarations use `var(--border-width-surface, var(--border-width-thin))` or `var(--border-width-control, var(--border-width-thin))`. Without a `var()` fallback, a missing role makes the containing declaration invalid at computed-value time and leaves resolution to the normal cascade, inheritance, or initial value.
+Both resolve to the existing `--border-width-heavy` physical token. Existing physical radius, border, and soft-shadow scales remain unchanged. Cross-family declarations use `var(--border-width-surface, var(--border-width-thin))` or `var(--border-width-control, var(--border-width-thin))`. Without a `var()` fallback, a missing role makes the containing declaration invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived.
 
 ### 2.4 Invariants have a narrow verification boundary
 

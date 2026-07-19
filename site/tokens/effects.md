@@ -28,7 +28,7 @@ Inside `.brutal`, `--border-width-surface` and `--border-width-control` both map
 }
 ```
 
-If a referenced custom property is missing and the `var()` has no fallback, the containing declaration becomes invalid at computed-value time. CSS then follows the normal cascade, inheritance, or initial-value behavior for that property; it does not invent a family fallback.
+If a referenced custom property is missing and the `var()` has no fallback, the containing declaration becomes invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived, and CSS does not invent a family fallback.
 
 ## Motion Duration
 

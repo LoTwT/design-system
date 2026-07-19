@@ -193,6 +193,8 @@ expectSourceIncludes("site/tokens/effects.md", [
   "at `:root`",
   "var(--border-width-control, var(--border-width-thin))",
   "invalid at computed-value time",
+  "behaves as `unset`",
+  "earlier cascaded declaration is not revived",
 ])
 expectSourceIncludes("site/tokens/semantic.md", [
   "Use `--text-muted` for active muted UI copy",
@@ -219,11 +221,20 @@ expectSourceIncludes("docs/spec/rfc-brutal-theme.md", [
   "co-located on one theme root",
   "not a consumer direct-use API",
   "invalid at computed-value time",
+  "behaves as `unset`",
+  "earlier cascaded declaration is not revived",
 ])
 expectSourceIncludes("docs/spec/design-system-v1.0.md", [
   "两个 class 共置同一 theme root",
   "不是 consumer direct-use API",
   "computed-value time invalid",
+  "按 `unset` 处理",
+  "更早的 cascaded declaration 不会重新生效",
+])
+expectSourceIncludes("skills/ayingott-design-system/SKILL.md", [
+  "invalid at computed-value time",
+  "behaves as `unset`",
+  "earlier cascaded declaration is not revived",
 ])
 
 expect(stringValue(property(config, "lang"), "lang") === "en", "VitePress lang must be en")

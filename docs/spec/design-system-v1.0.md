@@ -191,7 +191,7 @@ Opt-in `brutal.css` 在 `:root` 追加 `--shadow-hard-color` 与 `--shadow-hard-
 --border-style-solid / -dashed / -dotted                       (3 style)
 ```
 
-Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。缺少 family-scoped role 且 `var()` 未提供 fallback 时，包含它的 declaration 在 computed-value time invalid，并回到正常 cascade / inheritance / initial-value 解析。
+Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。缺少 family-scoped role 且 `var()` 未提供 fallback 时，包含它的 declaration 在 computed-value time invalid，并按 `unset` 处理：继承属性取 inherited value，非继承属性取 initial value；更早的 cascaded declaration 不会重新生效。
 
 ### 1.15 Motion（5 duration + 4 ease + 2 named animation + 2 keyframes）
 

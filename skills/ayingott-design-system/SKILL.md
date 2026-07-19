@@ -181,7 +181,7 @@ The family keeps the semantic API and component anatomy. It maps card/control ra
 }
 ```
 
-Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles remain scoped to `.brutal`. If a family-scoped role is missing and its `var()` has no fallback, the containing declaration becomes invalid at computed-value time; CSS then uses normal cascade, inheritance, or initial-value behavior.
+Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles remain scoped to `.brutal`. If a family-scoped role is missing and its `var()` has no fallback, the containing declaration becomes invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived.
 
 Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
 
