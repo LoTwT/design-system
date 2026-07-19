@@ -5,6 +5,7 @@ import {
   NEO_THEME_FAMILY,
   THEME_FAMILY_ROOT_CLASS,
   THEME_FAMILY_STORAGE_KEY,
+  applyThemeFamilyToRoot,
   type ThemeFamily,
 } from "../theme-family"
 
@@ -12,11 +13,8 @@ const selectedFamily = shallowRef<ThemeFamily>(DEFAULT_THEME_FAMILY)
 let hasInitialized = false
 
 function applyThemeFamily(family: ThemeFamily, persist: boolean) {
-  const root = document.documentElement
-
   selectedFamily.value = family
-  root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)
-  root.dataset.themeFamily = family
+  applyThemeFamilyToRoot(document.documentElement, family)
 
   if (!persist)
     return

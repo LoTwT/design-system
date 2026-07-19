@@ -5,6 +5,16 @@ export const THEME_FAMILY_STORAGE_KEY = "ayingott:theme-family"
 
 export type ThemeFamily = typeof DEFAULT_THEME_FAMILY | typeof NEO_THEME_FAMILY
 
+interface ThemeFamilyRoot {
+  classList: Pick<DOMTokenList, "toggle">
+  dataset: DOMStringMap
+}
+
+export function applyThemeFamilyToRoot(root: ThemeFamilyRoot, family: ThemeFamily) {
+  root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)
+  root.dataset.themeFamily = family
+}
+
 export const THEME_FAMILY_INIT_SCRIPT = `(() => {
   const root = document.documentElement
   let family = "${DEFAULT_THEME_FAMILY}"

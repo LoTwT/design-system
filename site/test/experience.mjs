@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto"
-import { readFileSync } from "node:fs"
-import { dirname, join } from "node:path"
+import { readFileSync, readdirSync } from "node:fs"
+import { dirname, join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
 import { runInNewContext } from "node:vm"
 import postcss from "postcss"
@@ -212,6 +212,8 @@ function staticString(node, constants) {
 function memberName(node, constants = new Map()) {
   if (ts.isIdentifier(node) || ts.isStringLiteral(node))
     return node.text
+  if (ts.isComputedPropertyName(node))
+    return staticString(node.expression, constants)
   if (ts.isPropertyAccessExpression(node))
     return node.name.text
   if (ts.isElementAccessExpression(node) && node.argumentExpression !== undefined)
@@ -231,10 +233,12 @@ function readClassListMutations(source, file) {
   const variableCandidates = []
   const objectBindingCandidates = []
   const constants = new Map()
+  const documentAliases = new Set(["document"])
   const rootAliases = new Set()
   const classListAliases = new Set()
   const mutatorFunctionAliases = new Map()
   const mutations = []
+  const directRootExpressions = []
   const rootWrites = []
   const rootCalls = []
 
@@ -279,14 +283,25 @@ function readClassListMutations(source, file) {
     }
   }
 
+  function isDocumentExpression(node) {
+    const value = unwrapExpression(node)
+    return (
+      (ts.isIdentifier(value) && documentAliases.has(value.text))
+      || (
+        isNamedMember(value, "document", constants)
+        && ts.isIdentifier(value.expression)
+        && ["globalThis", "self", "window"].includes(value.expression.text)
+      )
+    )
+  }
+
   function isRootExpression(node) {
     const value = unwrapExpression(node)
     return (
       (ts.isIdentifier(value) && rootAliases.has(value.text))
       || (
         isNamedMember(value, "documentElement", constants)
-        && ts.isIdentifier(value.expression)
-        && value.expression.text === "document"
+        && isDocumentExpression(value.expression)
       )
     )
   }
@@ -295,9 +310,29 @@ function readClassListMutations(source, file) {
   while (changed) {
     changed = false
     for (const candidate of variableCandidates) {
+      if (!documentAliases.has(candidate.name) && isDocumentExpression(candidate.value)) {
+        documentAliases.add(candidate.name)
+        changed = true
+      }
       if (!rootAliases.has(candidate.name) && isRootExpression(candidate.value)) {
         rootAliases.add(candidate.name)
         changed = true
+      }
+    }
+    for (const declaration of objectBindingCandidates) {
+      if (!isDocumentExpression(declaration.initializer))
+        continue
+      for (const element of declaration.name.elements) {
+        const name = memberName(element.propertyName ?? element.name, constants)
+        if (
+          name === "documentElement"
+          && !element.dotDotDotToken
+          && ts.isIdentifier(element.name)
+          && !rootAliases.has(element.name.text)
+        ) {
+          rootAliases.add(element.name.text)
+          changed = true
+        }
       }
     }
   }
@@ -392,6 +427,13 @@ function readClassListMutations(source, file) {
   }
 
   function collectEffects(node) {
+    if (
+      (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+      && isNamedMember(node, "documentElement", constants)
+      && isDocumentExpression(node.expression)
+    )
+      directRootExpressions.push(node.getText(sourceFile))
+
     if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
       const method = memberName(node, constants)
       const receiver = node.expression
@@ -492,7 +534,15 @@ function readClassListMutations(source, file) {
   }
 
   collectEffects(sourceFile)
-  return { aliases: classListAliases, mutations, rootCalls, rootWrites }
+  return {
+    aliases: classListAliases,
+    directRootExpressions,
+    documentAliases,
+    mutations,
+    rootAliases,
+    rootCalls,
+    rootWrites,
+  }
 }
 
 function verifyThemeFamilyClassMutation(source, file, expected) {
@@ -555,6 +605,132 @@ function verifyThemeFamilyClassMutation(source, file, expected) {
   }
 }
 
+function verifyThemeFamilyRootBoundary(source, file) {
+  const {
+    aliases,
+    directRootExpressions,
+    documentAliases,
+    mutations,
+    rootAliases,
+    rootCalls,
+    rootWrites,
+  } = readClassListMutations(source, file)
+  expect(documentAliases.size === 1, `${file} must not alias document`)
+  expect(rootAliases.size === 0, `${file} must not alias the theme root`)
+  expect(aliases.size === 0, `${file} must not alias classList`)
+  expect(directRootExpressions.length === 2, `${file} must keep exactly two reviewed theme-root reads`)
+  expect(mutations.length === 0, `${file} must delegate all classList mutations to the pure root adapter`)
+  expect(rootWrites.length === 0, `${file} must delegate all root writes to the pure root adapter`)
+  expect(rootCalls.length === 0, `${file} must not call methods directly on the theme root`)
+}
+
+function instrumentThemeRoot() {
+  const effects = []
+  const classList = new Proxy({}, {
+    get(_target, property) {
+      return (...args) => {
+        effects.push(`classList.${String(property)}(${args.map(String).join(",")})`)
+        return property === "toggle" ? Boolean(args[1]) : undefined
+      }
+    },
+    set(_target, property, value) {
+      effects.push(`classList.${String(property)}=${String(value)}`)
+      return true
+    },
+  })
+  const dataset = new Proxy({}, {
+    get(_target, property) {
+      effects.push(`dataset.${String(property)}:read`)
+    },
+    set(_target, property, value) {
+      effects.push(`dataset.${String(property)}=${String(value)}`)
+      return true
+    },
+  })
+  const root = new Proxy({}, {
+    defineProperty(_target, property) {
+      effects.push(`root.${String(property)}:define`)
+      return true
+    },
+    deleteProperty(_target, property) {
+      effects.push(`root.${String(property)}:delete`)
+      return true
+    },
+    get(_target, property) {
+      if (property === "classList")
+        return classList
+      if (property === "dataset")
+        return dataset
+      return (...args) => {
+        effects.push(`root.${String(property)}(${args.map(String).join(",")})`)
+      }
+    },
+    set(_target, property, value) {
+      effects.push(`root.${String(property)}=${String(value)}`)
+      return true
+    },
+  })
+  return { effects, root }
+}
+
+function verifyThemeFamilyRootEffects(applyThemeFamilyToRoot, file) {
+  expect(typeof applyThemeFamilyToRoot === "function", `${file} must export applyThemeFamilyToRoot`)
+  for (const family of ["default", "neo"]) {
+    const { effects, root } = instrumentThemeRoot()
+
+    applyThemeFamilyToRoot(root, family)
+    const expected = [
+      `classList.toggle(brutal,${family === "neo"})`,
+      `dataset.themeFamily=${family}`,
+    ]
+    expect(
+      JSON.stringify(effects) === JSON.stringify(expected),
+      `${file} ${family} root effects must be exactly ${expected.join(" then ")}`,
+    )
+  }
+}
+
+function verifyThemeFamilyInitEffects(script, file) {
+  for (const [savedFamily, expectedFamily] of [[null, "default"], ["neo", "neo"], ["unexpected", "default"]]) {
+    const { effects, root } = instrumentThemeRoot()
+    const storageEffects = []
+    const localStorage = new Proxy({}, {
+      get(_target, property) {
+        return (...args) => {
+          storageEffects.push(`localStorage.${String(property)}(${args.map(String).join(",")})`)
+          return property === "getItem" ? savedFamily : undefined
+        }
+      },
+    })
+    runInNewContext(script, { document: { documentElement: root }, localStorage }, { filename: file, timeout: 100 })
+    const expectedEffects = [
+      `classList.toggle(brutal,${expectedFamily === "neo"})`,
+      `dataset.themeFamily=${expectedFamily}`,
+    ]
+    expect(
+      JSON.stringify(storageEffects) === JSON.stringify(["localStorage.getItem(ayingott:theme-family)"]),
+      `${file} must read exactly the reviewed Theme Family storage key`,
+    )
+    expect(
+      JSON.stringify(effects) === JSON.stringify(expectedEffects),
+      `${file} ${String(savedFamily)} root effects must be exactly ${expectedEffects.join(" then ")}`,
+    )
+  }
+
+  const { effects, root } = instrumentThemeRoot()
+  runInNewContext(script, {
+    document: { documentElement: root },
+    localStorage: { getItem: () => { throw new Error("blocked") } },
+  }, { filename: file, timeout: 100 })
+  expect(
+    JSON.stringify(effects) === JSON.stringify([
+      "classList.toggle(brutal,false)",
+      "dataset.themeFamily=default",
+    ]),
+    `${file} blocked storage must fall back to exactly the default root effects`,
+  )
+}
+
 function evaluateStaticModule(source, file) {
   const result = ts.transpileModule(source, {
     compilerOptions: {
@@ -575,6 +751,202 @@ function readScopedStyle(source, file) {
   const matches = [...source.matchAll(/<style scoped>\s*([\s\S]*?)<\/style>/g)]
   expect(matches.length === 1, `${file} must contain exactly one scoped style block`)
   return matches[0][1]
+}
+
+function listFiles(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name)
+    return entry.isDirectory() ? listFiles(path) : [path]
+  })
+}
+
+function vueBlocks(source, tag) {
+  const blocks = []
+  const pattern = new RegExp(`<${tag}\\b([^>]*)>([\\s\\S]*?)<\\/${tag}>`, "gi")
+  for (const match of source.matchAll(pattern))
+    blocks.push({ attributes: match[1], source: match[2] })
+  return blocks
+}
+
+function cssModuleImports(source, file) {
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+  const imports = []
+
+  function collect(node) {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node))
+      && node.moduleSpecifier !== undefined
+      && ts.isStringLiteral(node.moduleSpecifier)
+      && node.moduleSpecifier.text.endsWith(".css")
+    )
+      imports.push(node.moduleSpecifier.text)
+
+    if (
+      ts.isCallExpression(node)
+      && (
+        node.expression.kind === ts.SyntaxKind.ImportKeyword
+        || (ts.isIdentifier(node.expression) && node.expression.text === "require")
+        || (
+          (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+          && memberName(node.expression) === "glob"
+        )
+      )
+      && node.arguments.length >= 1
+      && ts.isStringLiteral(node.arguments[0])
+      && node.arguments[0].text.endsWith(".css")
+    )
+      imports.push(node.arguments[0].text)
+
+    ts.forEachChild(node, collect)
+  }
+
+  collect(sourceFile)
+  return imports
+}
+
+function readThemeAuthorStyles() {
+  const vitePressDirectory = join(rootDir, "site/.vitepress")
+  const files = listFiles(vitePressDirectory).filter((file) => {
+    const relativeFile = relative(rootDir, file)
+    return !relativeFile.startsWith("site/.vitepress/cache/")
+      && !relativeFile.startsWith("site/.vitepress/dist/")
+  })
+  const localCssFiles = files
+    .filter(file => file.endsWith(".css"))
+    .map(file => relative(rootDir, file))
+    .sort()
+  expect(
+    localCssFiles.length === 1 && localCssFiles[0] === "site/.vitepress/theme/style.css",
+    "Theme author CSS must keep exactly one reviewed local stylesheet",
+  )
+
+  const moduleImports = []
+  const styles = []
+  for (const absoluteFile of files) {
+    const file = relative(rootDir, absoluteFile)
+    const source = readFileSync(absoluteFile, "utf8")
+    if (/\.(?:[cm]?[jt]s)$/.test(file)) {
+      for (const specifier of cssModuleImports(source, file))
+        moduleImports.push({ file, specifier })
+    }
+    if (file.endsWith(".vue")) {
+      for (const [index, block] of vueBlocks(source, "script").entries()) {
+        for (const specifier of cssModuleImports(block.source, `${file}#script[${index + 1}]`))
+          moduleImports.push({ file, specifier })
+      }
+      for (const [index, block] of vueBlocks(source, "style").entries()) {
+        expect(!/\bsrc\s*=/.test(block.attributes), `${file} style blocks must not use external src`)
+        expect(!/\blang\s*=/.test(block.attributes), `${file} style blocks must use plain CSS`)
+        styles.push({ file: `${file}#style[${index + 1}]`, source: block.source })
+      }
+    }
+    if (file.endsWith(".css"))
+      styles.push({ file, source })
+  }
+
+  expect(
+    moduleImports.length === 1
+    && moduleImports[0].file === "site/.vitepress/theme/index.ts"
+    && moduleImports[0].specifier === "./style.css",
+    "Theme scripts must import exactly the reviewed ./style.css author entry",
+  )
+
+  for (const style of styles) {
+    if (style.file === "site/.vitepress/theme/style.css")
+      continue
+    const css = postcss.parse(style.source, { from: style.file })
+    const imports = []
+    css.walkAtRules((atRule) => {
+      if (atRule.name.toLowerCase() === "import")
+        imports.push(atRule.params)
+    })
+    expect(imports.length === 0, `${style.file} must not extend the reviewed author-style import graph`)
+  }
+
+  return styles
+}
+
+function declarationKey(file, declaration) {
+  expect(declaration.parent?.type === "rule", `${file} transition/order declarations must belong to a rule`)
+  return JSON.stringify({
+    file,
+    important: Boolean(declaration.important),
+    media: mediaAncestors(declaration),
+    property: declaration.prop.toLowerCase(),
+    selectors: [...selectorSet(declaration.parent)].sort(),
+    value: normalizedCssValue(declaration.value),
+  })
+}
+
+function expectedDeclarationKey(file, selectors, property, value, important = false, media = []) {
+  return JSON.stringify({
+    file,
+    important,
+    media,
+    property,
+    selectors: [...selectors].sort(),
+    value: normalizedCssValue(value),
+  })
+}
+
+function verifyAuthorStyleInventory(styles) {
+  const motionProperties = new Set([
+    "all",
+    "scroll-behavior",
+    "transition",
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function",
+  ])
+  const actualTransitions = []
+  const actualOrders = []
+  for (const style of styles) {
+    const css = postcss.parse(style.source, { from: style.file })
+    css.walkDecls((declaration) => {
+      const property = declaration.prop.startsWith("--") ? declaration.prop : declaration.prop.toLowerCase()
+      if (
+        motionProperties.has(property)
+        || property === "animation"
+        || property.startsWith("animation-")
+        || property.startsWith("view-transition-")
+      )
+        actualTransitions.push(declarationKey(style.file, declaration))
+      if (property === "order")
+        actualOrders.push(declarationKey(style.file, declaration))
+    })
+  }
+
+  const familyStyle = "site/.vitepress/theme/components/ThemeFamilyControl.vue#style[1]"
+  const previewStyle = "site/.vitepress/theme/components/TokenPreview.vue#style[1]"
+  const globalStyle = "site/.vitepress/theme/style.css"
+  const reduced = ["(prefers-reduced-motion: reduce)"]
+  const expectedTransitions = [
+    expectedDeclarationKey(familyStyle, [".theme-family-switch__thumb"], "transition", "background-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard)"),
+    expectedDeclarationKey(familyStyle, [".theme-family-switch__thumb"], "transition-duration", "0s", false, reduced),
+    expectedDeclarationKey(previewStyle, [".motion-demo__bar"], "transition-property", "width, transform, opacity"),
+    expectedDeclarationKey(previewStyle, [".motion-demo__bar"], "transition-timing-function", "var(--ease-standard)"),
+    expectedDeclarationKey(previewStyle, [".motion-demo__bar"], "transition-duration", "inherit"),
+    expectedDeclarationKey(previewStyle, [".transition-demo__dot"], "transition", "inherit"),
+    expectedDeclarationKey(previewStyle, [".motion-demo__bar"], "transition-duration", "0ms", true, reduced),
+    expectedDeclarationKey(globalStyle, [".theme-action"], "transition", "var(--transition-interactive)"),
+    expectedDeclarationKey(globalStyle, reducedMotionSelectors, "transition-duration", "0s", true, reduced),
+    expectedDeclarationKey(globalStyle, [".theme-action"], "transition-duration", "0s", false, reduced),
+  ].sort()
+  expect(
+    JSON.stringify(actualTransitions.sort()) === JSON.stringify(expectedTransitions),
+    "Theme author sources must keep exactly the reviewed transition inventory",
+  )
+
+  const mobile = ["(max-width: 767px)"]
+  const expectedOrders = mobileNavOrder.map(([selector, order]) =>
+    expectedDeclarationKey(globalStyle, [selector], "order", order, false, mobile),
+  ).sort()
+  expect(
+    JSON.stringify(actualOrders.sort()) === JSON.stringify(expectedOrders),
+    "Theme author sources must keep exactly the reviewed mobile order inventory",
+  )
 }
 
 function verifyThemeCssEntryImports(source, file) {
@@ -924,12 +1296,83 @@ expectSourceIncludes("site/.vitepress/theme/Layout.vue", [
 const themeFamilyInitSource = expectSourceIncludes("site/.vitepress/theme/theme-family.ts", [
   'export const THEME_FAMILY_ROOT_CLASS = "brutal"',
   'export const THEME_FAMILY_STORAGE_KEY = "ayingott:theme-family"',
+  "export function applyThemeFamilyToRoot",
   "localStorage.getItem",
   "root.classList.toggle",
   "root.dataset.themeFamily = family",
 ])
 const themeFamilyModule = evaluateStaticModule(themeFamilyInitSource, "site/.vitepress/theme/theme-family.ts")
 expect(typeof themeFamilyModule.THEME_FAMILY_INIT_SCRIPT === "string", "Theme Family init script must be a string")
+verifyThemeFamilyInitEffects(
+  themeFamilyModule.THEME_FAMILY_INIT_SCRIPT,
+  "<rendered-theme-family-init-script-effects>",
+)
+expectFailure(
+  "interprocedural init-script root mutation",
+  () => verifyThemeFamilyInitEffects(
+    themeFamilyModule.THEME_FAMILY_INIT_SCRIPT.replace(
+      "root.dataset.themeFamily = family",
+      'root.dataset.themeFamily = family\n  function forceDark(element) { element.classList.add("dark") }\n  forceDark(root)',
+    ),
+    "<interprocedural-init-script-fixture>",
+  ),
+  "root effects must be exactly",
+)
+verifyThemeFamilyRootEffects(
+  themeFamilyModule.applyThemeFamilyToRoot,
+  "site/.vitepress/theme/theme-family.ts#applyThemeFamilyToRoot",
+)
+expectFailure(
+  "interprocedural root helper mutation",
+  () => verifyThemeFamilyRootEffects((root, family) => {
+    root.classList.toggle("brutal", family === "neo")
+    root.dataset.themeFamily = family
+    function forceDark(element) {
+      element.classList.add("dark")
+    }
+    forceDark(root)
+  }, "<interprocedural-root-helper-fixture>"),
+  "root effects must be exactly",
+)
+expectFailure(
+  "bound root method mutation",
+  () => verifyThemeFamilyRootEffects((root, family) => {
+    root.classList.toggle("brutal", family === "neo")
+    root.dataset.themeFamily = family
+    const setClass = root.setAttribute.bind(root)
+    setClass("class", "dark")
+  }, "<bound-root-method-fixture>"),
+  "root effects must be exactly",
+)
+expectFailure(
+  "called root method mutation",
+  () => verifyThemeFamilyRootEffects((root, family) => {
+    root.classList.toggle("brutal", family === "neo")
+    root.dataset.themeFamily = family
+    root.setAttribute.call(root, "class", "dark")
+  }, "<called-root-method-fixture>"),
+  "root effects must be exactly",
+)
+expectFailure(
+  "applied root method mutation",
+  () => verifyThemeFamilyRootEffects((root, family) => {
+    root.classList.toggle("brutal", family === "neo")
+    root.dataset.themeFamily = family
+    root.setAttribute.apply(root, ["class", "dark"])
+  }, "<applied-root-method-fixture>"),
+  "root effects must be exactly",
+)
+expectFailure(
+  "computed root helper mutation",
+  () => verifyThemeFamilyRootEffects((root, family) => {
+    root.classList.toggle("brutal", family === "neo")
+    root.dataset.themeFamily = family
+    const key = "classList"
+    const method = "add"
+    root[key][method]("dark")
+  }, "<computed-root-helper-fixture>"),
+  "root effects must be exactly",
+)
 verifyThemeFamilyClassMutation(
   themeFamilyModule.THEME_FAMILY_INIT_SCRIPT,
   "<rendered-theme-family-init-script>",
@@ -937,19 +1380,31 @@ verifyThemeFamilyClassMutation(
 )
 
 const themeFamilyComposableSource = expectSourceIncludes("site/.vitepress/theme/composables/useThemeFamily.ts", [
-  "root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)",
+  "applyThemeFamilyToRoot(document.documentElement, family)",
   "localStorage.setItem(THEME_FAMILY_STORAGE_KEY, family)",
   "document.documentElement.classList.contains(THEME_FAMILY_ROOT_CLASS)",
   '"Neo" : "Default"',
   'isDark.value ? "Dark" : "Light"',
 ])
-verifyThemeFamilyClassMutation(
+verifyThemeFamilyRootBoundary(
   themeFamilyComposableSource,
   "site/.vitepress/theme/composables/useThemeFamily.ts",
-  {
-    classIdentifier: "THEME_FAMILY_ROOT_CLASS",
-    stateIdentifier: "NEO_THEME_FAMILY",
-  },
+)
+expectFailure(
+  "composable destructured root alias mutation",
+  () => verifyThemeFamilyRootBoundary(
+    `${themeFamilyComposableSource}\nconst { documentElement: schemeRoot } = document\nschemeRoot.className += " dark"`,
+    "<composable-destructured-root-alias-fixture>",
+  ),
+  "must not alias the theme root",
+)
+expectFailure(
+  "composable interprocedural root escape",
+  () => verifyThemeFamilyRootBoundary(
+    `${themeFamilyComposableSource}\nfunction forceDark(element) { element.classList.add("dark") }\nforceDark(document.documentElement)`,
+    "<composable-interprocedural-root-fixture>",
+  ),
+  "must keep exactly two reviewed theme-root reads",
 )
 
 const familyMutationFixture = `
@@ -1046,6 +1501,18 @@ expectFailure(
   () => verifyThemeFamilyClassMutation(
     `${familyMutationFixture}\nroot.className += ' dark'`,
     "<family-root-classname-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one canonical root metadata write",
+)
+expectFailure(
+  "family destructured root alias mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nconst { documentElement: schemeRoot } = document\nschemeRoot.className += ' dark'`,
+    "<family-destructured-root-alias-fixture>",
     {
       classIdentifier: "THEME_FAMILY_ROOT_CLASS",
       stateIdentifier: "NEO_THEME_FAMILY",
@@ -1166,6 +1633,7 @@ verifyThemeFamilyReducedMotion(
 
 const cssFile = "site/.vitepress/theme/style.css"
 const cssSource = readSource(cssFile)
+const themeAuthorStyles = readThemeAuthorStyles()
 const globalStyleImportFixture = reviewedGlobalStyleImports.map(value => `@import ${value};`).join("\n")
 const globalTransitionFixture = `
   .theme-action {
@@ -1215,6 +1683,17 @@ expectFailure(
   "Expected exactly one global transition declaration",
 )
 verifyGlobalTransitionInventory(cssSource, cssFile)
+expectFailure(
+  "unscoped Vue author transition override",
+  () => verifyAuthorStyleInventory([
+    ...themeAuthorStyles,
+    {
+      file: "site/.vitepress/theme/Layout.vue#style[1]",
+      source: ".theme-family-control .theme-family-switch__thumb { transition-duration: 1s !important; }",
+    },
+  ]),
+  "must keep exactly the reviewed transition inventory",
+)
 expectFailure(
   "wrong mobile Theme Family order",
   () => verifyMobileThemeFamilyOrder(`
@@ -1277,6 +1756,7 @@ expectFailure(
   "Expected exactly 5 canonical mobile order declarations",
 )
 verifyMobileThemeFamilyOrder(cssSource, cssFile)
+verifyAuthorStyleInventory(themeAuthorStyles)
 const css = postcss.parse(cssSource, { from: cssFile })
 
 expectFailure(
