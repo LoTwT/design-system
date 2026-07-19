@@ -161,37 +161,112 @@ function verifyReducedAppearanceMotion(source, file) {
 
 const classListMutators = new Set(["add", "remove", "replace", "toggle"])
 
+function memberName(node) {
+  if (ts.isIdentifier(node) || ts.isStringLiteral(node))
+    return node.text
+  if (ts.isPropertyAccessExpression(node))
+    return node.name.text
+  if (
+    ts.isElementAccessExpression(node)
+    && node.argumentExpression !== undefined
+    && (ts.isStringLiteral(node.argumentExpression) || ts.isNoSubstitutionTemplateLiteral(node.argumentExpression))
+  )
+    return node.argumentExpression.text
+}
+
+function isNamedMember(node, name) {
+  return (
+    (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+    && memberName(node) === name
+  )
+}
+
 function readClassListMutations(source, file) {
   const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+  const aliasCandidates = []
+  const aliases = new Set()
   const mutations = []
 
-  function visit(node) {
-    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-      const method = node.expression.name.text
-      const receiver = node.expression.expression
+  function collectAliases(node) {
+    if (
+      ts.isVariableDeclaration(node)
+      && ts.isIdentifier(node.name)
+      && node.initializer !== undefined
+    )
+      aliasCandidates.push({ name: node.name.text, value: node.initializer })
+
+    if (
+      ts.isBinaryExpression(node)
+      && node.operatorToken.kind === ts.SyntaxKind.EqualsToken
+      && ts.isIdentifier(node.left)
+    )
+      aliasCandidates.push({ name: node.left.text, value: node.right })
+
+    if (
+      ts.isVariableDeclaration(node)
+      && ts.isObjectBindingPattern(node.name)
+      && node.name.elements.some(element =>
+        memberName(element.propertyName ?? element.name) === "classList",
+      )
+    )
+      aliases.add(node.name.getText(sourceFile))
+
+    ts.forEachChild(node, collectAliases)
+  }
+
+  collectAliases(sourceFile)
+
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const candidate of aliasCandidates) {
       if (
-        classListMutators.has(method)
-        && ts.isPropertyAccessExpression(receiver)
-        && receiver.name.text === "classList"
+        !aliases.has(candidate.name)
+        && (
+          isNamedMember(candidate.value, "classList")
+          || (ts.isIdentifier(candidate.value) && aliases.has(candidate.value.text))
+        )
+      ) {
+        aliases.add(candidate.name)
+        changed = true
+      }
+    }
+  }
+
+  function collectMutations(node) {
+    if (
+      ts.isCallExpression(node)
+      && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+    ) {
+      const method = memberName(node.expression)
+      const receiver = node.expression.expression
+      const directClassListCall = isNamedMember(receiver, "classList")
+      const aliasClassListCall = ts.isIdentifier(receiver) && aliases.has(receiver.text)
+      if (
+        aliasClassListCall
+        || (directClassListCall && (method === undefined || classListMutators.has(method)))
       ) {
         mutations.push({
           arguments: node.arguments,
-          method,
-          receiver: receiver.expression.getText(sourceFile),
+          method: method ?? "<computed>",
+          receiver: directClassListCall
+            ? receiver.expression.getText(sourceFile)
+            : receiver.getText(sourceFile),
           sourceFile,
         })
       }
     }
-    ts.forEachChild(node, visit)
+    ts.forEachChild(node, collectMutations)
   }
 
-  visit(sourceFile)
-  return mutations
+  collectMutations(sourceFile)
+  return { aliases, mutations }
 }
 
 function verifyThemeFamilyClassMutation(source, file, expected) {
-  const mutations = readClassListMutations(source, file)
+  const { aliases, mutations } = readClassListMutations(source, file)
+  expect(aliases.size === 0, `${file} must not alias classList`)
   expect(mutations.length === 1, `${file} must contain exactly one classList mutation`)
 
   const mutation = mutations[0]
@@ -259,6 +334,27 @@ function readScopedStyle(source, file) {
   return matches[0][1]
 }
 
+function declarationsForSelector(css, selector, property) {
+  const declarations = []
+  css.walkDecls(property, (declaration) => {
+    const rule = declaration.parent
+    if (rule?.type === "rule" && rule.selectors.some(candidate => candidate.trim() === selector))
+      declarations.push(declaration)
+  })
+  return declarations
+}
+
+function mediaAncestors(node) {
+  const media = []
+  let current = node.parent
+  while (current !== undefined) {
+    if (current.type === "atrule" && current.name === "media")
+      media.push(current.params)
+    current = current.parent
+  }
+  return media
+}
+
 function verifyThemeFamilyReducedMotion(source, file) {
   const css = postcss.parse(source, { from: file })
   const reducedMotion = css.nodes.filter(node =>
@@ -273,6 +369,16 @@ function verifyThemeFamilyReducedMotion(source, file) {
     "family reduced motion",
   ))
   expectDeclaration(thumb, "transition-duration", "0s")
+
+  const durations = declarationsForSelector(css, ".theme-family-switch__thumb", "transition-duration")
+  expect(durations.length === 1, `Expected exactly one family transition-duration declaration in ${file}`)
+  expect(durations[0].value.trim() === "0s", `Expected family transition-duration: 0s; received ${durations[0].value.trim()}`)
+  expect(!durations[0].important, "Expected family transition-duration important=false")
+  expect(
+    mediaAncestors(durations[0]).length === 1
+    && mediaAncestors(durations[0])[0] === "(prefers-reduced-motion: reduce)",
+    `Family transition-duration must only come from the canonical reduced-motion media query in ${file}`,
+  )
 }
 
 const mobileNavOrder = [
@@ -303,6 +409,16 @@ function verifyMobileThemeFamilyOrder(source, file) {
   for (const [selector, order] of mobileNavOrder) {
     const declarations = readDeclarations(findRule(mobile[0], [selector], `mobile order ${selector}`))
     expectDeclaration(declarations, "order", order)
+
+    const orderDeclarations = declarationsForSelector(css, selector, "order")
+    expect(orderDeclarations.length === 1, `Expected exactly one order declaration for ${selector} in ${file}`)
+    expect(orderDeclarations[0].value.trim() === order, `Expected ${selector} order: ${order}; received ${orderDeclarations[0].value.trim()}`)
+    expect(!orderDeclarations[0].important, `Expected ${selector} order important=false`)
+    expect(
+      mediaAncestors(orderDeclarations[0]).length === 1
+      && mediaAncestors(orderDeclarations[0])[0] === "(max-width: 767px)",
+      `${selector} order must only come from the canonical mobile media query in ${file}`,
+    )
   }
 }
 
@@ -509,6 +625,30 @@ expectFailure(
   ),
   "must contain exactly one classList mutation",
 )
+expectFailure(
+  "family element-access scheme mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.classList['add']('dark')`,
+    "<family-element-access-scheme-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
+expectFailure(
+  "family classList alias scheme mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nconst familyClasses = root.classList\nfamilyClasses.add('dark')`,
+    "<family-alias-scheme-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must not alias classList",
+)
 
 const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
   'role="switch"',
@@ -531,6 +671,20 @@ expectFailure(
     }
   `, "<wrong-family-reduced-motion-fixture>"),
   "Expected transition-duration: 0s",
+)
+expectFailure(
+  "late family reduced-motion override",
+  () => verifyThemeFamilyReducedMotion(`
+    @media (prefers-reduced-motion: reduce) {
+      .theme-family-switch__thumb {
+        transition-duration: 0s;
+      }
+    }
+    .theme-family-switch__thumb {
+      transition-duration: 1s !important;
+    }
+  `, "<late-family-reduced-motion-override-fixture>"),
+  "Expected exactly one family transition-duration declaration",
 )
 verifyThemeFamilyReducedMotion(
   readScopedStyle(themeFamilyControlSource, "site/.vitepress/theme/components/ThemeFamilyControl.vue"),
@@ -556,6 +710,23 @@ expectFailure(
     }
   `, "<wrong-mobile-family-order-fixture>"),
   "Expected order: 4",
+)
+expectFailure(
+  "equivalent mobile Theme Family order override",
+  () => verifyMobileThemeFamilyOrder(`
+    @media (max-width: 767px) {
+      .VPNavScreen > .container { display: flex; flex-direction: column; }
+      .VPNavScreen .menu { order: 1; }
+      .VPNavScreen .translations { order: 2; }
+      .VPNavScreen .appearance { order: 3; }
+      .VPNavScreen .theme-family-control--screen { order: 4; }
+      .VPNavScreen .social-links { order: 5; }
+    }
+    @media (width <= 767px) {
+      .VPNavScreen .theme-family-control--screen { order: 2 !important; }
+    }
+  `, "<equivalent-mobile-family-order-override-fixture>"),
+  "Expected exactly one order declaration for .VPNavScreen .theme-family-control--screen",
 )
 verifyMobileThemeFamilyOrder(cssSource, cssFile)
 const css = postcss.parse(cssSource, { from: cssFile })
