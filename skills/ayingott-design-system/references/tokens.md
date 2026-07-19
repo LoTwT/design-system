@@ -108,6 +108,19 @@ Each status also exposes `-fg`, `-bg`, and `-border` roles. Paper uses the `700`
 
 `--reading-link` intentionally uses `--text-accent` rather than `--accent-primary`, so normal-size links pass AA on the light canvas.
 
+## Neo-Brutal opt-in scope
+
+Import `@ayingott/theme/brutal.css` after the default entry. Keep the family and scheme axes on one theme root: no classes select Paper, `.dark` selects Ink, `.brutal` selects Neo Light, and `.brutal.dark` selects Neo Dark. Arbitrary mixed nested theme islands are unsupported in V0.
+
+| Category | Scope after `brutal.css` import | Consumer guidance |
+| --- | --- | --- |
+| Semantic roles such as `--surface-canvas` and `--text-muted` | Remapped inside `.brutal` / `.brutal.dark` | Primary consumer API |
+| `--border-width-surface`, `--border-width-control` | Defined inside `.brutal` / `.brutal.dark` | Use with `--border-width-thin` fallbacks across families |
+| `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, `--shadow-hard-lg` | Defined at `:root` | Entry-global physical tokens for direct composition; size utilities exist for `sm` / `md` / `lg` |
+| `--brutal-*` palette variables | Family-local implementation values | Contract-owned; do not use directly in consumer CSS |
+
+Use `--text-muted` for active muted UI copy. Physical color utilities remain valid for decorative or fixed-color work. `subtle`, `muted`, and `soft` are family-relative intents, not promises of equal alpha, literal color, or visual weight.
+
 ## Foundation palettes (use only when semantic vars do not fit)
 
 - **Surface** (warm paper ramp): `--color-surface-0` `#fbf7ee` → `--color-surface-5` `#d8d1bf`. 6 steps.

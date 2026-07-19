@@ -61,7 +61,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--surface-canvas` | The page background. Warm cream in light, purple-tinged near-black in dark. |
 | `--surface-panel` | Sidebars, secondary panels. |
 | `--surface-elevated` | Cards. The only place pure white appears in V0 (light mode only). |
-| `--surface-subtle` | Inset chips, hover backgrounds, code block panels. |
+| `--surface-subtle` | Inset chips, hover backgrounds, code block panels. The exact alpha and visual weight are family-relative. |
 | `--surface-muted` | Borders or backgrounds that need slightly more contrast than `subtle`. |
 | `--text-primary` | All body and heading text. |
 | `--text-secondary` | Captions, supporting prose. |
@@ -79,6 +79,8 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--status-success` / `-warning` / `-danger` / `-info` | State communication. Mirror decorative hues mint / amber / rose / sky. |
 
 Full list: see `references/tokens.md`.
+
+Use `--text-muted` for active muted UI copy such as metadata and helper text. Physical color utilities remain available for decorative or explicitly fixed-color work, but do not substitute them for semantic copy by default. Names such as `subtle`, `muted`, and `soft` express intent within the active family; they do not guarantee equal alpha, literal color, or visual weight across families.
 
 ### Reading semantic variables
 
@@ -161,6 +163,14 @@ The selector matrix is orthogonal:
 | `.brutal` | light | Neo Light |
 | `.brutal` | `.dark` | Neo Dark |
 
+Place the family and scheme classes together on the same theme root:
+
+```html
+<html class="brutal dark">
+```
+
+V0 supports these four co-located root states. Arbitrary mixed nested theme islands are unsupported because splitting `.brutal` and `.dark` across nested scopes can produce an uncontracted hybrid mapping.
+
 The family keeps the semantic API and component anatomy. It maps card/control radius to zero, card/panel depth to zero-blur hard shadows, and exposes `--border-width-surface` / `--border-width-control`. Use fallbacks when the same consumer CSS must work without the family:
 
 ```css
@@ -170,6 +180,10 @@ The family keeps the semantic API and component anatomy. It maps card/control ra
   box-shadow: var(--shadow-card);
 }
 ```
+
+Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles remain scoped to `.brutal`. If a family-scoped role is missing and its `var()` has no fallback, the containing declaration becomes invalid at computed-value time; CSS then uses normal cascade, inheritance, or initial-value behavior.
+
+Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
 
 Use `pressable` only with the opt-in entry and compose accessibility utilities:
 

@@ -11,6 +11,13 @@ function readSource(file) {
   return readFileSync(join(rootDir, file), "utf8")
 }
 
+function expectSourceIncludes(file, fragments) {
+  const source = readSource(file)
+  for (const fragment of fragments)
+    expect(source.includes(fragment), `${file} must include: ${fragment}`)
+  return source
+}
+
 function expect(condition, message) {
   if (!condition)
     throw new Error(message)
@@ -166,6 +173,58 @@ function sha256(file) {
 }
 
 const config = readConfig()
+
+const homepageSource = expectSourceIncludes("site/index.md", [
+  "text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.",
+  "text: Compare theme families",
+  "link: /guide/theme-overview",
+  "title: Two-axis themes",
+])
+expect(!homepageSource.includes("title: Runtime Semantics"), "Homepage must replace the Runtime Semantics card")
+expect((homepageSource.match(/^  - title:/gm) ?? []).length === 3, "Homepage must keep exactly three feature cards")
+
+expectSourceIncludes("site/guide/getting-started.md", [
+  '<html class="brutal dark">',
+  "Arbitrary mixed nested theme islands are unsupported",
+  "The `--brutal-*` palette variables are contract-owned implementation details",
+  "[Theme overview](./theme-overview)",
+])
+expectSourceIncludes("site/tokens/effects.md", [
+  "at `:root`",
+  "var(--border-width-control, var(--border-width-thin))",
+  "invalid at computed-value time",
+])
+expectSourceIncludes("site/tokens/semantic.md", [
+  "Use `--text-muted` for active muted UI copy",
+  "express family-relative intent",
+])
+expectSourceIncludes("site/guide/package-contract.md", [
+  "The family-local `--brutal-*` palette variables are contract-owned implementation details",
+])
+expectSourceIncludes("packages/theme/README.md", [
+  "place both classes on that same root",
+  "Arbitrary mixed nested theme islands are unsupported",
+  "not a consumer direct-use API",
+])
+expectSourceIncludes("skills/ayingott-design-system/SKILL.md", [
+  "Place the family and scheme classes together on the same theme root",
+  "Do not consume the family-local `--brutal-*` palette variables directly",
+  "Use `--text-muted` for active muted UI copy",
+])
+expectSourceIncludes("skills/ayingott-design-system/references/tokens.md", [
+  "## Neo-Brutal opt-in scope",
+  "Contract-owned; do not use directly in consumer CSS",
+])
+expectSourceIncludes("docs/spec/rfc-brutal-theme.md", [
+  "co-located on one theme root",
+  "not a consumer direct-use API",
+  "invalid at computed-value time",
+])
+expectSourceIncludes("docs/spec/design-system-v1.0.md", [
+  "两个 class 共置同一 theme root",
+  "不是 consumer direct-use API",
+  "computed-value time invalid",
+])
 
 expect(stringValue(property(config, "lang"), "lang") === "en", "VitePress lang must be en")
 expect(stringValue(property(config, "title"), "title") === "Ayingott Design System", "VitePress title must remain Ayingott Design System")

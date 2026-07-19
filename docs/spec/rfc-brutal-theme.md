@@ -33,6 +33,8 @@ Consumers keep the default entry and add the family entry after it:
 
 `.dark` remains the scheme axis. `.brutal` is only the family axis. `.dark` without `.brutal` is valid Ink. Removing `.brutal` or removing the extra import returns to Paper/Ink without changing the consumer's scheme mechanism.
 
+V0 defines these four states with the family and scheme classes co-located on one theme root. Arbitrary mixed nested theme islands are unsupported. Splitting `.brutal` and `.dark` across nested scopes can combine selectors through the cascade into an uncontracted hybrid; subtree isolation requires a separate runtime and contract decision.
+
 ## 2. Accepted corrections to the draft
 
 ### 2.1 Default compiled CSS is the compatibility boundary
@@ -43,6 +45,8 @@ The default `@ayingott/theme` compiled output remains exact. Hard-shadow tokens,
 
 Neo Light and Neo Dark declare equivalent key sets. Every current public surface, text, border, accent, focus, status, reading, radius, and depth role is either explicitly remapped or explicitly retained through the contract. A partial palette override is not conforming.
 
+The `--brutal-*` variables exist to implement and verify those mappings. They are contract-owned implementation palette values, not a consumer direct-use API. Consumers use semantic roles, the two opt-in structure roles, and the entry-global hard-shadow physical tokens instead.
+
 ### 2.3 Structure changes through role aliases
 
 The family remaps existing `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel` roles. It adds two opt-in roles:
@@ -50,7 +54,7 @@ The family remaps existing `--radius-card`, `--radius-control`, `--shadow-card`,
 - `--border-width-surface`
 - `--border-width-control`
 
-Both resolve to the existing `--border-width-heavy` physical token. Existing physical radius, border, and soft-shadow scales remain unchanged.
+Both resolve to the existing `--border-width-heavy` physical token. Existing physical radius, border, and soft-shadow scales remain unchanged. Cross-family declarations use `var(--border-width-surface, var(--border-width-thin))` or `var(--border-width-control, var(--border-width-thin))`. Without a `var()` fallback, a missing role makes the containing declaration invalid at computed-value time and leaves resolution to the normal cascade, inheritance, or initial value.
 
 ### 2.4 Invariants have a narrow verification boundary
 
@@ -71,7 +75,7 @@ packages/theme/src/
     └── pressable.css
 ```
 
-`brutal.css` imports the semantic and utility sources, then declares the opt-in hard-shadow variables and their three matching utilities. It does not import `index.css`; the consumer must import the default entry first.
+`brutal.css` imports the semantic and utility sources, then declares the opt-in hard-shadow variables at `:root` and their three matching utilities. The hard-shadow physical tokens are therefore entry-global after import, while the surface/control width roles remain scoped to `.brutal`. It does not import `index.css`; the consumer must import the default entry first.
 
 The fifth public export is:
 
@@ -153,6 +157,8 @@ Consumers own:
 - migration from fixed `1px` component borders to the opt-in width roles;
 - component anatomy and copy;
 - any production family switcher.
+
+Active muted UI copy uses the semantic `--text-muted` role by default; physical color utilities remain valid for decorative or explicitly fixed-color work. `subtle` and `muted` role names express family-relative intent and do not promise equal alpha, literal color, or visual weight across families.
 
 The rollout proof uses the real tarball in two disposable consumers. No consumer repository change is part of this feature.
 

@@ -3,11 +3,11 @@ layout: home
 
 hero:
   name: Ayingott Design System
-  text: Paper & Ink semantic themes for calm, geometric personal interfaces.
-  tagline: A first-party showcase for @ayingott/theme.
+  text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.
+  tagline: A first-party theme-family showcase for @ayingott/theme.
   actions:
     - theme: brand
-      text: View Paper & Ink
+      text: Compare theme families
       link: /guide/theme-overview
     - theme: alt
       text: Package Contract
@@ -16,8 +16,8 @@ hero:
 features:
   - title: Tailwind CSS v4
     details: Foundation tokens are published through CSS-first @theme static files.
-  - title: Runtime Semantics
-    details: Paper defaults to :root; Ink responds through .dark without changing structure.
+  - title: Two-axis themes
+    details: "Scheme and family stay independent: Paper and Ink by default, Neo Light and Dark by opt-in."
   - title: Opt-in Fonts
     details: Space Grotesk, Space Mono, and Newsreader are available through a separate fonts.css entry.
 ---
@@ -26,4 +26,4 @@ features:
 
 This site only displays the design system. It is not a playground, component library, or consumer integration test.
 
-Use it to inspect the paired theme, token values, visual states, and package contract.
+Use it to inspect the four theme states, token values, visual states, and package contract.

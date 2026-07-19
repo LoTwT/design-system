@@ -10,13 +10,25 @@ Effects include radius, shadow, border, and motion tokens.
 
 <TokenPreview source="shadow" prefix="shadow-" preview="shadow" />
 
-`brutal.css` adds the opt-in `--shadow-hard-sm`, `--shadow-hard-md`, and `--shadow-hard-lg` physical tokens. They use positive offsets with zero blur and do not appear in the default entry.
+Importing `brutal.css` adds the `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, and `--shadow-hard-lg` physical tokens at `:root`, together with utilities for the three size tokens. They use positive offsets with zero blur, do not appear in the default entry, and remain available even when the current theme root does not carry `.brutal`.
 
 ## Border Width
 
 <TokenPreview source="border" prefix="border-width-" preview="border" />
 
-Inside `.brutal`, `--border-width-surface` and `--border-width-control` both map to `--border-width-heavy`. Outside the family, consumers may use `var(--border-width-control, var(--border-width-thin))` for a clean fallback.
+Inside `.brutal`, `--border-width-surface` and `--border-width-control` both map to `--border-width-heavy`. Unlike the entry-global hard-shadow tokens, these structure roles are family-scoped. Use the canonical fallbacks when the same consumer CSS must work with or without Neo:
+
+```css
+.card {
+  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-default);
+}
+
+.button {
+  border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default);
+}
+```
+
+If a referenced custom property is missing and the `var()` has no fallback, the containing declaration becomes invalid at computed-value time. CSS then follows the normal cascade, inheritance, or initial-value behavior for that property; it does not invent a family fallback.
 
 ## Motion Duration
 

@@ -182,7 +182,7 @@ V0 token：`--spacing-px / -0 / -0-5 / -1 / -1-5 / -2 / -2-5 / -3 / -3-5 / -4 / 
 
 设计意图：multi-layer 阴影（每个含 2 层）提质感；语义阴影 (`--shadow-card`, `--shadow-panel`) 让 consumer 不直接绑 size。
 
-Opt-in `brutal.css` 追加 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、zero blur），并在 `.brutal` 下重映射 semantic shadow aliases；默认 soft-shadow scale 与编译输出不变。
+Opt-in `brutal.css` 在 `:root` 追加 `--shadow-hard-color` 与 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、zero blur），因此 import 后这些 physical tokens 为 entry-global；它另在 `.brutal` 下重映射 semantic shadow aliases。默认 soft-shadow scale 与编译输出不变。
 
 ### 1.14 Border（5 width + 3 style）
 
@@ -191,7 +191,7 @@ Opt-in `brutal.css` 追加 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、ze
 --border-style-solid / -dashed / -dotted                       (3 style)
 ```
 
-Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。
+Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。缺少 family-scoped role 且 `var()` 未提供 fallback 时，包含它的 declaration 在 computed-value time invalid，并回到正常 cascade / inheritance / initial-value 解析。
 
 ### 1.15 Motion（5 duration + 4 ease + 2 named animation + 2 keyframes）
 
@@ -469,9 +469,11 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
 | present | absent | Neo-Brutal Light |
 | present | present | Neo-Brutal Dark |
 
-`.dark` 仍是 scheme selector；`.brutal` 只选择 family。Neo Light/Dark 使用等价 declaration key set，完整覆盖 surface / text / border / accent / focus / status / reading，并重映射 card/control radius、card/panel shadow 与 surface/control border width。移除 `.brutal` 或额外 import 即回退 Paper/Ink。
+`.dark` 仍是 scheme selector；`.brutal` 只选择 family。V0 要求两个 class 共置同一 theme root；arbitrary mixed nested theme islands 不受支持，因为拆分两个轴会通过 cascade 产生未纳入 contract 的 hybrid mapping。Neo Light/Dark 使用等价 declaration key set，完整覆盖 surface / text / border / accent / focus / status / reading，并重映射 card/control radius、card/panel shadow 与 surface/control border width。移除 `.brutal` 或额外 import 即回退 Paper/Ink。
 
-Neo sticker palette 使用 family-local direct literals，由 `brutal-theme-contract.json` digest 持有。Blue `#3D5AFE` 的 foreground 固定 pure white `#FFFFFF`（5.132:1），不得绑定会随 scheme 翻转的 paper ink。
+Neo sticker palette 使用 `--brutal-*` family-local direct literals，由 `brutal-theme-contract.json` digest 持有；这些变量是 contract-owned implementation values，不是 consumer direct-use API。Blue `#3D5AFE` 的 foreground 固定 pure white `#FFFFFF`（5.132:1），不得绑定会随 scheme 翻转的 paper ink。
+
+Active muted UI copy 默认使用 semantic `--text-muted`；physical color utility 仍可用于 decorative 或显式 fixed-color 场景。`subtle` / `muted` / `soft` 表示 active family 内的 relative intent，不承诺跨 family 相同 alpha、literal 或视觉重量。
 
 ---
 
