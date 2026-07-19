@@ -605,6 +605,89 @@ function verifyThemeFamilyClassMutation(source, file, expected) {
   }
 }
 
+function callablePath(node) {
+  const value = unwrapExpression(node)
+  if (ts.isIdentifier(value))
+    return value.text
+  if (ts.isPropertyAccessExpression(value) || ts.isElementAccessExpression(value)) {
+    const parent = callablePath(value.expression)
+    const name = memberName(value)
+    if (parent !== undefined && name !== undefined)
+      return `${parent}.${name}`
+  }
+}
+
+function verifyThemeFamilyComposableGraph(source, file) {
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+  const imports = sourceFile.statements.filter(ts.isImportDeclaration).map(statement =>
+    statement.getText(sourceFile).replace(/\s+/g, " "),
+  )
+  expect(
+    JSON.stringify(imports) === JSON.stringify([
+      'import { computed, onMounted, shallowRef } from "vue"',
+      'import { useData } from "vitepress"',
+      'import { DEFAULT_THEME_FAMILY, NEO_THEME_FAMILY, THEME_FAMILY_ROOT_CLASS, THEME_FAMILY_STORAGE_KEY, applyThemeFamilyToRoot, type ThemeFamily, } from "../theme-family"',
+    ]),
+    `${file} must keep exactly the reviewed import graph`,
+  )
+
+  const calls = new Map()
+  const gateways = new Map([
+    ["document", 0],
+    ["globalThis", 0],
+    ["self", 0],
+    ["window", 0],
+  ])
+  let dynamicImports = 0
+  let constructors = 0
+  let taggedTemplates = 0
+
+  function collect(node) {
+    if (ts.isIdentifier(node) && gateways.has(node.text))
+      gateways.set(node.text, gateways.get(node.text) + 1)
+    if (ts.isCallExpression(node)) {
+      if (node.expression.kind === ts.SyntaxKind.ImportKeyword)
+        dynamicImports += 1
+      const path = callablePath(node.expression) ?? "<computed>"
+      calls.set(path, (calls.get(path) ?? 0) + 1)
+    }
+    if (ts.isNewExpression(node))
+      constructors += 1
+    if (ts.isTaggedTemplateExpression(node))
+      taggedTemplates += 1
+    ts.forEachChild(node, collect)
+  }
+
+  collect(sourceFile)
+  expect(
+    JSON.stringify([...gateways]) === JSON.stringify([
+      ["document", 2],
+      ["globalThis", 0],
+      ["self", 0],
+      ["window", 0],
+    ]),
+    `${file} must keep exactly the two reviewed document gateway reads`,
+  )
+  expect(dynamicImports === 0, `${file} must not use dynamic imports`)
+  expect(constructors === 0, `${file} must not construct DOM mutation helpers`)
+  expect(taggedTemplates === 0, `${file} must not invoke tagged helpers`)
+  expect(
+    JSON.stringify([...calls].sort()) === JSON.stringify([
+      ["applyThemeFamily", 2],
+      ["applyThemeFamilyToRoot", 1],
+      ["computed", 2],
+      ["document.documentElement.classList.contains", 1],
+      ["initializeThemeFamily", 1],
+      ["localStorage.setItem", 1],
+      ["onMounted", 1],
+      ["shallowRef", 2],
+      ["useData", 1],
+    ]),
+    `${file} must keep exactly the reviewed callable product graph; received ${JSON.stringify([...calls].sort())}`,
+  )
+}
+
 function verifyThemeFamilyRootBoundary(source, file) {
   const {
     aliases,
@@ -766,6 +849,120 @@ function vueBlocks(source, tag) {
   for (const match of source.matchAll(pattern))
     blocks.push({ attributes: match[1], source: match[2] })
   return blocks
+}
+
+function verifyThemeFamilyComponentGraph(source, file) {
+  const scripts = vueBlocks(source, "script")
+  expect(scripts.length === 1, `${file} must keep exactly one reviewed script block`)
+  const sourceFile = ts.createSourceFile(file, scripts[0].source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} script has TypeScript parse errors`)
+  const imports = sourceFile.statements.filter(ts.isImportDeclaration).map(statement =>
+    statement.getText(sourceFile).replace(/\s+/g, " "),
+  )
+  expect(
+    JSON.stringify(imports) === JSON.stringify([
+      'import { computed } from "vue"',
+      'import { useThemeFamily } from "../composables/useThemeFamily"',
+      'import { NEO_THEME_FAMILY } from "../theme-family"',
+    ]),
+    `${file} must keep exactly the reviewed component import graph`,
+  )
+  const calls = new Map()
+  let dynamicImports = 0
+  let constructors = 0
+  let taggedTemplates = 0
+  function collect(node) {
+    if (ts.isCallExpression(node)) {
+      if (node.expression.kind === ts.SyntaxKind.ImportKeyword)
+        dynamicImports += 1
+      const path = callablePath(node.expression) ?? "<computed>"
+      calls.set(path, (calls.get(path) ?? 0) + 1)
+    }
+    if (ts.isNewExpression(node))
+      constructors += 1
+    if (ts.isTaggedTemplateExpression(node))
+      taggedTemplates += 1
+    ts.forEachChild(node, collect)
+  }
+  collect(sourceFile)
+  expect(dynamicImports === 0, `${file} must not use dynamic imports`)
+  expect(constructors === 0, `${file} must not construct DOM mutation helpers`)
+  expect(taggedTemplates === 0, `${file} must not invoke tagged helpers`)
+  expect(
+    JSON.stringify([...calls].sort()) === JSON.stringify([
+      ["computed", 2],
+      ["defineProps", 1],
+      ["useThemeFamily", 1],
+    ]),
+    `${file} must keep exactly the reviewed component callable graph`,
+  )
+  const templateEvents = source.match(/(?:@[\w-]+|v-on:[\w-]+|:on[A-Z]\w*|v-bind:on[A-Z]\w*)\s*=/g) ?? []
+  expect(
+    JSON.stringify(templateEvents) === JSON.stringify(["@click="])
+    && source.includes('@click="toggleThemeFamily"'),
+    `${file} must keep exactly the reviewed toggleThemeFamily event binding`,
+  )
+}
+
+function verifyThemeLayoutGraph(source, file) {
+  const scripts = vueBlocks(source, "script")
+  expect(scripts.length === 1, `${file} must keep exactly one reviewed script block`)
+  const sourceFile = ts.createSourceFile(file, scripts[0].source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} script has TypeScript parse errors`)
+  const imports = sourceFile.statements.filter(ts.isImportDeclaration).map(statement =>
+    statement.getText(sourceFile).replace(/\s+/g, " "),
+  )
+  expect(
+    JSON.stringify(imports) === JSON.stringify([
+      'import DefaultTheme from "vitepress/theme-without-fonts"',
+      'import ThemeFamilyControl from "./components/ThemeFamilyControl.vue"',
+    ]),
+    `${file} must keep exactly the reviewed layout import graph`,
+  )
+  let calls = 0
+  let constructors = 0
+  let taggedTemplates = 0
+  function collect(node) {
+    if (ts.isCallExpression(node))
+      calls += 1
+    if (ts.isNewExpression(node))
+      constructors += 1
+    if (ts.isTaggedTemplateExpression(node))
+      taggedTemplates += 1
+    ts.forEachChild(node, collect)
+  }
+  collect(sourceFile)
+  expect(calls === 0 && constructors === 0 && taggedTemplates === 0, `${file} script must remain declarative`)
+  expect(
+    !/(?:@[\w-]+|v-on:[\w-]+|:on[A-Z]\w*|v-bind:on[A-Z]\w*)\s*=/.test(source),
+    `${file} template must remain declarative`,
+  )
+}
+
+function verifyThemeClientDomInventory(sources) {
+  const gatewayTokens = ["document", "eval", "frames", "Function", "globalThis", "parent", "self", "top", "window"]
+  const actual = []
+  for (const { file, source } of sources) {
+    for (const token of gatewayTokens) {
+      const count = (source.match(new RegExp(`\\b${token}\\b`, "g")) ?? []).length
+      if (count > 0)
+        actual.push([file, token, count])
+    }
+  }
+  expect(
+    JSON.stringify(actual.sort()) === JSON.stringify([
+      ["site/.vitepress/theme/composables/useThemeFamily.ts", "document", 2],
+      ["site/.vitepress/theme/theme-family.ts", "document", 1],
+    ]),
+    "Theme Family client sources must keep exactly the reviewed global DOM gateway inventory",
+  )
+}
+
+function readThemeClientSources() {
+  const themeDirectory = join(rootDir, "site/.vitepress/theme")
+  return listFiles(themeDirectory)
+    .filter(file => file.endsWith(".ts") || file.endsWith(".vue"))
+    .map(file => ({ file: relative(rootDir, file), source: readFileSync(file, "utf8") }))
 }
 
 function cssModuleImports(source, file) {
@@ -1287,12 +1484,14 @@ expectFailure(
   "must import exactly the reviewed ./style.css author entry",
 )
 verifyThemeCssEntryImports(themeIndexSource, themeIndexFile)
-expectSourceIncludes("site/.vitepress/theme/Layout.vue", [
+const themeLayoutFile = "site/.vitepress/theme/Layout.vue"
+const themeLayoutSource = expectSourceIncludes(themeLayoutFile, [
   '<ThemeFamilyControl placement="header" />',
   '<ThemeFamilyControl placement="screen" />',
   '#nav-bar-content-after',
   '#nav-screen-content-after',
 ])
+verifyThemeLayoutGraph(themeLayoutSource, themeLayoutFile)
 const themeFamilyInitSource = expectSourceIncludes("site/.vitepress/theme/theme-family.ts", [
   'export const THEME_FAMILY_ROOT_CLASS = "brutal"',
   'export const THEME_FAMILY_STORAGE_KEY = "ayingott:theme-family"',
@@ -1386,9 +1585,37 @@ const themeFamilyComposableSource = expectSourceIncludes("site/.vitepress/theme/
   '"Neo" : "Default"',
   'isDark.value ? "Dark" : "Light"',
 ])
+verifyThemeFamilyComposableGraph(
+  themeFamilyComposableSource,
+  "site/.vitepress/theme/composables/useThemeFamily.ts",
+)
 verifyThemeFamilyRootBoundary(
   themeFamilyComposableSource,
   "site/.vitepress/theme/composables/useThemeFamily.ts",
+)
+expectFailure(
+  "composable alternate root locator mutation",
+  () => verifyThemeFamilyComposableGraph(
+    `${themeFamilyComposableSource}\ndocument.querySelector("html")?.classList.add("dark")`,
+    "<composable-alternate-root-locator-fixture>",
+  ),
+  "must keep exactly the two reviewed document gateway reads",
+)
+expectFailure(
+  "composable additional local script import",
+  () => verifyThemeFamilyComposableGraph(
+    `${themeFamilyComposableSource}\nimport "./root-escape"`,
+    "<composable-additional-local-import-fixture>",
+  ),
+  "must keep exactly the reviewed import graph",
+)
+expectFailure(
+  "composable dynamic script import",
+  () => verifyThemeFamilyComposableGraph(
+    `${themeFamilyComposableSource}\nvoid import("./root-escape")`,
+    "<composable-dynamic-import-fixture>",
+  ),
+  "must not use dynamic imports",
 )
 expectFailure(
   "composable destructured root alias mutation",
@@ -1552,6 +1779,30 @@ const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/com
   ".theme-family-switch:focus-visible",
   "@media (prefers-reduced-motion: reduce)",
 ])
+verifyThemeFamilyComponentGraph(
+  themeFamilyControlSource,
+  "site/.vitepress/theme/components/ThemeFamilyControl.vue",
+)
+expectFailure(
+  "component inline root event mutation",
+  () => verifyThemeFamilyComponentGraph(
+    `${themeFamilyControlSource}\n<div @pointerdown="$el.ownerDocument.documentElement.classList.add('dark')" />`,
+    "<component-inline-root-event-fixture>",
+  ),
+  "must keep exactly the reviewed toggleThemeFamily event binding",
+)
+verifyThemeClientDomInventory(readThemeClientSources())
+expectFailure(
+  "component alternate root locator mutation",
+  () => verifyThemeClientDomInventory([
+    ...readThemeClientSources(),
+    {
+      file: "site/.vitepress/theme/components/ThemeFamilyEscape.vue",
+      source: '<script setup>document.querySelector("html")?.classList.add("dark")</script>',
+    },
+  ]),
+  "must keep exactly the reviewed global DOM gateway inventory",
+)
 const familyTransitionFixture = `
   .theme-family-switch__thumb {
     transition:
