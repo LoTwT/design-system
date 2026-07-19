@@ -47,7 +47,7 @@ try {
     name: "@ayingott/theme-missing-peer-smoke",
     version: "0.0.0",
     private: true,
-    packageManager: "pnpm@10.33.0",
+    packageManager: "pnpm@11.15.0",
     dependencies: {
       "@ayingott/theme": `file:${missingPeerTarballReference}`,
     },
@@ -58,7 +58,10 @@ try {
     encoding: "utf8",
   })
   const missingPeerOutput = `${missingPeerInstall.stdout}${missingPeerInstall.stderr}`
-  if (missingPeerInstall.status === 0 || !missingPeerOutput.includes("missing peer tailwindcss@^4.0.0"))
+  const reportsMissingTailwind = missingPeerOutput.includes("missing peer tailwindcss")
+  const reportsTailwindRange = missingPeerOutput.includes("tailwindcss@^4.0.0")
+    || /Wanted:\s+\^4\.0\.0:/m.test(missingPeerOutput)
+  if (missingPeerInstall.status === 0 || !reportsMissingTailwind || !reportsTailwindRange)
     throw new Error(`Missing Tailwind peer fixture did not fail as expected:\n${missingPeerOutput}`)
 
   writeFileSync(join(consumerDir, "package.json"), `${JSON.stringify({
@@ -66,7 +69,7 @@ try {
     version: "0.0.0",
     private: true,
     type: "module",
-    packageManager: "pnpm@10.33.0",
+    packageManager: "pnpm@11.15.0",
     dependencies: {
       "@ayingott/theme": `file:${tarballReference}`,
       "@tailwindcss/cli": "4.2.4",

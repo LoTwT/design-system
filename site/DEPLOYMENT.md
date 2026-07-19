@@ -17,7 +17,7 @@ The source of truth is `wrangler.jsonc`.
 - Build command: leave empty
 - Deploy command: `npx wrangler deploy` or `pnpm wrangler deploy`
 - Environment variable: `NODE_VERSION=22`
-- Environment variable: `PNPM_VERSION=10.33.0`
+- Environment variable: `PNPM_VERSION=11.15.0`
 
 `wrangler.jsonc` defines `build.command = "pnpm site:build"`, so Wrangler runs
 the VitePress build before uploading `site/.vitepress/dist`. Do not configure a
