@@ -27,6 +27,8 @@ Opt in to self-hosted font files when the consumer wants the bundled Space Grote
 
 ## Development
 
+Requires Node.js >=22.13.
+
 ```bash
 pnpm install --frozen-lockfile
 pnpm check
