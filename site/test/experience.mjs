@@ -2,6 +2,7 @@ import { createHash } from "node:crypto"
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+import { runInNewContext } from "node:vm"
 import postcss from "postcss"
 import ts from "typescript"
 
@@ -158,6 +159,153 @@ function verifyReducedAppearanceMotion(source, file) {
   expectDeclaration(motion, "transition-duration", "0s", true)
 }
 
+const classListMutators = new Set(["add", "remove", "replace", "toggle"])
+
+function readClassListMutations(source, file) {
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+  const mutations = []
+
+  function visit(node) {
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
+      const method = node.expression.name.text
+      const receiver = node.expression.expression
+      if (
+        classListMutators.has(method)
+        && ts.isPropertyAccessExpression(receiver)
+        && receiver.name.text === "classList"
+      ) {
+        mutations.push({
+          arguments: node.arguments,
+          method,
+          receiver: receiver.expression.getText(sourceFile),
+          sourceFile,
+        })
+      }
+    }
+    ts.forEachChild(node, visit)
+  }
+
+  visit(sourceFile)
+  return mutations
+}
+
+function verifyThemeFamilyClassMutation(source, file, expected) {
+  const mutations = readClassListMutations(source, file)
+  expect(mutations.length === 1, `${file} must contain exactly one classList mutation`)
+
+  const mutation = mutations[0]
+  expect(mutation.method === "toggle", `${file} classList mutation must use toggle`)
+  expect(mutation.receiver === "root", `${file} classList mutation must target root`)
+  expect(mutation.arguments.length === 2, `${file} family toggle must receive class and force arguments`)
+
+  const [classArgument, forceArgument] = mutation.arguments
+  if (expected.classIdentifier !== undefined) {
+    expect(
+      ts.isIdentifier(classArgument) && classArgument.text === expected.classIdentifier,
+      `${file} family toggle must use ${expected.classIdentifier}`,
+    )
+  }
+  else {
+    expect(
+      ts.isStringLiteral(classArgument) && classArgument.text === expected.className,
+      `${file} family toggle must use the ${expected.className} class literal`,
+    )
+  }
+
+  expect(ts.isBinaryExpression(forceArgument), `${file} family toggle force must be a strict equality`)
+  expect(
+    forceArgument.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken,
+    `${file} family toggle force must use strict equality`,
+  )
+  expect(
+    ts.isIdentifier(forceArgument.left) && forceArgument.left.text === "family",
+    `${file} family toggle force must read family`,
+  )
+
+  if (expected.stateIdentifier !== undefined) {
+    expect(
+      ts.isIdentifier(forceArgument.right) && forceArgument.right.text === expected.stateIdentifier,
+      `${file} family toggle force must use ${expected.stateIdentifier}`,
+    )
+  }
+  else {
+    expect(
+      ts.isStringLiteral(forceArgument.right) && forceArgument.right.text === expected.state,
+      `${file} family toggle force must use the ${expected.state} state literal`,
+    )
+  }
+}
+
+function evaluateStaticModule(source, file) {
+  const result = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+    fileName: file,
+    reportDiagnostics: true,
+  })
+  expect((result.diagnostics ?? []).length === 0, `${file} static module transpile failed`)
+
+  const context = { exports: {} }
+  runInNewContext(result.outputText, context, { filename: file, timeout: 100 })
+  return context.exports
+}
+
+function readScopedStyle(source, file) {
+  const matches = [...source.matchAll(/<style scoped>\s*([\s\S]*?)<\/style>/g)]
+  expect(matches.length === 1, `${file} must contain exactly one scoped style block`)
+  return matches[0][1]
+}
+
+function verifyThemeFamilyReducedMotion(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const reducedMotion = css.nodes.filter(node =>
+    node.type === "atrule"
+    && node.name === "media"
+    && node.params === "(prefers-reduced-motion: reduce)",
+  )
+  expect(reducedMotion.length === 1, `Expected exactly one family reduced-motion media query in ${file}`)
+  const thumb = readDeclarations(findRule(
+    reducedMotion[0],
+    [".theme-family-switch__thumb"],
+    "family reduced motion",
+  ))
+  expectDeclaration(thumb, "transition-duration", "0s")
+}
+
+const mobileNavOrder = [
+  [".VPNavScreen .menu", "1"],
+  [".VPNavScreen .translations", "2"],
+  [".VPNavScreen .appearance", "3"],
+  [".VPNavScreen .theme-family-control--screen", "4"],
+  [".VPNavScreen .social-links", "5"],
+]
+
+function verifyMobileThemeFamilyOrder(source, file) {
+  const css = postcss.parse(source, { from: file })
+  const mobile = css.nodes.filter(node =>
+    node.type === "atrule"
+    && node.name === "media"
+    && node.params === "(max-width: 767px)",
+  )
+  expect(mobile.length === 1, `Expected exactly one mobile nav media query in ${file}`)
+
+  const container = readDeclarations(findRule(
+    mobile[0],
+    [".VPNavScreen > .container"],
+    "mobile nav order container",
+  ))
+  expectDeclaration(container, "display", "flex")
+  expectDeclaration(container, "flex-direction", "column")
+
+  for (const [selector, order] of mobileNavOrder) {
+    const declarations = readDeclarations(findRule(mobile[0], [selector], `mobile order ${selector}`))
+    expectDeclaration(declarations, "order", order)
+  }
+}
+
 function verifySavedIconRole(source, file) {
   const css = postcss.parse(source, { from: file })
   const savedIcon = readDeclarations(findRule(
@@ -309,7 +457,13 @@ const themeFamilyInitSource = expectSourceIncludes("site/.vitepress/theme/theme-
   "root.classList.toggle",
   "root.dataset.themeFamily = family",
 ])
-expect(!themeFamilyInitSource.includes('classList.toggle("dark"'), "Theme Family initialization must not control the scheme class")
+const themeFamilyModule = evaluateStaticModule(themeFamilyInitSource, "site/.vitepress/theme/theme-family.ts")
+expect(typeof themeFamilyModule.THEME_FAMILY_INIT_SCRIPT === "string", "Theme Family init script must be a string")
+verifyThemeFamilyClassMutation(
+  themeFamilyModule.THEME_FAMILY_INIT_SCRIPT,
+  "<rendered-theme-family-init-script>",
+  { className: "brutal", state: "neo" },
+)
 
 const themeFamilyComposableSource = expectSourceIncludes("site/.vitepress/theme/composables/useThemeFamily.ts", [
   "root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)",
@@ -318,9 +472,45 @@ const themeFamilyComposableSource = expectSourceIncludes("site/.vitepress/theme/
   '"Neo" : "Default"',
   'isDark.value ? "Dark" : "Light"',
 ])
-expect(!themeFamilyComposableSource.includes('classList.toggle("dark"'), "Theme Family composable must not control the scheme class")
+verifyThemeFamilyClassMutation(
+  themeFamilyComposableSource,
+  "site/.vitepress/theme/composables/useThemeFamily.ts",
+  {
+    classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+    stateIdentifier: "NEO_THEME_FAMILY",
+  },
+)
 
-expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
+const familyMutationFixture = `
+  const root = document.documentElement
+  root.classList.toggle(THEME_FAMILY_ROOT_CLASS, family === NEO_THEME_FAMILY)
+`
+expectFailure(
+  "family classList.add scheme mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.classList.add('dark')`,
+    "<family-add-scheme-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
+expectFailure(
+  "family single-quote scheme toggle mutation",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.classList.toggle('dark')`,
+    "<family-toggle-scheme-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
+
+const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
   'role="switch"',
   'aria-label="Neo theme family"',
   ':aria-checked="isNeo"',
@@ -331,6 +521,21 @@ expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", 
   ".theme-family-switch:focus-visible",
   "@media (prefers-reduced-motion: reduce)",
 ])
+expectFailure(
+  "wrong family reduced-motion duration",
+  () => verifyThemeFamilyReducedMotion(`
+    @media (prefers-reduced-motion: reduce) {
+      .theme-family-switch__thumb {
+        transition-duration: 1s;
+      }
+    }
+  `, "<wrong-family-reduced-motion-fixture>"),
+  "Expected transition-duration: 0s",
+)
+verifyThemeFamilyReducedMotion(
+  readScopedStyle(themeFamilyControlSource, "site/.vitepress/theme/components/ThemeFamilyControl.vue"),
+  "site/.vitepress/theme/components/ThemeFamilyControl.vue#style",
+)
 
 const cssFile = "site/.vitepress/theme/style.css"
 const cssSource = readSource(cssFile)
@@ -338,14 +543,21 @@ expect(
   (cssSource.match(/@import "@ayingott\/theme\/brutal\.css";/g) ?? []).length === 1,
   "Site theme must import the existing Neo opt-in entry exactly once",
 )
-for (const fragment of [
-  ".VPNavScreen > .container",
-  ".VPNavScreen .appearance",
-  ".VPNavScreen .theme-family-control--screen",
-  ".VPNavScreen .social-links",
-]) {
-  expect(cssSource.includes(fragment), `Mobile Theme Family order must include: ${fragment}`)
-}
+expectFailure(
+  "wrong mobile Theme Family order",
+  () => verifyMobileThemeFamilyOrder(`
+    @media (max-width: 767px) {
+      .VPNavScreen > .container { display: flex; flex-direction: column; }
+      .VPNavScreen .menu { order: 1; }
+      .VPNavScreen .translations { order: 2; }
+      .VPNavScreen .appearance { order: 3; }
+      .VPNavScreen .theme-family-control--screen { order: 2; }
+      .VPNavScreen .social-links { order: 5; }
+    }
+  `, "<wrong-mobile-family-order-fixture>"),
+  "Expected order: 4",
+)
+verifyMobileThemeFamilyOrder(cssSource, cssFile)
 const css = postcss.parse(cssSource, { from: cssFile })
 
 expectFailure(
