@@ -50,6 +50,20 @@ The showcase site is intentionally separate from source docs:
 ```bash
 pnpm site:dev
 pnpm site:build
+pnpm site:browser
 ```
+
+`site:build` is the portable static build and emitted-output gate. `site:browser`
+then verifies the built site with a local Chrome/Chromium binary; set
+`CHROME_PATH` when it is outside a standard location. `playwright-core` does not
+download a browser; to reproduce the pinned gate locally, run:
+
+```bash
+pnpm dlx @puppeteer/browsers@3.0.6 install chrome@150.0.7871.125 --path .cache/chrome-for-testing --format "{{path}}"
+CHROME_PATH=/absolute/path/from-above EXPECTED_CHROME_VERSION=150.0.7871.125 pnpm site:browser
+```
+
+CI and release validation use the same exact Chrome for Testing version and
+reject browser-version drift.
 
 `site/` is display-only and does not replace the package smoke or pack gates.

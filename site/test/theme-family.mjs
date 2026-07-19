@@ -3,69 +3,43 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { runInNewContext } from "node:vm"
 import ts from "typescript"
-
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 function expect(condition, message) {
   if (!condition)
     throw new Error(message)
 }
-
 const readSource = file => readFileSync(join(rootDir, file), "utf8")
-
 function createRoot(initialClasses = []) {
   const classes = new Set(initialClasses)
+  const add = (...names) => names.forEach(name => classes.add(name))
+  const remove = (...names) => names.forEach(name => classes.delete(name))
   const classList = {
-    add(...names) {
-      for (const name of names)
-        classes.add(name)
-    },
-    contains(name) {
-      return classes.has(name)
-    },
-    remove(...names) {
-      for (const name of names)
-        classes.delete(name)
-    },
+    add,
+    contains: name => classes.has(name),
+    remove,
     toggle(name, force) {
       const next = force === undefined ? !classes.has(name) : Boolean(force)
-      if (next)
-        classes.add(name)
-      else
-        classes.delete(name)
+      ;(next ? add : remove)(name)
       return next
     },
   }
   return { classList, classes, dataset: {} }
 }
-
-const expectClasses = (root, expected, label) => expect(
-  JSON.stringify([...root.classes].sort()) === JSON.stringify([...expected].sort()),
-  `${label}: expected classes ${[...expected].join(" ")}; received ${[...root.classes].join(" ")}`,
-)
-
+const expectClasses = (root, expected, label) => expect(JSON.stringify([...root.classes].sort()) === JSON.stringify([...expected].sort()),
+  `${label}: expected classes ${[...expected].join(" ")}; received ${[...root.classes].join(" ")}`)
 function loadTsModule(file, { globals = {}, imports = {}, source = readSource(file) } = {}) {
-  const output = ts.transpileModule(source, {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-    fileName: file,
-  }).outputText
+  const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 }, fileName: file }).outputText
   const exports = {}
-  const sandbox = { exports, ...globals, require(id) {
-    return imports[id] ?? {}
-  } }
+  const sandbox = { exports, ...globals, require: id => imports[id] ?? {} }
   runInNewContext(output, sandbox, { filename: file })
   return exports
 }
 const poisonRoot = createRoot(["global-sentinel"])
 const storage = { getItem: () => null, setItem: () => {} }
+const poisonDocument = { documentElement: poisonRoot }
 const themeFamily = loadTsModule("site/.vitepress/theme/theme-family.ts", {
-  globals: {
-    document: { documentElement: poisonRoot },
-    localStorage: storage,
-    self: { document: { documentElement: poisonRoot } },
-    window: { document: { documentElement: poisonRoot } },
-  },
+  globals: { document: poisonDocument, localStorage: storage, self: { document: poisonDocument }, window: { document: poisonDocument } },
 })
-
 const familyRoot = createRoot(["brutal", "dark"])
 themeFamily.applyThemeFamilyToRoot(familyRoot, themeFamily.DEFAULT_THEME_FAMILY)
 expectClasses(familyRoot, ["dark"], "Default family")
@@ -75,24 +49,18 @@ expectClasses(familyRoot, ["brutal", "dark"], "Neo family")
 expect(familyRoot.dataset.themeFamily === "neo", "Neo family must update the root dataset")
 expectClasses(poisonRoot, ["global-sentinel"], "Adapter global boundary")
 expect(Object.keys(poisonRoot.dataset).length === 0, "Adapter must not mutate an ambient global root")
-
 function runInitScript(storedFamily, { initialDark = false, storageThrows = false } = {}) {
   const root = createRoot(initialDark ? ["dark"] : [])
   const writes = []
   const reads = []
   runInNewContext(themeFamily.THEME_FAMILY_INIT_SCRIPT, {
     document: { documentElement: root },
-    localStorage: {
-      getItem(key) {
-        reads.push(key)
-        if (storageThrows)
-          throw new Error("blocked")
-        return storedFamily
-      },
-      setItem(...args) {
-        writes.push(args)
-      },
-    },
+    localStorage: { getItem(key) {
+      reads.push(key)
+      if (storageThrows)
+        throw new Error("blocked")
+      return storedFamily
+    }, setItem: (...args) => writes.push(args) },
   })
   expect(reads.length > 0 && reads.every(key => key === themeFamily.THEME_FAMILY_STORAGE_KEY), "Init script may only read the family storage key")
   expect(writes.length === 0, "Init script must not persist during first paint")
@@ -110,16 +78,12 @@ for (const initialDark of [false, true]) {
 }
 expect(runInitScript("unexpected").dataset.themeFamily === "default", "Unexpected storage must fail to Default")
 expect(runInitScript(null, { storageThrows: true }).dataset.themeFamily === "default", "Blocked storage must fail to Default")
-
 const mounted = []
 const isDark = { value: false }
 const composableRoot = createRoot(["brutal"])
 const persisted = []
 const composable = loadTsModule("site/.vitepress/theme/composables/useThemeFamily.ts", {
-  globals: {
-    document: { documentElement: composableRoot },
-    localStorage: { setItem: (...args) => persisted.push(args) },
-  },
+  globals: { document: { documentElement: composableRoot }, localStorage: { setItem: (...args) => persisted.push(args) } },
   imports: {
     "../theme-family": themeFamily,
     vitepress: { useData: () => ({ isDark }) },
