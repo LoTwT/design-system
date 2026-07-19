@@ -181,6 +181,14 @@ function isNamedMember(node, name) {
   )
 }
 
+function isClassListMutatorReference(node) {
+  return (
+    (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node))
+    && isNamedMember(node.expression, "classList")
+    && (memberName(node) === undefined || classListMutators.has(memberName(node)))
+  )
+}
+
 function readClassListMutations(source, file) {
   const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
@@ -206,8 +214,12 @@ function readClassListMutations(source, file) {
     if (
       ts.isVariableDeclaration(node)
       && ts.isObjectBindingPattern(node.name)
-      && node.name.elements.some(element =>
-        memberName(element.propertyName ?? element.name) === "classList",
+      && (
+        (node.initializer !== undefined && isNamedMember(node.initializer, "classList"))
+        || node.name.elements.some(element =>
+          memberName(element.propertyName ?? element.name) === "classList"
+          || classListMutators.has(memberName(element.propertyName ?? element.name)),
+        )
       )
     )
       aliases.add(node.name.getText(sourceFile))
@@ -225,6 +237,7 @@ function readClassListMutations(source, file) {
         !aliases.has(candidate.name)
         && (
           isNamedMember(candidate.value, "classList")
+          || isClassListMutatorReference(candidate.value)
           || (ts.isIdentifier(candidate.value) && aliases.has(candidate.value.text))
         )
       ) {
@@ -236,19 +249,21 @@ function readClassListMutations(source, file) {
 
   function collectMutations(node) {
     if (
-      ts.isCallExpression(node)
-      && (ts.isPropertyAccessExpression(node.expression) || ts.isElementAccessExpression(node.expression))
+      ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)
     ) {
-      const method = memberName(node.expression)
-      const receiver = node.expression.expression
+      const method = memberName(node)
+      const receiver = node.expression
       const directClassListCall = isNamedMember(receiver, "classList")
       const aliasClassListCall = ts.isIdentifier(receiver) && aliases.has(receiver.text)
       if (
-        aliasClassListCall
+        classListMutators.has(method)
+        || aliasClassListCall
         || (directClassListCall && (method === undefined || classListMutators.has(method)))
       ) {
+        const directCall = ts.isCallExpression(node.parent) && node.parent.expression === node
         mutations.push({
-          arguments: node.arguments,
+          arguments: directCall ? node.parent.arguments : [],
+          directCall,
           method: method ?? "<computed>",
           receiver: directClassListCall
             ? receiver.expression.getText(sourceFile)
@@ -270,6 +285,7 @@ function verifyThemeFamilyClassMutation(source, file, expected) {
   expect(mutations.length === 1, `${file} must contain exactly one classList mutation`)
 
   const mutation = mutations[0]
+  expect(mutation.directCall, `${file} classList mutator must be called directly`)
   expect(mutation.method === "toggle", `${file} classList mutation must use toggle`)
   expect(mutation.receiver === "root", `${file} classList mutation must target root`)
   expect(mutation.arguments.length === 2, `${file} family toggle must receive class and force arguments`)
@@ -336,7 +352,10 @@ function readScopedStyle(source, file) {
 
 function declarationsForProperty(css, property) {
   const declarations = []
-  css.walkDecls(property, declaration => declarations.push(declaration))
+  css.walkDecls((declaration) => {
+    if (!declaration.prop.startsWith("--") && declaration.prop.toLowerCase() === property.toLowerCase())
+      declarations.push(declaration)
+  })
   return declarations
 }
 
@@ -357,6 +376,7 @@ function normalizedCssValue(value) {
 
 function verifyThemeFamilyReducedMotion(source, file) {
   const css = postcss.parse(source, { from: file })
+  expect(declarationsForProperty(css, "all").length === 0, `Family component must not use the all shorthand in ${file}`)
   const reducedMotion = css.nodes.filter(node =>
     node.type === "atrule"
     && node.name === "media"
@@ -399,6 +419,39 @@ function verifyThemeFamilyReducedMotion(source, file) {
     && mediaAncestors(durations[0])[0] === "(prefers-reduced-motion: reduce)",
     `Family transition-duration must only come from the canonical reduced-motion media query in ${file}`,
   )
+}
+
+function verifyGlobalTransitionInventory(source, file) {
+  const css = postcss.parse(source, { from: file })
+  expect(declarationsForProperty(css, "all").length === 0, `Global site CSS must not use the all shorthand in ${file}`)
+  const transitions = declarationsForProperty(css, "transition")
+  expect(transitions.length === 1, `Expected exactly one global transition declaration in ${file}`)
+  const actionTransition = readDeclarations(findRule(css, [".theme-action"], "global theme action transition"))
+  expectDeclaration(actionTransition, "transition", "var(--transition-interactive)")
+
+  const durations = declarationsForProperty(css, "transition-duration")
+  expect(durations.length === 2, `Expected exactly two global transition-duration declarations in ${file}`)
+
+  const reducedMotion = css.nodes.filter(node =>
+    node.type === "atrule"
+    && node.name === "media"
+    && node.params === "(prefers-reduced-motion: reduce)",
+  )
+  expect(reducedMotion.length === 1, `Expected exactly one global reduced-motion media query in ${file}`)
+
+  const appearance = readDeclarations(findRule(
+    reducedMotion[0],
+    reducedMotionSelectors,
+    "global reduced appearance motion",
+  ))
+  expectDeclaration(appearance, "transition-duration", "0s", true)
+
+  const action = readDeclarations(findRule(
+    reducedMotion[0],
+    [".theme-action"],
+    "global reduced theme action motion",
+  ))
+  expectDeclaration(action, "transition-duration", "0s")
 }
 
 const mobileNavOrder = [
@@ -678,6 +731,18 @@ expectFailure(
   ),
   "must not alias classList",
 )
+expectFailure(
+  "family indirect classList mutator call",
+  () => verifyThemeFamilyClassMutation(
+    `${familyMutationFixture}\nroot.classList.add.call(root.classList, 'dark')`,
+    "<family-indirect-mutator-call-fixture>",
+    {
+      classIdentifier: "THEME_FAMILY_ROOT_CLASS",
+      stateIdentifier: "NEO_THEME_FAMILY",
+    },
+  ),
+  "must contain exactly one classList mutation",
+)
 
 const themeFamilyControlSource = expectSourceIncludes("site/.vitepress/theme/components/ThemeFamilyControl.vue", [
   'role="switch"',
@@ -736,6 +801,34 @@ expectFailure(
   `, "<higher-specificity-family-reduced-motion-override-fixture>"),
   "Expected exactly one family transition-duration declaration",
 )
+expectFailure(
+  "uppercase family reduced-motion override",
+  () => verifyThemeFamilyReducedMotion(`${familyTransitionFixture}
+    @media (prefers-reduced-motion: reduce) {
+      .theme-family-switch__thumb {
+        transition-duration: 0s;
+      }
+      .theme-family-control .theme-family-switch__thumb {
+        TRANSITION-DURATION: 1s !important;
+      }
+    }
+  `, "<uppercase-family-reduced-motion-override-fixture>"),
+  "Expected exactly one family transition-duration declaration",
+)
+expectFailure(
+  "family transition shorthand override",
+  () => verifyThemeFamilyReducedMotion(`${familyTransitionFixture}
+    @media (prefers-reduced-motion: reduce) {
+      .theme-family-switch__thumb {
+        transition-duration: 0s;
+      }
+      .theme-family-control .theme-family-switch__thumb {
+        transition: transform 1s !important;
+      }
+    }
+  `, "<family-transition-shorthand-override-fixture>"),
+  "Expected exactly one family transition declaration",
+)
 verifyThemeFamilyReducedMotion(
   readScopedStyle(themeFamilyControlSource, "site/.vitepress/theme/components/ThemeFamilyControl.vue"),
   "site/.vitepress/theme/components/ThemeFamilyControl.vue#style",
@@ -743,10 +836,45 @@ verifyThemeFamilyReducedMotion(
 
 const cssFile = "site/.vitepress/theme/style.css"
 const cssSource = readSource(cssFile)
+const globalTransitionFixture = `
+  .theme-action {
+    transition: var(--transition-interactive);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .VPSwitch.VPSwitchAppearance,
+    .VPSwitch.VPSwitchAppearance .check,
+    .dark .VPSwitch.VPSwitchAppearance .icon .sun,
+    .dark .VPSwitch.VPSwitchAppearance .icon .moon {
+      transition-duration: 0s !important;
+    }
+    .theme-action {
+      transition-duration: 0s;
+    }
+  }
+`
 expect(
   (cssSource.match(/@import "@ayingott\/theme\/brutal\.css";/g) ?? []).length === 1,
   "Site theme must import the existing Neo opt-in entry exactly once",
 )
+expectFailure(
+  "global Theme Family transition override",
+  () => verifyGlobalTransitionInventory(`${globalTransitionFixture}
+    .theme-family-control .theme-family-switch__thumb {
+      transition-duration: 1s !important;
+    }
+  `, "<global-family-transition-override-fixture>"),
+  "Expected exactly two global transition-duration declarations",
+)
+expectFailure(
+  "global Theme Family transition shorthand override",
+  () => verifyGlobalTransitionInventory(`${globalTransitionFixture}
+    .theme-family-control .theme-family-switch__thumb {
+      transition: transform 1s !important;
+    }
+  `, "<global-family-transition-shorthand-override-fixture>"),
+  "Expected exactly one global transition declaration",
+)
+verifyGlobalTransitionInventory(cssSource, cssFile)
 expectFailure(
   "wrong mobile Theme Family order",
   () => verifyMobileThemeFamilyOrder(`
@@ -791,6 +919,21 @@ expectFailure(
       .VPNavScreen > .container .theme-family-control--screen { order: 2 !important; }
     }
   `, "<higher-specificity-mobile-family-order-override-fixture>"),
+  "Expected exactly 5 canonical mobile order declarations",
+)
+expectFailure(
+  "uppercase mobile Theme Family order override",
+  () => verifyMobileThemeFamilyOrder(`
+    @media (max-width: 767px) {
+      .VPNavScreen > .container { display: flex; flex-direction: column; }
+      .VPNavScreen .menu { order: 1; }
+      .VPNavScreen .translations { order: 2; }
+      .VPNavScreen .appearance { order: 3; }
+      .VPNavScreen .theme-family-control--screen { order: 4; }
+      .VPNavScreen .social-links { order: 5; }
+      .VPNavScreen > .container .theme-family-control--screen { ORDER: 2 !important; }
+    }
+  `, "<uppercase-mobile-family-order-override-fixture>"),
   "Expected exactly 5 canonical mobile order declarations",
 )
 verifyMobileThemeFamilyOrder(cssSource, cssFile)
