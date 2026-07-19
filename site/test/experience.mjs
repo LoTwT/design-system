@@ -61,11 +61,28 @@ function stringValue(node, label) {
   return node.text
 }
 
-function readConfig() {
-  const file = "site/.vitepress/config.ts"
-  const source = readSource(file)
+function explicitPropertyNames(object, label) {
+  const names = object.properties.map((node) => {
+    expect(ts.isPropertyAssignment(node), `${label} must use only explicit property assignments`)
+    return propertyName(node.name)
+  })
+  expect(new Set(names).size === names.length, `${label} must not contain duplicate properties`)
+  return names.sort()
+}
+
+function verifyVitePressConfigGraph(source, file) {
   const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   expect(sourceFile.parseDiagnostics.length === 0, `${file} has TypeScript parse errors`)
+
+  const imports = sourceFile.statements.filter(ts.isImportDeclaration).map(node => node.getText(sourceFile))
+  expect(
+    JSON.stringify(imports) === JSON.stringify([
+      'import tailwindcss from "@tailwindcss/vite"',
+      'import { defineConfig } from "vitepress"',
+      'import { THEME_FAMILY_INIT_SCRIPT } from "./theme/theme-family"',
+    ]),
+    `${file} must keep exactly the reviewed static import graph`,
+  )
 
   const exports = sourceFile.statements.filter(ts.isExportAssignment)
   expect(exports.length === 1, `${file} must have exactly one default export`)
@@ -73,7 +90,65 @@ function readConfig() {
   expect(ts.isCallExpression(call), `${file} default export must call defineConfig`)
   expect(ts.isIdentifier(call.expression) && call.expression.text === "defineConfig", `${file} must call defineConfig directly`)
   expect(call.arguments.length === 1, "defineConfig must receive exactly one argument")
-  return objectValue(call.arguments[0], "defineConfig argument")
+  const config = objectValue(call.arguments[0], "defineConfig argument")
+  expect(
+    JSON.stringify(explicitPropertyNames(config, "VitePress config")) === JSON.stringify([
+      "appearance",
+      "cleanUrls",
+      "description",
+      "head",
+      "lang",
+      "srcExclude",
+      "themeConfig",
+      "title",
+      "vite",
+    ]),
+    "VitePress config must keep exactly the reviewed top-level config surface",
+  )
+
+  const vite = objectValue(property(config, "vite"), "vite")
+  expect(
+    JSON.stringify(explicitPropertyNames(vite, "Vite config")) === JSON.stringify(["plugins"]),
+    "Vite config must keep exactly the reviewed plugin-only surface",
+  )
+  const plugins = arrayValue(property(vite, "plugins"), "vite.plugins")
+  expect(plugins.elements.length === 1, "Vite plugins must keep exactly the reviewed Tailwind plugin")
+  const tailwindPlugin = plugins.elements[0]
+  expect(
+    ts.isCallExpression(tailwindPlugin)
+    && ts.isIdentifier(tailwindPlugin.expression)
+    && tailwindPlugin.expression.text === "tailwindcss"
+    && tailwindPlugin.arguments.length === 0,
+    "Vite plugins must keep exactly the reviewed Tailwind plugin",
+  )
+
+  const calls = []
+  let constructors = 0
+  let taggedTemplates = 0
+  function collect(node) {
+    if (ts.isCallExpression(node)) {
+      expect(ts.isIdentifier(node.expression), `${file} must not call an indirect config helper`)
+      calls.push(node.expression.text)
+    }
+    if (ts.isNewExpression(node))
+      constructors += 1
+    if (ts.isTaggedTemplateExpression(node))
+      taggedTemplates += 1
+    ts.forEachChild(node, collect)
+  }
+  collect(sourceFile)
+  expect(
+    JSON.stringify(calls.sort()) === JSON.stringify(["defineConfig", "tailwindcss"]),
+    `${file} must keep exactly the reviewed config call graph`,
+  )
+  expect(constructors === 0 && taggedTemplates === 0, `${file} must not add config constructors or tagged helpers`)
+
+  return config
+}
+
+function readConfig() {
+  const file = "site/.vitepress/config.ts"
+  return verifyVitePressConfigGraph(readSource(file), file)
 }
 
 function readDeclarations(rule) {
@@ -1011,6 +1086,24 @@ function readSiteMarkdownSources() {
     .map(file => ({ file: relative(rootDir, file), source: readFileSync(file, "utf8") }))
 }
 
+function verifyMarkdownFrontmatterInventory(sources) {
+  const inventory = []
+  for (const { file, source } of sources) {
+    if (!source.startsWith("---\n") && !source.startsWith("---\r\n"))
+      continue
+    const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)
+    expect(match !== null, `${file} must have one closed opening frontmatter block`)
+    inventory.push([file, createHash("sha256").update(match[1]).digest("hex")])
+  }
+  expect(
+    JSON.stringify(inventory.sort()) === JSON.stringify([
+      ["site/guide/theme-overview.md", "cee0193348052d6c8cfae84c121fcd7b1afdccdde93f259736746483c57d268d"],
+      ["site/index.md", "fdb8c14c67f2cd4563cdbb17ec7fd053e0846d022d3ef71ad9d4ab15fad3ab5e"],
+    ]),
+    "Site Markdown must keep exactly the reviewed frontmatter inventory",
+  )
+}
+
 function verifyMarkdownClientEntrypoints(sources) {
   for (const { file, source } of sources) {
     expect(!/<style\b/i.test(source), `${file} must not add a Markdown author-style block`)
@@ -1408,6 +1501,43 @@ function sha256(file) {
 }
 
 const config = readConfig()
+const vitePressConfigFile = "site/.vitepress/config.ts"
+const vitePressConfigSource = readSource(vitePressConfigFile)
+expectFailure(
+  "VitePress transformHead author entry",
+  () => verifyVitePressConfigGraph(
+    vitePressConfigSource.replace(
+      "  head: [",
+      `  transformHead: () => [["style", {}, ".theme-family-switch__thumb { transition-duration: 1s !important; }"]],
+  head: [`,
+    ),
+    "<vitepress-transform-head-fixture>",
+  ),
+  "must keep exactly the reviewed top-level config surface",
+)
+expectFailure(
+  "VitePress transformPageData head author entry",
+  () => verifyVitePressConfigGraph(
+    vitePressConfigSource.replace(
+      "  head: [",
+      `  transformPageData: pageData => ({ ...pageData, frontmatter: { ...pageData.frontmatter, head: [["style", {}, ".theme-family-switch__thumb { transition-duration: 1s !important; }"]] } }),
+  head: [`,
+    ),
+    "<vitepress-transform-page-data-fixture>",
+  ),
+  "must keep exactly the reviewed top-level config surface",
+)
+expectFailure(
+  "Vite transformIndexHtml author entry",
+  () => verifyVitePressConfigGraph(
+    vitePressConfigSource.replace(
+      "plugins: [tailwindcss()]",
+      `plugins: [tailwindcss(), { transformIndexHtml: () => [{ tag: "style", children: ".theme-family-switch__thumb { transition-duration: 1s !important; }" }] }]`,
+    ),
+    "<vite-transform-index-html-fixture>",
+  ),
+  "must keep exactly the reviewed Tailwind plugin",
+)
 
 const homepageSource = expectSourceIncludes("site/index.md", [
   "text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.",
@@ -1898,6 +2028,25 @@ expectFailure(
 )
 verifyThemeTemplateStyleInventory(themeClientSources)
 const siteMarkdownSources = readSiteMarkdownSources()
+verifyMarkdownFrontmatterInventory(siteMarkdownSources)
+expectFailure(
+  "Markdown frontmatter head author-style entry",
+  () => verifyMarkdownFrontmatterInventory(siteMarkdownSources.map(({ file, source }) => ({
+    file,
+    source: file === "site/index.md"
+      ? source.replace(
+          "---\nlayout: home",
+          `---
+layout: home
+head:
+  - - style
+    - {}
+    - ".theme-family-control .theme-family-switch__thumb { transition-duration: 1s !important; }"`,
+        )
+      : source,
+  }))),
+  "must keep exactly the reviewed frontmatter inventory",
+)
 verifyMarkdownClientEntrypoints(siteMarkdownSources)
 expectFailure(
   "Markdown global author-style entry",
