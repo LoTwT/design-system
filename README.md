@@ -59,8 +59,8 @@ then verifies the built site with a local Chrome/Chromium binary; set
 download a browser; to reproduce the pinned gate locally, run:
 
 ```bash
-pnpm dlx @puppeteer/browsers@3.0.6 install chrome@150.0.7871.125 --path .cache/chrome-for-testing --format "{{path}}"
-CHROME_PATH=/absolute/path/from-above EXPECTED_CHROME_VERSION=150.0.7871.125 pnpm site:browser
+pnpm dlx @puppeteer/browsers@3.0.6 install chrome@150.0.7871.124 --path .cache/chrome-for-testing --format "{{path}}"
+CHROME_PATH=/absolute/path/from-above EXPECTED_CHROME_VERSION=150.0.7871.124 pnpm site:browser
 ```
 
 CI and release validation use the same exact Chrome for Testing version and
