@@ -851,7 +851,19 @@ function vueBlocks(source, tag) {
   return blocks
 }
 
+function verifyNoInlineAuthorStyle(source, file) {
+  expect(
+    !/(?:^|\s)(?:style|:style|v-bind:style)\s*=/im.test(source),
+    `${file} must not add inline author styles`,
+  )
+  expect(
+    !/(?:^|\s)v-bind\s*=/im.test(source),
+    `${file} must not spread runtime-bound attributes`,
+  )
+}
+
 function verifyThemeFamilyComponentGraph(source, file) {
+  verifyNoInlineAuthorStyle(source, file)
   const scripts = vueBlocks(source, "script")
   expect(scripts.length === 1, `${file} must keep exactly one reviewed script block`)
   const sourceFile = ts.createSourceFile(file, scripts[0].source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
@@ -905,6 +917,7 @@ function verifyThemeFamilyComponentGraph(source, file) {
 }
 
 function verifyThemeLayoutGraph(source, file) {
+  verifyNoInlineAuthorStyle(source, file)
   const scripts = vueBlocks(source, "script")
   expect(scripts.length === 1, `${file} must keep exactly one reviewed script block`)
   const sourceFile = ts.createSourceFile(file, scripts[0].source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
@@ -958,11 +971,52 @@ function verifyThemeClientDomInventory(sources) {
   )
 }
 
+function verifyThemeTemplateStyleInventory(sources) {
+  const bindings = []
+  for (const { file, source } of sources) {
+    expect(!/(?:^|\s)v-bind\s*=/im.test(source), `${file} must not spread runtime-bound attributes`)
+    expect(!/<link\b/i.test(source), `${file} must not add a template stylesheet link`)
+    const pattern = /(?:^|\s)(style|:style|v-bind:style)\s*=\s*(["'])([\s\S]*?)\2/gim
+    for (const match of source.matchAll(pattern))
+      bindings.push([file, match[1].toLowerCase(), match[3].trim().replace(/\s+/g, " ")])
+  }
+  expect(
+    JSON.stringify(bindings.sort()) === JSON.stringify([
+      ["site/.vitepress/theme/components/ColorSwatchGrid.vue", ":style", "{ background: `var(--${token.name})`, borderColor: 'var(--border-subtle)' }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ backgroundColor: preview === 'shadow' ? 'var(--surface-canvas)' : 'var(--surface-subtle)' }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ borderRadius: `var(--${token.name})` }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ borderWidth: token.value, borderStyle: 'solid', borderColor: 'var(--accent-primary)' }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ boxShadow: `var(--${token.name})` }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ transition: `var(--${token.name})` }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ transitionDuration: `var(--${token.name})` }"],
+      ["site/.vitepress/theme/components/TokenPreview.vue", ":style", "{ width: `var(--${token.name})` }"],
+      ["site/.vitepress/theme/components/TypeScale.vue", ":style", "{ fontSize: `var(--${token.name})`, lineHeight: token.lineHeight }"],
+      ["site/.vitepress/theme/components/theme-overview/ThemeIcon.vue", ":style", "iconStyle"],
+    ]),
+    "Theme Vue templates must keep exactly the reviewed inline author-style inventory",
+  )
+}
+
 function readThemeClientSources() {
   const themeDirectory = join(rootDir, "site/.vitepress/theme")
   return listFiles(themeDirectory)
     .filter(file => file.endsWith(".ts") || file.endsWith(".vue"))
     .map(file => ({ file: relative(rootDir, file), source: readFileSync(file, "utf8") }))
+}
+
+function readSiteMarkdownSources() {
+  const siteDirectory = join(rootDir, "site")
+  return listFiles(siteDirectory)
+    .filter(file => file.endsWith(".md"))
+    .map(file => ({ file: relative(rootDir, file), source: readFileSync(file, "utf8") }))
+}
+
+function verifyMarkdownClientEntrypoints(sources) {
+  for (const { file, source } of sources) {
+    expect(!/<style\b/i.test(source), `${file} must not add a Markdown author-style block`)
+    expect(!/<script\b/i.test(source), `${file} must not add a Markdown client-script block`)
+    expect(!/<link\b/i.test(source), `${file} must not add a Markdown stylesheet link`)
+  }
 }
 
 function cssModuleImports(source, file) {
@@ -1428,6 +1482,7 @@ expect(stringValue(property(logo, "dark"), "themeConfig.logo.dark") === "/lo-whi
 expect(stringValue(property(logo, "alt"), "themeConfig.logo.alt") === "Lo", "Logo alt text must remain Lo")
 
 const head = arrayValue(property(config, "head"), "head")
+expect(head.elements.length === 3, "Expected exactly the reviewed init script and two favicon head entries")
 const iconLinks = head.elements.flatMap((entry) => {
   if (!ts.isArrayLiteralExpression(entry) || entry.elements.length !== 2)
     return []
@@ -1784,6 +1839,39 @@ verifyThemeFamilyComponentGraph(
   "site/.vitepress/theme/components/ThemeFamilyControl.vue",
 )
 expectFailure(
+  "component static inline motion override",
+  () => verifyThemeFamilyComponentGraph(
+    themeFamilyControlSource.replace(
+      '<span class="theme-family-switch__thumb" />',
+      '<span class="theme-family-switch__thumb" style="transition-duration: 1s !important" />',
+    ),
+    "<component-static-inline-style-fixture>",
+  ),
+  "must not add inline author styles",
+)
+expectFailure(
+  "component dynamic inline motion override",
+  () => verifyThemeFamilyComponentGraph(
+    themeFamilyControlSource.replace(
+      '<span class="theme-family-switch__thumb" />',
+      '<span class="theme-family-switch__thumb" :style="{ transitionDuration: \'1s\' }" />',
+    ),
+    "<component-dynamic-inline-style-fixture>",
+  ),
+  "must not add inline author styles",
+)
+expectFailure(
+  "component spread inline motion override",
+  () => verifyThemeFamilyComponentGraph(
+    themeFamilyControlSource.replace(
+      '<span class="theme-family-switch__thumb" />',
+      '<span class="theme-family-switch__thumb" v-bind="{ style: { transitionDuration: \'1s\' } }" />',
+    ),
+    "<component-spread-inline-style-fixture>",
+  ),
+  "must not spread runtime-bound attributes",
+)
+expectFailure(
   "component inline root event mutation",
   () => verifyThemeFamilyComponentGraph(
     `${themeFamilyControlSource}\n<div @pointerdown="$el.ownerDocument.documentElement.classList.add('dark')" />`,
@@ -1791,11 +1879,37 @@ expectFailure(
   ),
   "must keep exactly the reviewed toggleThemeFamily event binding",
 )
-verifyThemeClientDomInventory(readThemeClientSources())
+const themeClientSources = readThemeClientSources()
+verifyThemeClientDomInventory(themeClientSources)
+verifyThemeTemplateStyleInventory(themeClientSources)
+const siteMarkdownSources = readSiteMarkdownSources()
+verifyMarkdownClientEntrypoints(siteMarkdownSources)
+expectFailure(
+  "Markdown global author-style entry",
+  () => verifyMarkdownClientEntrypoints([
+    ...siteMarkdownSources,
+    {
+      file: "site/guide/theme-escape.md",
+      source: "<style>.theme-family-switch__thumb { transition-duration: 1s !important; }</style>",
+    },
+  ]),
+  "must not add a Markdown author-style block",
+)
+expectFailure(
+  "additional Vue template author style",
+  () => verifyThemeTemplateStyleInventory([
+    ...themeClientSources,
+    {
+      file: "site/.vitepress/theme/components/ThemeFamilyEscape.vue",
+      source: '<template><span style="transition-duration: 1s !important" /></template>',
+    },
+  ]),
+  "must keep exactly the reviewed inline author-style inventory",
+)
 expectFailure(
   "component alternate root locator mutation",
   () => verifyThemeClientDomInventory([
-    ...readThemeClientSources(),
+    ...themeClientSources,
     {
       file: "site/.vitepress/theme/components/ThemeFamilyEscape.vue",
       source: '<script setup>document.querySelector("html")?.classList.add("dark")</script>',
