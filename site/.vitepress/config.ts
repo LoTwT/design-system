@@ -1,11 +1,13 @@
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vitepress"
+import { THEME_FAMILY_INIT_SCRIPT } from "./theme/theme-family"
 
 export default defineConfig({
   title: "Ayingott Design System",
   description: "Showcase for @ayingott/theme tokens and visual language.",
   lang: "en",
   head: [
+    ["script", {}, THEME_FAMILY_INIT_SCRIPT],
     ["link", { rel: "icon", type: "image/svg+xml", href: "/lo.svg", media: "(prefers-color-scheme: light)" }],
     ["link", { rel: "icon", type: "image/svg+xml", href: "/lo-white.svg", media: "(prefers-color-scheme: dark)" }],
   ],

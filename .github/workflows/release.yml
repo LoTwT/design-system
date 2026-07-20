@@ -38,6 +38,11 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+        id: setup-chrome
+        with:
+          chrome-version: 150.0.7871.124
+
       - name: Derive release version and channel
         id: release
         shell: bash
@@ -103,6 +108,10 @@ jobs:
       - run: pnpm check
       - run: pnpm site:typecheck
       - run: pnpm site:build
+      - run: pnpm site:browser
+        env:
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          EXPECTED_CHROME_VERSION: 150.0.7871.124
 
       - name: Build immutable release artifact
         shell: bash

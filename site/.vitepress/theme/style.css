@@ -110,6 +110,34 @@
   transform: translateX(18px);
 }
 
+@media (max-width: 767px) {
+  /* VitePress 1.6 navigation structure: keep this ordering covered by the site contract test. */
+  .VPNavScreen > .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .VPNavScreen .menu {
+    order: 1;
+  }
+
+  .VPNavScreen .translations {
+    order: 2;
+  }
+
+  .VPNavScreen .appearance {
+    order: 3;
+  }
+
+  .VPNavScreen .theme-family-control--screen {
+    order: 4;
+  }
+
+  .VPNavScreen .social-links {
+    order: 5;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .VPSwitch.VPSwitchAppearance,
   .VPSwitch.VPSwitchAppearance .check,
