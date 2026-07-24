@@ -73,7 +73,7 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   gap: 0 var(--spacing-3);
   margin-block-start: var(--spacing-3);
   padding: var(--spacing-3) 0.875rem var(--spacing-3) var(--spacing-4);
-  border: var(--border-width-control, var(--border-width-thin)) solid var(--border-subtle);
+  border: var(--border-width-control) solid var(--border-subtle);
   border-radius: var(--radius-card);
   background: var(--vp-c-bg-soft);
 }
@@ -133,7 +133,7 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   display: block;
   width: 2.5rem;
   height: 1.5rem;
-  border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-control) solid var(--border-default);
   border-radius: var(--radius-control);
   background: var(--surface-muted);
 }

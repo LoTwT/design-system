@@ -5,11 +5,13 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
+const rootDir = dirname(dirname(packageDir))
+const brutalContract = JSON.parse(readFileSync(join(rootDir, "docs/spec/brutal-theme-contract.json"), "utf8"))
 const tmpDir = join(packageDir, "test", ".tmp")
 const input = join(packageDir, "test", "smoke.package.css")
 const output = join(tmpDir, "smoke.css")
-const themeOnlyInput = join(packageDir, "test", "smoke.theme-only.css")
-const themeOnlyOutput = join(tmpDir, "smoke.theme-only.css")
+const themeOnlyInput = join(rootDir, brutalContract.defaultBaseline.compiledInput)
+const themeOnlyOutput = join(rootDir, brutalContract.defaultBaseline.compiledOutput)
 const brutalInput = join(tmpDir, "smoke.brutal.css")
 const brutalOutput = join(tmpDir, "smoke.brutal.output.css")
 
@@ -37,7 +39,7 @@ const css = readFileSync(output, "utf8")
 const themeOnlyCss = readFileSync(themeOnlyOutput, "utf8")
 const brutalCss = readFileSync(brutalOutput, "utf8")
 const themeOnlySha256 = createHash("sha256").update(themeOnlyCss).digest("hex")
-const requiredThemeOnlySha256 = "449b8a3d5da925afca80e0a126d6744ae963f5d9ee4d3580fc4dda4c391e5c77"
+const requiredThemeOnlySha256 = brutalContract.defaultBaseline.compiledSha256
 
 const readCssVars = (file) => {
   const source = readFileSync(join(packageDir, file), "utf8")
@@ -85,6 +87,8 @@ const requiredOutput = [
   ["warning status background var", "--status-warning-bg"],
   ["danger status border var", "--status-danger-border"],
   ["info status foreground var", "--status-info-fg"],
+  ["surface border role var", "--border-width-surface"],
+  ["control border role var", "--border-width-control"],
   ["dark selector", ".dark"],
   ["increased contrast override", "@media (prefers-contrast: more)"],
   ["forced colors override", "@media (forced-colors: active)"],

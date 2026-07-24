@@ -189,9 +189,10 @@ Opt-in `brutal.css` 在 `:root` 追加 `--shadow-hard-color` 与 `--shadow-hard-
 ```css
 --border-width-hairline / -thin / -medium / -thick / -heavy   (5 width: 0.5px ~ 3px)
 --border-style-solid / -dashed / -dotted                       (3 style)
+--border-width-surface / -control                              (2 structure roles → thin)
 ```
 
-Opt-in `.brutal` 另提供 `--border-width-surface` / `--border-width-control` 两个 structure roles，均映射现有 `--border-width-heavy`。它们不是默认入口的新 foundation token；跨 family consumer 分别使用 `var(--border-width-surface, var(--border-width-thin))` 与 `var(--border-width-control, var(--border-width-thin))` 回退。缺少 family-scoped role 且 `var()` 未提供 fallback 时，包含它的 declaration 在 computed-value time invalid，并按 `unset` 处理：继承属性取 inherited value，非继承属性取 initial value；更早的 cascaded declaration 不会重新生效。
+`--border-width-surface` / `--border-width-control` 是默认入口的 foundation structure roles，默认映射 `--border-width-thin`；opt-in `.brutal` 将其 remap 到 `--border-width-heavy`。两个 family 的 structure role 集合完全一致，consumer 直接引用即可，无需 `var()` fallback。
 
 ### 1.15 Motion（5 duration + 4 ease + 2 named animation + 2 keyframes）
 
@@ -563,12 +564,12 @@ consumer 不 import `@ayingott/theme` 主入口时不会拿到这些 base 样式
 | 场景 | V0 token 组合 |
 |---|---|
 | Primary CTA 按钮 | `bg: var(--accent-primary)` / `color: var(--accent-contrast)`；hover / active 同步使用对应 accent background + contrast foreground |
-| Secondary 按钮 | `bg: var(--surface-elevated)` / `color: var(--text-primary)` / `border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default)` |
-| Outline accent button | `bg: transparent` / `color: var(--text-accent)` / `border: var(--border-width-control, var(--border-width-thin)) solid var(--accent-primary)` |
+| Secondary 按钮 | `bg: var(--surface-elevated)` / `color: var(--text-primary)` / `border: var(--border-width-control) solid var(--border-default)` |
+| Outline accent button | `bg: transparent` / `color: var(--text-accent)` / `border: var(--border-width-control) solid var(--accent-primary)` |
 | 链接（inline）| `color: var(--text-accent)` |
 | 装饰几何元素 | `fill: var(--accent-primary)` 或 neutral-300 |
 | Tag chip 默认 | `bg: var(--accent-soft)` / `color: var(--text-primary)`（**不**用 text-accent，避免对比度低于 AA — 见 §8.1）|
-| Card border | `border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle)`（默认）/ `var(--border-default)` 强调 / `var(--border-strong)` focus |
+| Card border | `border: var(--border-width-surface) solid var(--border-subtle)`（默认）/ `var(--border-default)` 强调 / `var(--border-strong)` focus |
 | Card hover | `box-shadow: var(--shadow-md)` |
 | Heading（H1-H6）| `color: var(--text-primary)` |
 | Body text | `color: var(--text-primary)` 默认 / `var(--text-secondary)` 次级 / `var(--text-muted)` meta |

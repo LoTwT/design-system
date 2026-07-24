@@ -7,4 +7,7 @@
   --border-style-solid: solid;
   --border-style-dashed: dashed;
   --border-style-dotted: dotted;
+
+  --border-width-surface: var(--border-width-thin);
+  --border-width-control: var(--border-width-thin);
 }

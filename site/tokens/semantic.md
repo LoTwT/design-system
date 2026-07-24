@@ -28,7 +28,7 @@ The same semantic names are overridden under `.dark`. Ink also flattens semantic
 
 Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue.
 
-The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and adds the opt-in `--border-width-surface` / `--border-width-control` roles. It does not alter the default Paper/Ink entry.
+The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and remaps the foundation `--border-width-surface` / `--border-width-control` structure roles to `--border-width-heavy`. It does not alter the default Paper/Ink entry.
 
 Use `--text-muted` for active muted UI copy such as helper text and metadata. A physical color utility such as `text-neutral-600` can still serve decorative or explicitly fixed-color work, but it is not the default for semantic copy.
 

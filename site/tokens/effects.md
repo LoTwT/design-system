@@ -16,19 +16,17 @@ Importing `brutal.css` adds the `--shadow-hard-color`, `--shadow-hard-sm`, `--sh
 
 <TokenPreview source="border" prefix="border-width-" preview="border" />
 
-Inside `.brutal`, `--border-width-surface` and `--border-width-control` both map to `--border-width-heavy`. Unlike the entry-global hard-shadow tokens, these structure roles are family-scoped. Use the canonical fallbacks when the same consumer CSS must work with or without Neo:
+`--border-width-surface` and `--border-width-control` are foundation structure roles that default to `--border-width-thin`. Inside `.brutal`, both remap to `--border-width-heavy`. Unlike the entry-global hard-shadow tokens, they resolve in every family, so consumer CSS references them directly:
 
 ```css
 .card {
-  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-surface) solid var(--border-default);
 }
 
 .button {
-  border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-control) solid var(--border-default);
 }
 ```
-
-If a referenced custom property is missing and the `var()` has no fallback, the containing declaration becomes invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived, and CSS does not invent a family fallback.
 
 ## Motion Duration
 

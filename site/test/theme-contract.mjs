@@ -259,6 +259,7 @@ expectFailure(
 )
 
 const foundation = variableMap(contract.sources.foundation, "@theme static")
+const border = variableMap(contract.sources.border, "@theme static")
 const paper = variableMap(contract.sources.paper, contract.selectors.paper)
 const ink = variableMap(contract.sources.ink, contract.selectors.ink)
 const reading = variableMap(contract.sources.reading, ":root")
@@ -266,6 +267,8 @@ const readingInk = variableMap(contract.sources.reading, contract.selectors.ink)
 
 for (const [name, value] of Object.entries(contract.foundationDeclarations))
   expect(foundation[name] === value, `foundation --${name} must be ${value}; received ${foundation[name]}`)
+for (const [name, value] of Object.entries(contract.borderDeclarations))
+  expect(border[name] === value, `border --${name} must be ${value}; received ${border[name]}`)
 exactDeclarations("Paper", paper, contract.modeDeclarations.paper)
 exactDeclarations("Ink", ink, contract.modeDeclarations.ink)
 exactDeclarations("reading", reading, contract.readingDeclarations)

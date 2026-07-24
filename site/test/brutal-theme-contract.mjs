@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import {
@@ -32,8 +32,8 @@ const requiredDigests = {
 }
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "449b8a3d5da925afca80e0a126d6744ae963f5d9ee4d3580fc4dda4c391e5c77",
-  paperInkContractSha256: "7cd8579941750d2823832931798004107bd2bcae89642299585ac7ce4b6b0eaf",
+  compiledSha256: "89d947d8507ba8cd5db26b41348434983c64fd28c09ff8d5e2ec6ea836cc2e01",
+  paperInkContractSha256: "179f2aadb6da725594eb2f373f968c9ad9d85c4a709d3b9564cafff2f19d297e",
 }
 
 function fileSha256(file) {
@@ -116,8 +116,24 @@ function verifyDefaultBaselines() {
     "Default theme source changed while adding Brutal",
   )
   expect(
+    contract.defaultBaseline.compiledInput === "packages/theme/test/smoke.theme-only.css",
+    "Default compiled input path drifted",
+  )
+  expect(
+    contract.defaultBaseline.compiledOutput === "packages/theme/test/.tmp/smoke.theme-only.css",
+    "Default compiled output path drifted",
+  )
+  expect(
+    existsSync(join(rootDir, contract.defaultBaseline.compiledOutput)),
+    "Default compiled output missing; run pnpm smoke first",
+  )
+  expect(
+    fileSha256(contract.defaultBaseline.compiledOutput) === contract.defaultBaseline.compiledSha256,
+    "Default compiled CSS baseline drifted",
+  )
+  expect(
     fileSha256(paperInkContractFile) === contract.defaultBaseline.paperInkContractSha256,
-    "Paper & Ink contract must remain byte-identical",
+    "Paper & Ink contract must match the recorded baseline",
   )
 }
 
