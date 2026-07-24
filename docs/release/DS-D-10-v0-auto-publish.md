@@ -37,8 +37,10 @@ Trusted Publishing, GitHub Release, registry smoke, and rollback mechanics.
   / OIDC. It has no required reviewers or deployment branch/tag restrictions,
   and repository administrators retain bypass. It is not a protected approval
   gate and must not be described as one.
-- The `main` ruleset requires the GitHub Actions checks `check` and `site`, with
-  branches required to be up to date before merge.
+- The `main` branch currently has no ruleset protection. The previous `main`
+  ruleset (required `check` and `site` status checks, up-to-date branches, and
+  one approving review) was removed on 2026-07-24; the `check` and `site`
+  workflows still run on pull requests but are not enforced.
 - Dependabot automation is defined as disabled across alerts, security updates,
   and scheduled version updates. Omitting `.github/dependabot.yml` disables
   version updates. A 2026-07-14 maintainer admin-visible readback confirmed that

@@ -38,7 +38,7 @@ Public CSS exports:
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
 
-Package contract details live in `packages/theme/README.md` and `CLAUDE.md`. Read those if a task requires touching the package itself.
+Package contract details live in `packages/theme/README.md` and `AGENTS.md`. Read those if a task requires touching the package itself.
 
 ## Token layers
 
@@ -319,7 +319,7 @@ These live in the design-system repository. Read them when the skill is not enou
 - `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.
 - `packages/theme/THIRD_PARTY_NOTICES.md` — font licensing.
-- `CLAUDE.md` — repository-level agent guidance.
+- `AGENTS.md` — repository-level agent guidance (`CLAUDE.md` imports it).
 - Live showcase: https://design.ayingott.me
 
 When the spec and this skill ever disagree, the spec wins. File a change to this skill.
