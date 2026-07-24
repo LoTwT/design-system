@@ -107,7 +107,7 @@ Always reach for semantic vars first. Drop down to foundation tokens only when t
 .card {
   background: var(--surface-elevated);
   color: var(--text-primary);
-  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle);
+  border: var(--border-width-surface) solid var(--border-subtle);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
 }
@@ -171,17 +171,17 @@ Place the family and scheme classes together on the same theme root:
 
 V0 supports these four co-located root states. Arbitrary mixed nested theme islands are unsupported because splitting `.brutal` and `.dark` across nested scopes can produce an uncontracted hybrid mapping.
 
-The family keeps the semantic API and component anatomy. It maps card/control radius to zero, card/panel depth to zero-blur hard shadows, and exposes `--border-width-surface` / `--border-width-control`. Use fallbacks when the same consumer CSS must work without the family:
+The family keeps the semantic API and component anatomy. It maps card/control radius to zero, card/panel depth to zero-blur hard shadows, and remaps `--border-width-surface` / `--border-width-control` to `--border-width-heavy`:
 
 ```css
 .card {
-  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-surface) solid var(--border-default);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
 }
 ```
 
-Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles remain scoped to `.brutal`. If a family-scoped role is missing and its `var()` has no fallback, the containing declaration becomes invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived.
+Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles are foundation roles that resolve in every family; `.brutal` only remaps them to heavy widths.
 
 Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
 
@@ -230,12 +230,12 @@ If output reads like product marketing copy, rewrite it.
 When producing visual artifacts (mockups, slides, prototype HTML), follow these defaults. They mirror what the V0 deployment at https://design.ayingott.me demonstrates.
 
 - **Page background is warm cream**, not grey, not pure white. Use `var(--surface-canvas)`.
-- **Cards** sit on `var(--surface-elevated)` with `border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-subtle)`, `border-radius: var(--radius-card)`, and `box-shadow: var(--shadow-card)`. Paper/Ink resolve to the existing soft anatomy; Neo resolves to a 3px border, zero radius, and hard depth.
+- **Cards** sit on `var(--surface-elevated)` with `border: var(--border-width-surface) solid var(--border-subtle)`, `border-radius: var(--radius-card)`, and `box-shadow: var(--shadow-card)`. Paper/Ink resolve to the existing soft anatomy; Neo resolves to a 3px border, zero radius, and hard depth.
 - **Primary buttons** use `background: var(--accent-primary)` + `color: var(--text-inverse)`, `border-radius: var(--radius-control)` (`0.375rem`), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`.
 - **Paper/Ink hover** may lift by `translateY(-1px)` with `var(--shadow-md)` when the consumer owns that interaction.
 - **Neo press feedback** uses the shipped `pressable` utility; do not reproduce its movement locally.
 - **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Never strip the outline.
-- **Paper/Ink borders** are alpha derivatives at the default 1px (`thin`) thickness. **Neo borders** use the opt-in structure width roles and semantic ink color.
+- **Paper/Ink borders** are alpha derivatives at the default 1px (`thin`) thickness. **Neo borders** use the remapped structure width roles and semantic ink color.
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
 - **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
 - **Display headlines** (Space Grotesk) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.

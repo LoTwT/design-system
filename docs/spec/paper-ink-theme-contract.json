@@ -8,6 +8,7 @@
   },
   "sources": {
     "foundation": "packages/theme/src/foundation/colors.css",
+    "border": "packages/theme/src/foundation/border.css",
     "paper": "packages/theme/src/semantic/light.css",
     "ink": "packages/theme/src/semantic/dark.css",
     "reading": "packages/theme/src/semantic/reading.css",
@@ -22,6 +23,10 @@
     "color-neutral-600": "#736a5c",
     "color-neutral-700": "#514a3e",
     "color-neutral-950": "#191713"
+  },
+  "borderDeclarations": {
+    "border-width-surface": "var(--border-width-thin)",
+    "border-width-control": "var(--border-width-thin)"
   },
   "modeDeclarations": {
     "paper": {

@@ -2,6 +2,7 @@
 
 ### Added
 
+- Add `--border-width-surface` and `--border-width-control` as public foundation structure roles that default to `--border-width-thin` and remap to `--border-width-heavy` under `.brutal`.
 - Add the executable Paper & Ink paired-theme contract, legal contrast pairs, and showcase state coverage.
 - Add semantic foreground/background/border status roles, accent-surface focus roles, and reading focus/letter-spacing aliases.
 
@@ -10,6 +11,10 @@
 - Refine the default Paper foundation ramp and semantic action states while preserving `:root`, `.dark`, public token names, package exports, and opt-in fonts.
 - Flatten semantic card and panel depth in Ink and add a responsive paired-theme showcase.
 - Increase Paper active muted-text headroom with a semantic direct literal and enforce a separate `5:1` release target across canvas, panel, and elevated surfaces in both modes.
+
+### Migration
+
+- Replace `var(--border-width-surface, var(--border-width-thin))` and `var(--border-width-control, var(--border-width-thin))` with direct references to `var(--border-width-surface)` and `var(--border-width-control)`. No fallback is required because both roles now resolve in every theme family.
 
 ## 0.1.0 - 2026-05-20
 

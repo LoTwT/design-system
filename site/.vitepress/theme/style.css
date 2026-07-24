@@ -367,7 +367,7 @@
   display: grid;
   gap: var(--spacing-4);
   padding: var(--spacing-5);
-  border: var(--border-width-surface, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-surface) solid var(--border-default);
   border-radius: var(--radius-card);
   background: var(--surface-panel);
   box-shadow: var(--shadow-panel);
@@ -590,7 +590,7 @@
   height: var(--touch-target-min);
   padding-inline: var(--spacing-4);
   padding-block: 0;
-  border: var(--border-width-control, var(--border-width-thin)) solid;
+  border: var(--border-width-control) solid;
   border-color: var(--border-default);
   border-radius: var(--radius-control);
   color: var(--text-primary);
@@ -641,7 +641,7 @@
   width: 100%;
   min-height: var(--touch-target-min);
   padding-inline: var(--spacing-3);
-  border: var(--border-width-control, var(--border-width-thin)) solid;
+  border: var(--border-width-control) solid;
   border-color: var(--border-default);
   border-radius: var(--radius-control);
   color: var(--text-primary);
@@ -677,7 +677,7 @@
   align-items: center;
   min-height: var(--touch-target-min);
   padding: var(--spacing-2) var(--spacing-3);
-  border: var(--border-width-control, var(--border-width-thin)) solid var(--border-default);
+  border: var(--border-width-control) solid var(--border-default);
   border-radius: var(--radius-control);
   color: var(--text-primary);
   background: var(--surface-elevated);
@@ -717,7 +717,7 @@
   column-gap: var(--spacing-2);
   min-inline-size: 0;
   padding: 6px var(--spacing-3);
-  border: var(--border-width-control, var(--border-width-thin)) solid;
+  border: var(--border-width-control) solid;
   border-radius: var(--radius-control);
 }
 

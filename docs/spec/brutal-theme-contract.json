@@ -21,9 +21,10 @@
   "defaultBaseline": {
     "source": "packages/theme/src/index.css",
     "sourceSha256": "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-    "compiledFixture": "packages/theme/test/smoke.theme-only.css",
-    "compiledSha256": "449b8a3d5da925afca80e0a126d6744ae963f5d9ee4d3580fc4dda4c391e5c77",
-    "paperInkContractSha256": "7cd8579941750d2823832931798004107bd2bcae89642299585ac7ce4b6b0eaf"
+    "compiledInput": "packages/theme/test/smoke.theme-only.css",
+    "compiledOutput": "packages/theme/test/.tmp/smoke.theme-only.css",
+    "compiledSha256": "89d947d8507ba8cd5db26b41348434983c64fd28c09ff8d5e2ec6ea836cc2e01",
+    "paperInkContractSha256": "179f2aadb6da725594eb2f373f968c9ad9d85c4a709d3b9564cafff2f19d297e"
   },
   "foundationDeclarations": {
     "shadow-hard-color": "currentcolor",
@@ -215,8 +216,8 @@
     }
   },
   "showcaseRoles": {
-    "surfaceBorderWidth": "var(--border-width-surface, var(--border-width-thin))",
-    "controlBorderWidth": "var(--border-width-control, var(--border-width-thin))",
+    "surfaceBorderWidth": "var(--border-width-surface)",
+    "controlBorderWidth": "var(--border-width-control)",
     "surfaceRadius": "var(--radius-card)",
     "controlRadius": "var(--radius-control)",
     "surfaceShadow": "var(--shadow-panel)",

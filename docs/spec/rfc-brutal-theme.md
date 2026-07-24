@@ -39,22 +39,22 @@ V0 defines these four states with the family and scheme classes co-located on on
 
 ### 2.1 Default compiled CSS is the compatibility boundary
 
-The default `@ayingott/theme` compiled output remains exact. Hard-shadow tokens, the family selector, the pressable utility, and its local reduced-motion policy live only in `brutal.css` and its import chain. The existing foundation files are unchanged.
+The default `@ayingott/theme` compiled output remains the compatibility boundary. Hard-shadow tokens, the family selector, the pressable utility, and its local reduced-motion policy live only in `brutal.css` and its import chain. The default foundation adds only the two cross-family border structure roles described below, and the executable contract pins the resulting compiled baseline.
 
 ### 2.2 The complete semantic declaration set is owned
 
 Neo Light and Neo Dark declare equivalent key sets. Every current public surface, text, border, accent, focus, status, reading, radius, and depth role is either explicitly remapped or explicitly retained through the contract. A partial palette override is not conforming.
 
-The `--brutal-*` variables exist to implement and verify those mappings. They are contract-owned implementation palette values, not a consumer direct-use API. Consumers use semantic roles, the two opt-in structure roles, and the entry-global hard-shadow physical tokens instead.
+The `--brutal-*` variables exist to implement and verify those mappings. They are contract-owned implementation palette values, not a consumer direct-use API. Consumers use semantic roles, the two structure roles, and the entry-global hard-shadow physical tokens instead.
 
 ### 2.3 Structure changes through role aliases
 
-The family remaps existing `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel` roles. It adds two opt-in roles:
+The family remaps existing `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel` roles, plus two foundation structure roles:
 
 - `--border-width-surface`
 - `--border-width-control`
 
-Both resolve to the existing `--border-width-heavy` physical token. Existing physical radius, border, and soft-shadow scales remain unchanged. Cross-family declarations use `var(--border-width-surface, var(--border-width-thin))` or `var(--border-width-control, var(--border-width-thin))`. Without a `var()` fallback, a missing role makes the containing declaration invalid at computed-value time. The declaration behaves as `unset`: an inherited property inherits, while a non-inherited property takes its initial value. An earlier cascaded declaration is not revived.
+Both default to `--border-width-thin` in the default entry and remap to the existing `--border-width-heavy` physical token inside the family, so the structure role set stays identical across families. Existing physical radius, border, and soft-shadow scales remain unchanged. Cross-family declarations reference `var(--border-width-surface)` or `var(--border-width-control)` directly.
 
 ### 2.4 Invariants have a narrow verification boundary
 
@@ -75,7 +75,7 @@ packages/theme/src/
     └── pressable.css
 ```
 
-`brutal.css` imports the semantic and utility sources, then declares the opt-in hard-shadow variables at `:root` and their three matching utilities. The hard-shadow physical tokens are therefore entry-global after import, while the surface/control width roles remain scoped to `.brutal`. It does not import `index.css`; the consumer must import the default entry first.
+`brutal.css` imports the semantic and utility sources, then declares the opt-in hard-shadow variables at `:root` and their three matching utilities. The hard-shadow physical tokens are therefore entry-global after import, while the foundation surface/control width roles are remapped inside `.brutal`. It does not import `index.css`; the consumer must import the default entry first.
 
 The fifth public export is:
 
@@ -154,7 +154,7 @@ The VitePress Theme Overview remains display-only. It documents the four-state s
 Consumers own:
 
 - persistence and initial `.brutal` class placement;
-- migration from fixed `1px` component borders to the opt-in width roles;
+- migration from fixed `1px` component borders or fallback-based structure-role references to the always-defined width roles;
 - component anatomy and copy;
 - any production family switcher.
 
@@ -164,8 +164,8 @@ The rollout proof uses the real tarball in two disposable consumers. No consumer
 
 ## 8. Acceptance gates
 
-- default compiled CSS exact equality;
-- Paper/Ink contract JSON byte equality and unchanged verifier result;
+- intentional default compiled CSS baseline update for the two foundation structure roles;
+- updated Paper/Ink contract baseline and unchanged contrast-verifier result;
 - Neo Light/Dark declaration-set equality and all legal pairs;
 - exact five-export package contract;
 - real tarball install and Tailwind compilation;
