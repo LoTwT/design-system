@@ -210,6 +210,43 @@ async function verifyBrowserBehavior() {
     expect(rendered.focusVisible && rendered.outline.includes("solid 2px"), "mobile switch must expose a rendered keyboard focus outline")
     const isZero = value => value.split(",").every(duration => Number.parseFloat(duration) === 0)
     expect(isZero(lightDuration) && isZero(darkDuration), "Theme Family thumb must compute to zero transition duration under reduced motion in Light and Dark")
+
+    for (const width of [768, 769, 1024]) {
+      await page.setViewportSize({ height: 844, width })
+      await page.goto(`${origin}/`)
+      const tabletLabel = page.locator(".theme-family-control--header .theme-family-control__label")
+      await tabletLabel.waitFor({ state: "visible" })
+      expect((await tabletLabel.textContent())?.includes("Family"), `${width}px Theme Family switch must have a visible label`)
+      // Measure only after webfonts settle; fallback-font metrics differ across platforms.
+      await page.evaluate(() => document.fonts.ready)
+      const viewportWidth = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
+      expect(viewportWidth.scroll <= viewportWidth.client, `Homepage must not overflow at ${width}px; received ${viewportWidth.scroll}px content in ${viewportWidth.client}px viewport`)
+    }
+
+    await page.setViewportSize({ height: 844, width: 320 })
+    await page.goto(`${origin}/tokens/typography`)
+    await page.evaluate(() => document.fonts.ready)
+    const typographyWidth = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
+    expect(typographyWidth.scroll <= typographyWidth.client, `Typography page must not overflow at 320px; received ${typographyWidth.scroll}px content in ${typographyWidth.client}px viewport`)
+
+    await page.goto(`${origin}/tokens/semantic`)
+    await page.evaluate(() => {
+      document.documentElement.classList.add("dark", "brutal")
+    })
+    const paperSwatch = page.locator(".token-section").first().locator(".token-card > div").first()
+    const paperSwatchColor = await paperSwatch.evaluate(element => getComputedStyle(element).backgroundColor)
+    expect(paperSwatchColor === "rgb(251, 247, 238)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
+
+    await page.goto(`${origin}/tokens/effects`)
+    const transitionDurations = await page.locator(".transition-demo").first().evaluate((element) => {
+      const dot = element.querySelector(".transition-demo__dot")
+      return {
+        container: getComputedStyle(element).transitionDuration,
+        dot: getComputedStyle(dot).transitionDuration,
+      }
+    })
+    expect(isZero(transitionDurations.container) && isZero(transitionDurations.dot), "Transition specimens must compute to zero duration under reduced motion")
+
     console.log(`site Theme Family browser contract passed with Chrome ${version}`)
   }
   catch (error) {

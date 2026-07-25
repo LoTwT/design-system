@@ -14,6 +14,10 @@ export default defineConfig({
   recursive: false,
   noGitCheck: false,
   execute: (operation) => {
+    execSync(`node scripts/sync-release-docs.mjs ${operation.state.newVersion}`, {
+      cwd: operation.options.cwd,
+      stdio: 'inherit',
+    })
     execSync('pnpm changelog', {
       cwd: operation.options.cwd,
       stdio: 'inherit',
@@ -23,6 +27,9 @@ export default defineConfig({
       updatedFiles: [
         ...operation.state.updatedFiles,
         resolve(operation.options.cwd, 'CHANGELOG.md'),
+        resolve(operation.options.cwd, 'site/index.md'),
+        resolve(operation.options.cwd, 'site/guide/getting-started.md'),
+        resolve(operation.options.cwd, 'site/guide/package-contract.md'),
       ],
     })
   },

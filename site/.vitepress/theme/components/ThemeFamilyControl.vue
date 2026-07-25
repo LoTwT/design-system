@@ -24,7 +24,10 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
     :class="[`theme-family-control--${placement}`, { 'is-ready': isReady }]"
     :aria-hidden="isReady ? undefined : 'true'"
   >
-    <span class="theme-family-control__label">Theme family</span>
+    <span class="theme-family-control__label">
+      <span class="theme-family-control__label-header">Family</span>
+      <span class="theme-family-control__label-screen">Theme family</span>
+    </span>
     <span
       class="theme-family-control__status"
       aria-live="polite"
@@ -62,7 +65,7 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   display: none;
   align-items: center;
   gap: var(--spacing-1);
-  margin-inline-start: var(--spacing-2);
+  margin-inline-start: 0;
 }
 
 .theme-family-control--screen {
@@ -98,6 +101,18 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
 }
 
 .theme-family-control--header .theme-family-control__label {
+  display: block;
+}
+
+.theme-family-control__label-header {
+  display: none;
+}
+
+.theme-family-control--header .theme-family-control__label-header {
+  display: inline;
+}
+
+.theme-family-control--header .theme-family-control__label-screen {
   display: none;
 }
 

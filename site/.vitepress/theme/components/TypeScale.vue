@@ -26,14 +26,14 @@ const textTokens = computed(() => {
       <article
         v-for="token in textTokens"
         :key="token.name"
-        class="token-card p-4"
+        class="token-card min-w-0 p-4"
       >
-        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div class="token-label">--{{ token.name }}</div>
-          <div class="token-value">{{ token.value }} / {{ token.lineHeight }}</div>
+        <div class="mb-3 flex min-w-0 flex-wrap items-center justify-between gap-3">
+          <div class="token-label" translate="no">--{{ token.name }}</div>
+          <div class="token-value min-w-0" translate="no">{{ token.value }} / {{ token.lineHeight }}</div>
         </div>
         <p
-          class="m-0 font-display"
+          class="m-0 min-w-0 break-words font-display"
           :style="{ fontSize: `var(--${token.name})`, lineHeight: token.lineHeight }"
         >
           Ayingott 设计系统展示

@@ -32,11 +32,11 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
       <article v-for="token in tokens" :key="token.name" class="token-card overflow-hidden">
         <div
           class="h-20 border-b"
-          :style="{ background: `var(--${token.name})`, borderColor: 'var(--border-subtle)' }"
+          :style="{ background: token.value, borderColor: 'var(--border-subtle)' }"
         />
         <div class="token-card__body">
-          <div class="token-label">--{{ token.name }}</div>
-          <div class="token-value">{{ token.value }}</div>
+          <div class="token-label" translate="no">--{{ token.name }}</div>
+          <div class="token-value" translate="no">{{ token.value }}</div>
         </div>
       </article>
     </div>

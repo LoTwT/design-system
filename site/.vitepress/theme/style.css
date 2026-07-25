@@ -79,6 +79,16 @@
   background: transparent;
 }
 
+/* Keep the nav inside tablet viewports: the visible Family label plus the
+   search key badge (wider off macOS, where it renders "Ctrl K") otherwise
+   overflow the 768px breakpoint. The shortcut still works; only the hint is
+   hidden. Do not re-enable the badge in this range without re-measuring. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .VPNavBar .DocSearch-Button .DocSearch-Button-Keys {
+    display: none;
+  }
+}
+
 .VPSwitch.VPSwitchAppearance::before {
   position: absolute;
   top: 11px;
@@ -149,18 +159,6 @@
   .theme-action {
     transition-duration: 0s;
   }
-}
-
-.focus-ring:focus-visible {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: 2px;
-  box-shadow: var(--focus-ring-shadow);
-}
-
-.focus-ring-inset:focus-visible {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: -2px;
-  box-shadow: inset 0 0 0 1px var(--focus-ring-color);
 }
 
 .focus-ring-preview {
@@ -587,9 +585,8 @@
   justify-content: center;
   min-width: var(--touch-target-min);
   min-height: var(--touch-target-min);
-  height: var(--touch-target-min);
   padding-inline: var(--spacing-4);
-  padding-block: 0;
+  padding-block: var(--spacing-2);
   border: var(--border-width-control) solid;
   border-color: var(--border-default);
   border-radius: var(--radius-control);

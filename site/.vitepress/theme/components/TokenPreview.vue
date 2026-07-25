@@ -42,8 +42,8 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
         class="token-card grid items-center gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_10rem]"
       >
         <div>
-          <div class="token-label">--{{ token.name }}</div>
-          <div class="token-value">{{ token.value }}</div>
+          <div class="token-label" translate="no">--{{ token.name }}</div>
+          <div class="token-value" translate="no">{{ token.value }}</div>
         </div>
 
         <div
@@ -86,7 +86,7 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
           >
             <span class="transition-demo__dot" />
           </div>
-          <div v-else class="token-value">{{ token.value }}</div>
+          <div v-else class="token-value" translate="no">{{ token.value }}</div>
         </div>
       </article>
     </div>
@@ -105,20 +105,20 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
 
 .motion-demo__bar {
   display: block;
-  width: 34%;
+  width: 62%;
   height: var(--spacing-4);
   border-radius: var(--radius-full);
   background: var(--accent-primary);
-  transform: translateX(0);
-  transition-property: width, transform, opacity;
+  transform: translateX(0) scaleX(0.55);
+  transform-origin: left center;
+  transition-property: transform, opacity;
   transition-timing-function: var(--ease-standard);
   transition-duration: inherit;
 }
 
 .motion-demo:hover .motion-demo__bar {
-  width: 62%;
   opacity: var(--opacity-emphasis);
-  transform: translateX(1.5rem);
+  transform: translateX(1.5rem) scaleX(1);
 }
 
 .transition-demo {
@@ -155,8 +155,10 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .motion-demo__bar {
-    transition-duration: 0ms !important;
+  .motion-demo__bar,
+  .transition-demo,
+  .transition-demo__dot {
+    transition: none !important;
   }
 }
 </style>

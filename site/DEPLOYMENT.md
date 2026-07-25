@@ -25,13 +25,24 @@ separate Cloudflare Build command unless the Workers Git UI explicitly requires
 one; keeping the build command in `wrangler.jsonc` makes local deploys and
 Cloudflare deploys follow the same path.
 
-## Local Commands
+## Local Verification
+
+Run the complete repository gates before previewing or deploying:
 
 ```bash
+pnpm check
+pnpm site:typecheck
 pnpm site:build
+```
+
+## Local Preview and Deploy
+
+```bash
 pnpm site:cf-preview
 pnpm site:deploy
 ```
+
+Wrangler owns the deployment build through `wrangler.jsonc`; the preview and deploy scripts do not run a separate prebuild.
 
 `site:deploy` requires an authenticated Wrangler session or equivalent
 Cloudflare API credentials in CI.
