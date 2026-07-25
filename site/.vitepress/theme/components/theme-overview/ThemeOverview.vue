@@ -24,7 +24,8 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
       <div class="theme-section__heading">
         <h2 id="token-source">Token source</h2>
       </div>
-      <div class="theme-token-source">
+      <div class="theme-token-source" translate="no">
+        <code>@import "tailwindcss";</code>
         <code>@import "@ayingott/theme";</code>
         <code>@import "@ayingott/theme/brutal.css";</code>
         <span><code>.dark</code> controls scheme · <code>.brutal</code> opts into the family</span>

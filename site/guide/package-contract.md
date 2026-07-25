@@ -1,6 +1,9 @@
 # Package Contract
 
-`@ayingott/theme` exposes five public entries:
+> [!IMPORTANT]
+> This page describes the current `main` branch. npm `latest` is `0.1.0` and does not include the `./brutal.css` export yet.
+
+`@ayingott/theme` on `main` exposes five public entries:
 
 ```json
 {
@@ -11,6 +14,12 @@
   "./fonts/*": "./src/fonts/*"
 }
 ```
+
+## Consumer Requirements
+
+- Tailwind CSS `^4.0.0` is a required peer dependency.
+- The default `@ayingott/theme` entry does not load bundled fonts; consumers opt in through `@ayingott/theme/fonts.css`.
+- The default entry does not load Neo-Brutalism; after its package release, consumers opt in by importing `@ayingott/theme/brutal.css` after the default entry.
 
 ## In Scope
 

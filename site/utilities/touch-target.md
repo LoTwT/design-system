@@ -1,6 +1,9 @@
 # Touch Target
 
-V0 ships two touch utilities:
+V0 ships two touch utilities with different guarantees:
+
+- `touch-target` guarantees both the minimum width and minimum height.
+- `touch-target-inline` guarantees the minimum height and adds horizontal padding for text links; it does not independently guarantee a 44px minimum width.
 
 ```css
 touch-target
@@ -13,7 +16,7 @@ touch-target-inline
   <button class="touch-target rounded-control border" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-primary);">
     44px target
   </button>
-  <a class="touch-target-inline rounded-control border no-underline" href="#" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-accent);">
+  <a class="touch-target-inline rounded-control border no-underline" href="#neo-brutal-pressable" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-accent);">
     inline touch target
   </a>
 </div>

@@ -32,8 +32,8 @@ export default defineConfig({
       {
         text: "Guide",
         items: [
-          { text: "Theme Overview", link: "/guide/theme-overview" },
           { text: "Getting Started", link: "/guide/getting-started" },
+          { text: "Theme Overview", link: "/guide/theme-overview" },
           { text: "Package Contract", link: "/guide/package-contract" },
         ],
       },

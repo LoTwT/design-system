@@ -173,22 +173,31 @@ function sha256(file) {
 }
 
 const config = readConfig()
+const packageVersion = JSON.parse(readSource("package.json")).version
+const isPreNeoRelease = packageVersion === "0.1.0" || packageVersion.includes("-")
 
 const homepageSource = expectSourceIncludes("site/index.md", [
-  "text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.",
   "text: Compare theme families",
   "link: /guide/theme-overview",
   "title: Two-axis themes",
 ])
+expect(
+  homepageSource.includes("not included in npm `latest` (`0.1.0`) yet.") === isPreNeoRelease,
+  "Homepage main-only Neo notice must match the package release state",
+)
 expect(!homepageSource.includes("title: Runtime Semantics"), "Homepage must replace the Runtime Semantics card")
 expect((homepageSource.match(/^  - title:/gm) ?? []).length === 3, "Homepage must keep exactly three feature cards")
 
-expectSourceIncludes("site/guide/getting-started.md", [
+const gettingStartedSource = expectSourceIncludes("site/guide/getting-started.md", [
   '<html class="brutal dark">',
   "Arbitrary mixed nested theme islands are unsupported",
   "The `--brutal-*` palette variables are contract-owned implementation details",
   "[Theme overview](./theme-overview)",
 ])
+expect(
+  gettingStartedSource.includes("not included in npm `latest` (`0.1.0`) yet") === isPreNeoRelease,
+  "Getting Started main-only Neo notice must match the package release state",
+)
 expectSourceIncludes("site/tokens/effects.md", [
   "at `:root`",
   "foundation structure roles that default to `--border-width-thin`",
@@ -199,9 +208,16 @@ expectSourceIncludes("site/tokens/semantic.md", [
   "Use `--text-muted` for active muted UI copy",
   "express family-relative intent",
 ])
-expectSourceIncludes("site/guide/package-contract.md", [
+const packageContractSource = expectSourceIncludes("site/guide/package-contract.md", [
+  "Tailwind CSS `^4.0.0` is a required peer dependency",
+  "does not load bundled fonts",
+  "does not load Neo-Brutalism",
   "The family-local `--brutal-*` palette variables are contract-owned implementation details",
 ])
+expect(
+  packageContractSource.includes("npm `latest` is `0.1.0` and does not include the `./brutal.css` export yet") === isPreNeoRelease,
+  "Package Contract main-only Neo notice must match the package release state",
+)
 expectSourceIncludes("packages/theme/README.md", [
   "place both classes on that same root",
   "Arbitrary mixed nested theme islands are unsupported",
@@ -341,6 +357,25 @@ expectFailure(
   "Expected color: var(--text-accent)",
 )
 verifySavedIconRole(readSource(cssFile), cssFile)
+
+const colorSwatchSource = readSource("site/.vitepress/theme/components/ColorSwatchGrid.vue")
+expect(colorSwatchSource.includes("background: token.value"), "Semantic swatches must render the parsed source value")
+expect(!colorSwatchSource.includes("background: `var(--${token.name})`"), "Semantic swatches must not use the ambient theme variable")
+
+const typeScaleSource = readSource("site/.vitepress/theme/components/TypeScale.vue")
+expect(typeScaleSource.includes("token-card min-w-0"), "Type scale cards must be allowed to shrink on narrow screens")
+expect(typeScaleSource.includes("min-w-0 break-words font-display"), "Type specimens must wrap on narrow screens")
+
+const tokenPreviewSource = readSource("site/.vitepress/theme/components/TokenPreview.vue")
+expect(tokenPreviewSource.includes(".transition-demo__dot {\n    transition: none !important;"), "Reduced motion must disable transition specimen motion")
+expect(!tokenPreviewSource.includes("transition-property: width"), "Motion specimens must not animate layout width")
+
+const themeFamilyControlSource = readSource("site/.vitepress/theme/components/ThemeFamilyControl.vue")
+expect(themeFamilyControlSource.includes("theme-family-control__label-header\">Family"), "Header Theme Family control must have a visible label")
+
+const themeAction = readDeclarations(findRule(css, [".theme-action"], "theme action sizing"))
+expectDeclaration(themeAction, "min-height", "var(--touch-target-min)")
+expect(themeAction.get("height") === undefined, "Theme actions must grow for long or translated labels")
 
 const themeIconSource = readSource("site/.vitepress/theme/components/theme-overview/ThemeIcon.vue")
 for (const icon of ["circle-check", "circle-x", "info", "triangle-alert"]) {
