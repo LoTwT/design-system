@@ -217,12 +217,15 @@ async function verifyBrowserBehavior() {
       const tabletLabel = page.locator(".theme-family-control--header .theme-family-control__label")
       await tabletLabel.waitFor({ state: "visible" })
       expect((await tabletLabel.textContent())?.includes("Family"), `${width}px Theme Family switch must have a visible label`)
+      // Measure only after webfonts settle; fallback-font metrics differ across platforms.
+      await page.evaluate(() => document.fonts.ready)
       const viewportWidth = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
       expect(viewportWidth.scroll <= viewportWidth.client, `Homepage must not overflow at ${width}px; received ${viewportWidth.scroll}px content in ${viewportWidth.client}px viewport`)
     }
 
     await page.setViewportSize({ height: 844, width: 320 })
     await page.goto(`${origin}/tokens/typography`)
+    await page.evaluate(() => document.fonts.ready)
     const typographyWidth = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
     expect(typographyWidth.scroll <= typographyWidth.client, `Typography page must not overflow at 320px; received ${typographyWidth.scroll}px content in ${typographyWidth.client}px viewport`)
 
