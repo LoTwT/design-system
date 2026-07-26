@@ -1,5 +1,11 @@
 # Paper & Ink design QA
 
+> **Historical snapshot — 2026-07-17, PR #36.** This QA evidence predates the
+> Neo family and the current palette and font baselines, and its values no
+> longer match the implementation. It is kept as a point-in-time record; do
+> not retro-edit. Current contrast and experience guarantees are enforced by
+> the contract tests under `site/test/`.
+
 ## Source references
 
 - `paper-ink-light-default-final.png` (1440 x 1024)
