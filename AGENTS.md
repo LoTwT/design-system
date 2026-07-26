@@ -29,12 +29,17 @@ Run:
 pnpm check
 pnpm site:typecheck
 pnpm site:build
+CHROME_PATH=<chrome-binary> pnpm site:browser
 ```
 
 `pnpm check` covers source smoke, package dry-run, real-tarball consumer
 install/compile, and site contrast checks. The `site:typecheck` and `site:build`
-commands validate the VitePress implementation. Pull requests still run the
-`check` and `site` CI jobs, but no `main` ruleset currently enforces them.
+commands validate the VitePress implementation. `site:browser` runs the
+Playwright browser contract (theme-family init plus live-Chrome behavior); it
+needs a Chrome binary via `CHROME_PATH` and also runs in the `site` CI job and
+the release workflow, so run it before pushing browser-visible changes. Pull
+requests still run the `check` and `site` CI jobs, but no `main` ruleset
+currently enforces them.
 
 ## Release
 

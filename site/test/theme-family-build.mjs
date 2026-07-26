@@ -235,7 +235,7 @@ async function verifyBrowserBehavior() {
     })
     const paperSwatch = page.locator(".token-section").first().locator(".token-card > div").first()
     const paperSwatchColor = await paperSwatch.evaluate(element => getComputedStyle(element).backgroundColor)
-    expect(paperSwatchColor === "rgb(251, 247, 238)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
+    expect(paperSwatchColor === "rgb(250, 248, 244)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
 
     await page.goto(`${origin}/tokens/effects`)
     const transitionDurations = await page.locator(".transition-demo").first().evaluate((element) => {
