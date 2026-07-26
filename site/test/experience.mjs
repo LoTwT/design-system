@@ -386,6 +386,19 @@ expectDeclaration(familyOrder, "order", "1")
 const chromeOrder = readDeclarations(findRule(tabletNav[0], [".VPNavBar .social-links", ".VPNavBar .extra"], "nav chrome order"))
 expectDeclaration(chromeOrder, "order", "2")
 
+const navTitleFont = readDeclarations(findRule(css, [".VPNavBarTitle .title"], "nav title font size"))
+expectDeclaration(navTitleFont, "font-size", "15px")
+
+const navTitleLogo = readDeclarations(findRule(css, [".VPNavBarTitle img.logo"], "nav title logo size"))
+expectDeclaration(navTitleLogo, "width", "2.75rem", true)
+expectDeclaration(navTitleLogo, "min-width", "2.75rem", true)
+expectDeclaration(navTitleLogo, "flex", "0 0 2.75rem")
+
+const desktopNav = css.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(min-width: 960px)")
+expect(desktopNav.length === 1, "Expected exactly one min-width: 960px media query")
+const navTitlePadding = readDeclarations(findRule(desktopNav[0], [".VPNavBar.has-sidebar .title"], "nav title slot padding"))
+expectDeclaration(navTitlePadding, "padding-right", "12px", true)
+
 const themeAction = readDeclarations(findRule(css, [".theme-action"], "theme action sizing"))
 expectDeclaration(themeAction, "min-height", "var(--touch-target-min)")
 expect(themeAction.get("height") === undefined, "Theme actions must grow for long or translated labels")
