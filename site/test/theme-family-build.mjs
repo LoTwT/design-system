@@ -232,6 +232,22 @@ async function verifyBrowserBehavior() {
       expect(viewportWidth.scroll <= viewportWidth.client, `Homepage must not overflow at ${width}px; received ${viewportWidth.scroll}px content in ${viewportWidth.client}px viewport`)
     }
 
+    // The nav title link must fit the fixed sidebar-width title box; the
+    // pinned font size, logo size, and slot padding are the mechanism,
+    // this layout invariant is what they protect.
+    for (const width of [960, 1280]) {
+      await page.setViewportSize({ height: 844, width })
+      await page.goto(`${origin}/guide/getting-started`)
+      // Measure only after webfonts settle; fallback-font metrics differ across platforms.
+      await page.evaluate(() => document.fonts.ready)
+      const titleLink = await page.evaluate(() => {
+        const link = document.querySelector(".VPNavBarTitle a.title")
+        return link === null ? null : { client: link.clientWidth, scroll: link.scrollWidth }
+      })
+      expect(titleLink !== null, `Nav title link must render at ${width}px`)
+      expect(titleLink.scroll <= titleLink.client, `Nav title must fit the fixed title box at ${width}px; scrollWidth ${titleLink.scroll} exceeds clientWidth ${titleLink.client}`)
+    }
+
     await page.setViewportSize({ height: 844, width: 320 })
     await page.goto(`${origin}/tokens/typography`)
     await page.evaluate(() => document.fonts.ready)
