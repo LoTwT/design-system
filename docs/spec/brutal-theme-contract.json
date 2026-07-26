@@ -23,8 +23,8 @@
     "sourceSha256": "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
     "compiledInput": "packages/theme/test/smoke.theme-only.css",
     "compiledOutput": "packages/theme/test/.tmp/smoke.theme-only.css",
-    "compiledSha256": "89d947d8507ba8cd5db26b41348434983c64fd28c09ff8d5e2ec6ea836cc2e01",
-    "paperInkContractSha256": "179f2aadb6da725594eb2f373f968c9ad9d85c4a709d3b9564cafff2f19d297e"
+    "compiledSha256": "d9fe7f04ed33edae66473e0f45bd31fb72c6d04ab54efd792133322e3964573c",
+    "paperInkContractSha256": "cfe541ae7d369e32fcac9c4afecf6c14179b92750011609c4e4a32e120f73492"
   },
   "foundationDeclarations": {
     "shadow-hard-color": "currentcolor",
@@ -101,7 +101,7 @@
   },
   "modeDeclarations": {
     "light": {
-      "brutal-canvas": "#fff3d6",
+      "brutal-canvas": "#fcf6ea",
       "brutal-ink": "#111111",
       "surface-panel": "#ffffff",
       "surface-elevated": "#fff9eb",
@@ -118,17 +118,17 @@
       "reading-link-hover": "var(--brutal-ink)"
     },
     "dark": {
-      "brutal-canvas": "#17150f",
-      "brutal-ink": "#fff3d6",
+      "brutal-canvas": "#161412",
+      "brutal-ink": "#f5f2ea",
       "surface-panel": "#211e16",
       "surface-elevated": "#2c281e",
       "surface-subtle": "#3a3427",
       "surface-muted": "#4c4432",
-      "text-secondary": "#e2d4b3",
-      "text-muted": "#c4b48e",
+      "text-secondary": "#e7dfd2",
+      "text-muted": "#cac1b0",
       "text-inverse": "var(--brutal-sticker-ink)",
       "text-accent": "var(--brutal-purple)",
-      "border-subtle": "rgb(255 243 214 / 0.62)",
+      "border-subtle": "rgb(245 242 234 / 0.62)",
       "accent-soft": "#4c4432",
       "focus-ring-color": "var(--brutal-yellow)",
       "focus-ring-shadow": "0 0 0 4px var(--brutal-blue)",
@@ -284,7 +284,7 @@
     { "id": "brutal-dark-info-border", "mode": "dark", "foreground": "status-info-border", "background": "status-info-bg", "minimum": 3, "kind": "non-text" }
   ],
   "digests": {
-    "declarations": "f498a38744406508b0017fa6174f6a81ac3cc4d307f4bc451595524e1ec5119d",
+    "declarations": "f53f8a8232d6c7196635e6a7efc1de806418558f89516511c96cf76a9151a906",
     "invariants": "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
     "interaction": "d13711208ae566c5792cc2aa4110429be4870d35809cef2650471412a8bf53aa",
     "stateMappings": "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",

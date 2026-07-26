@@ -22,11 +22,11 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 
 | Variable | Light source | Dark value |
 | --- | --- | --- |
-| `--surface-canvas` | `var(--color-surface-0)` `#fbf7ee` | `#121019` |
+| `--surface-canvas` | `var(--color-surface-0)` `#faf8f4` | `#121019` |
 | `--surface-panel` | `var(--color-surface-1)` `#fffcf6` | `#191623` |
 | `--surface-elevated` | `var(--color-surface-2)` `#ffffff` | `#211d2e` |
-| `--surface-subtle` | `var(--color-surface-3)` `#f1ebdd` | `#2a2635` |
-| `--surface-muted` | `var(--color-surface-4)` `#e4ddcf` | `#373142` |
+| `--surface-subtle` | `var(--color-surface-3)` `#f1ede5` | `#2a2635` |
+| `--surface-muted` | `var(--color-surface-4)` `#e5e0d7` | `#373142` |
 
 ### Text
 
@@ -123,7 +123,7 @@ Use `--text-muted` for active muted UI copy. Physical color utilities remain val
 
 ## Foundation palettes (use only when semantic vars do not fit)
 
-- **Surface** (warm paper ramp): `--color-surface-0` `#fbf7ee` → `--color-surface-5` `#d8d1bf`. 6 steps.
+- **Surface** (warm paper ramp): `--color-surface-0` `#faf8f4` → `--color-surface-5` `#d8d1bf`. 6 steps.
 - **Lavender** (brand): `--color-lavender-50` → `--color-lavender-950`. 11 steps.
 - **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.

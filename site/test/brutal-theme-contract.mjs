@@ -24,7 +24,7 @@ const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 const paperInkContract = JSON.parse(readFileSync(join(rootDir, paperInkContractFile), "utf8"))
 
 const requiredDigests = {
-  declarations: "f498a38744406508b0017fa6174f6a81ac3cc4d307f4bc451595524e1ec5119d",
+  declarations: "f53f8a8232d6c7196635e6a7efc1de806418558f89516511c96cf76a9151a906",
   invariants: "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
   interaction: "d13711208ae566c5792cc2aa4110429be4870d35809cef2650471412a8bf53aa",
   stateMappings: "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
@@ -32,8 +32,8 @@ const requiredDigests = {
 }
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "89d947d8507ba8cd5db26b41348434983c64fd28c09ff8d5e2ec6ea836cc2e01",
-  paperInkContractSha256: "179f2aadb6da725594eb2f373f968c9ad9d85c4a709d3b9564cafff2f19d297e",
+  compiledSha256: "d9fe7f04ed33edae66473e0f45bd31fb72c6d04ab54efd792133322e3964573c",
+  paperInkContractSha256: "cfe541ae7d369e32fcac9c4afecf6c14179b92750011609c4e4a32e120f73492",
 }
 
 function fileSha256(file) {
@@ -522,7 +522,7 @@ const bluePair = contract.legalPairs.find(pair => pair.id === "brutal-sticker-bl
 expect(bluePair !== undefined, "Missing brutal-sticker-blue pair")
 expectFailure(
   "blue contrast bound to paper white",
-  () => verifyPair(bluePair, [{ ...expectedMode("light"), "brutal-sticker-paper": "#fff3d6" }]),
+  () => verifyPair(bluePair, [{ ...expectedMode("light"), "brutal-sticker-paper": "#fcf6ea" }]),
   "below target 5:1",
 )
 

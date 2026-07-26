@@ -30,11 +30,11 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
 ```css
---color-surface-0: #fbf7ee;   /* Paper 主底（page bg）*/
+--color-surface-0: #faf8f4;   /* Paper 主底（page bg）*/
 --color-surface-1: #fffcf6;
 --color-surface-2: #ffffff;   /* 卡片底色 */
---color-surface-3: #f1ebdd;   /* code block / quote / 装饰二级背景 */
---color-surface-4: #e4ddcf;
+--color-surface-3: #f1ede5;   /* code block / quote / 装饰二级背景 */
+--color-surface-4: #e5e0d7;
 --color-surface-5: #d8d1bf;   /* 弱化 / disabled 背景 */
 ```
 
@@ -763,15 +763,15 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 ### 8.1 对比度（WCAG AA）
 
-实际值按当前 Paper 实施 hex 值计算（surface-0 `#fbf7ee`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
+实际值按当前 Paper 实施 hex 值计算（surface-0 `#faf8f4`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
 
 | 文本类型 | 最小比 | 实测比（V0 hex）| 适用范围 |
 |---|---|---|---|
-| `--text-primary` (#191713) on `--surface-canvas` (#fbf7ee) | ≥ 4.5:1 | **16.74:1** ✅ | 所有正文 / heading / body |
-| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.19:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
-| Paper `--text-muted` (#6b6252) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.62 / 5.87 / 6.01:1** ✅ | normal-size meta / caption / placeholder |
+| `--text-primary` (#191713) on `--surface-canvas` (#faf8f4) | ≥ 4.5:1 | **16.87:1** ✅ | 所有正文 / heading / body |
+| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.25:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
+| Paper `--text-muted` (#6b6252) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.67 / 5.87 / 6.01:1** ✅ | normal-size meta / caption / placeholder |
 | Ink `--text-muted` (#aa9e8b) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **7.16 / 6.75 / 6.23:1** ✅ | normal-size meta / caption / placeholder |
-| `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.6:1** ✅ | 内联链接 |
+| `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.8:1** ✅ | 内联链接 |
 | `--text-accent` on `--accent-soft` (lavender-100 #eee8ff) | ≥ 4.5:1 普通 / 3:1 大字 | **~5.0:1** ✅ | chip 上文字（接近 AA 阈值）|
 
 应用约束：
