@@ -40,6 +40,16 @@
   --vp-c-brand-soft: var(--accent-soft);
 }
 
+/* VitePress paints the sidebar, code blocks, and inputs with --vp-c-bg-alt,
+   which maps to the pure-white --surface-panel under Neo. Move that chrome
+   off pure white: code blocks and inputs take the warm elevated surface,
+   while the sidebar steps toward the subtle surface so it stays visibly
+   separated from the canvas. */
+.brutal {
+  --vp-c-bg-alt: var(--surface-elevated);
+  --vp-sidebar-bg-color: color-mix(in oklab, var(--surface-canvas) 60%, var(--surface-subtle));
+}
+
 .VPNavBarTitle .title,
 .VPHomeHero .name,
 .VPDoc h1,
@@ -94,13 +104,27 @@
   background: transparent;
 }
 
-/* Keep the nav inside tablet viewports: the visible Family label plus the
-   search key badge (wider off macOS, where it renders "Ctrl K") otherwise
-   overflow the 768px breakpoint. The shortcut still works; only the hint is
-   hidden. Do not re-enable the badge in this range without re-measuring. */
+/* Keep the nav inside tablet viewports: the search key badge (wider off
+   macOS, where it renders "Ctrl K") otherwise risks overflowing the 768px
+   breakpoint. The shortcut still works; only the hint is hidden. Do not
+   re-enable the badge in this range without re-measuring. */
 @media (min-width: 768px) and (max-width: 1023px) {
   .VPNavBar .DocSearch-Button .DocSearch-Button-Keys {
     display: none;
+  }
+}
+
+/* Group the two theme toggles: the header family switch renders in the
+   nav-bar-content-after slot (after the social links), so reorder the nav
+   flex row to place it between the appearance toggle and the social links. */
+@media (min-width: 768px) {
+  .VPNavBar .theme-family-control--header {
+    order: 1;
+  }
+
+  .VPNavBar .social-links,
+  .VPNavBar .extra {
+    order: 2;
   }
 }
 

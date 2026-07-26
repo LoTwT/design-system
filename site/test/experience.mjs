@@ -371,7 +371,20 @@ expect(tokenPreviewSource.includes(".transition-demo__dot {\n    transition: non
 expect(!tokenPreviewSource.includes("transition-property: width"), "Motion specimens must not animate layout width")
 
 const themeFamilyControlSource = readSource("site/.vitepress/theme/components/ThemeFamilyControl.vue")
-expect(themeFamilyControlSource.includes("theme-family-control__label-header\">Family"), "Header Theme Family control must have a visible label")
+expect(themeFamilyControlSource.includes('v-if="placement === \'screen\'"'), "Theme Family visible label must render only in the screen placement")
+expect(themeFamilyControlSource.includes(".theme-family-control--header .theme-family-control__status"), "Header Theme Family status must stay as a screen-reader-only live region")
+expect(!themeFamilyControlSource.includes("theme-family-control__label-header"), "Header Theme Family control must not render a visible text label")
+
+const brutalChrome = readDeclarations(findRule(css, [".brutal"], "Neo chrome surfaces"))
+expectDeclaration(brutalChrome, "--vp-c-bg-alt", "var(--surface-elevated)")
+expectDeclaration(brutalChrome, "--vp-sidebar-bg-color", "color-mix(in oklab, var(--surface-canvas) 60%, var(--surface-subtle))")
+
+const tabletNav = css.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(min-width: 768px)")
+expect(tabletNav.length === 1, "Expected exactly one min-width: 768px media query")
+const familyOrder = readDeclarations(findRule(tabletNav[0], [".VPNavBar .theme-family-control--header"], "family switch nav order"))
+expectDeclaration(familyOrder, "order", "1")
+const chromeOrder = readDeclarations(findRule(tabletNav[0], [".VPNavBar .social-links", ".VPNavBar .extra"], "nav chrome order"))
+expectDeclaration(chromeOrder, "order", "2")
 
 const themeAction = readDeclarations(findRule(css, [".theme-action"], "theme action sizing"))
 expectDeclaration(themeAction, "min-height", "var(--touch-target-min)")
