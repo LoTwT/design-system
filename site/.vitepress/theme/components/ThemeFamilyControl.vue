@@ -24,10 +24,7 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
     :class="[`theme-family-control--${placement}`, { 'is-ready': isReady }]"
     :aria-hidden="isReady ? undefined : 'true'"
   >
-    <span class="theme-family-control__label">
-      <span class="theme-family-control__label-header">Family</span>
-      <span class="theme-family-control__label-screen">Theme family</span>
-    </span>
+    <span v-if="placement === 'screen'" class="theme-family-control__label">Theme family</span>
     <span
       class="theme-family-control__status"
       aria-live="polite"
@@ -45,7 +42,23 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
       @click="toggleThemeFamily"
     >
       <span class="theme-family-switch__track" aria-hidden="true">
-        <span class="theme-family-switch__thumb" />
+        <span class="theme-family-switch__thumb">
+          <svg
+            class="theme-family-switch__icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          </svg>
+        </span>
       </span>
     </button>
   </div>
@@ -64,7 +77,6 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
 .theme-family-control--header {
   display: none;
   align-items: center;
-  gap: var(--spacing-1);
   margin-inline-start: 0;
 }
 
@@ -100,28 +112,17 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   white-space: nowrap;
 }
 
-.theme-family-control--header .theme-family-control__label {
-  display: block;
-}
-
-.theme-family-control__label-header {
-  display: none;
-}
-
-.theme-family-control--header .theme-family-control__label-header {
-  display: inline;
-}
-
-.theme-family-control--header .theme-family-control__label-screen {
-  display: none;
-}
-
+/* The header keeps the live region for screen readers only; the visible
+   text lives in the screen (mobile) placement. */
 .theme-family-control--header .theme-family-control__status {
-  display: none;
-  min-inline-size: 6.75rem;
-  color: var(--vp-c-text-2);
-  font-size: var(--text-2xs);
-  text-align: end;
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0 0 0 0);
 }
 
 .theme-family-switch {
@@ -143,45 +144,63 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   touch-action: manipulation;
 }
 
+/* Mirror the appearance toggle's geometry: a 40x22 track centered in the
+   44px target, an 18px thumb sliding 18px, and a 12px icon in the thumb. */
 .theme-family-switch__track {
   position: relative;
   display: block;
   width: 2.5rem;
-  height: 1.5rem;
-  border: var(--border-width-control) solid var(--border-default);
-  border-radius: var(--radius-control);
-  background: var(--surface-muted);
+  height: 1.375rem;
+  border: 1px solid var(--vp-input-border-color);
+  border-radius: 11px;
+  background-color: var(--vp-input-switch-bg-color);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
 .theme-family-switch__thumb {
   position: absolute;
-  inset-block-start: 0.1875rem;
-  inset-inline-start: 0.1875rem;
-  width: 1rem;
-  height: 1rem;
-  border-radius: var(--radius-control);
-  background: var(--text-primary);
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--vp-c-neutral-inverse);
+  box-shadow: var(--vp-shadow-1);
   transform: translateX(0);
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: transform var(--duration-fast) var(--ease-standard);
 }
 
-.theme-family-switch[aria-checked="true"] .theme-family-switch__track {
-  background: var(--accent-primary);
+.theme-family-switch__icon {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  color: var(--vp-c-text-2);
 }
 
-.theme-family-switch[aria-checked="true"] .theme-family-switch__thumb {
-  background: var(--accent-contrast);
-  transform: translateX(1rem);
+.dark .theme-family-switch__icon {
+  color: var(--vp-c-text-1);
 }
 
 .theme-family-switch:hover .theme-family-switch__track {
   border-color: var(--vp-c-brand-1);
 }
 
-.theme-family-switch:active .theme-family-switch__track {
-  border-color: var(--accent-primary-active);
+.theme-family-switch[aria-checked="true"] .theme-family-switch__track {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-primary);
+}
+
+.theme-family-switch[aria-checked="true"] .theme-family-switch__thumb {
+  transform: translateX(18px);
+}
+
+.theme-family-switch[aria-checked="true"]:hover .theme-family-switch__track {
+  border-color: var(--accent-primary-hover);
+  background-color: var(--accent-primary-hover);
 }
 
 .theme-family-switch:focus-visible {
@@ -200,13 +219,8 @@ const switchTitle = computed(() => `Switch to ${isNeo.value ? "Default" : "Neo"}
   }
 }
 
-@media (min-width: 1280px) {
-  .theme-family-control--header .theme-family-control__status {
-    display: block;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
+  .theme-family-switch__track,
   .theme-family-switch__thumb {
     transition-duration: 0s;
   }

@@ -90,6 +90,7 @@ async function waitForState(page, { controls, dark, family, storage }) {
   await page.waitForFunction((expected) => {
     const root = document.documentElement
     const items = [...document.querySelectorAll(".theme-family-control")]
+    const isHeader = control => control.classList.contains("theme-family-control--header")
     return items.length === expected.controls && root.classList.contains("dark") === expected.dark
       && root.dataset.themeFamily === expected.family && root.classList.contains("brutal") === (expected.family === "neo")
       && localStorage.getItem("ayingott:theme-family") === expected.storage
@@ -98,6 +99,7 @@ async function waitForState(page, { controls, dark, family, storage }) {
         && control.querySelector(".theme-family-switch")?.getAttribute("aria-checked") === String(expected.family === "neo")
         && control.querySelector(".theme-family-control__status")?.getAttribute("aria-live") === "polite"
         && control.querySelector(".theme-family-control__status")?.textContent.trim() === expected.status)
+      && items.filter(isHeader).every(control => control.querySelector(".theme-family-control__label") === null)
   }, { controls, dark, family, status, storage })
 }
 
@@ -162,9 +164,19 @@ async function verifyBrowserBehavior() {
     await waitForState(page, { controls: 1, dark: false, family: "default", storage: null })
     const desktop = page.locator(".theme-family-control--header")
     const desktopSwitch = desktop.locator(".theme-family-switch")
-    const desktopStatus = desktop.locator(".theme-family-control__status")
     await assertInteractive(desktopSwitch, "desktop Theme Family switch")
-    await desktopStatus.waitFor({ state: "visible" })
+    const navOrder = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector)?.getBoundingClientRect()
+      const appearance = box(".VPNavBar .appearance")
+      const family = box(".VPNavBar .theme-family-control--header")
+      const social = box(".VPNavBar .social-links")
+      return appearance && family && social
+        ? { afterAppearance: family.left >= appearance.right, beforeSocial: family.right <= social.left }
+        : null
+    })
+    expect(navOrder?.afterAppearance && navOrder?.beforeSocial, "Theme Family switch must sit between the appearance toggle and the social links")
+    const headerStatusBox = await desktop.locator(".theme-family-control__status").boundingBox()
+    expect(headerStatusBox !== null && headerStatusBox.width <= 1 && headerStatusBox.height <= 1, "Header Theme Family status must be visually hidden")
     const lightDuration = await desktop.locator(".theme-family-switch__thumb").evaluate(element => getComputedStyle(element).transitionDuration)
     await beginSchemeWatch(page, false)
     await desktopSwitch.click()
@@ -214,9 +226,6 @@ async function verifyBrowserBehavior() {
     for (const width of [768, 769, 1024]) {
       await page.setViewportSize({ height: 844, width })
       await page.goto(`${origin}/`)
-      const tabletLabel = page.locator(".theme-family-control--header .theme-family-control__label")
-      await tabletLabel.waitFor({ state: "visible" })
-      expect((await tabletLabel.textContent())?.includes("Family"), `${width}px Theme Family switch must have a visible label`)
       // Measure only after webfonts settle; fallback-font metrics differ across platforms.
       await page.evaluate(() => document.fonts.ready)
       const viewportWidth = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))

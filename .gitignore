@@ -7,3 +7,5 @@ site/.vitepress/dist/
 site/.vitepress/cache/
 
 .wrangler/
+
+.claude/
