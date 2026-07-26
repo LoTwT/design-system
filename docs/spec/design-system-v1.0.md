@@ -113,13 +113,13 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.7 Typography · Family（V0.1 已 ship 4 family）
 
 ```css
---font-display: "Space Grotesk", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-display: "Bricolage Grotesque", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-sans:    system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-mono:    "Space Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
---font-reading: "Newsreader", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
+--font-reading: "Literata", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
 ```
 
-`--font-reading` 是 V0.1 additive long-form token。Newsreader 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
+`--font-reading` 是 V0.1 additive long-form token。Literata 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
 
 ### 1.8 Typography · Size Scale（13 阶，各带配套 line-height）
 
@@ -710,19 +710,19 @@ V0 `packages/theme/src/fonts.css` 提供 `@font-face`：
 
 ```css
 @import "tailwindcss";
-@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Space Grotesk + Space Mono + Newsreader */
+@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Bricolage Grotesque + Space Mono + Literata */
 @import "@ayingott/theme";              /* tokens + semantic + utilities + base */
 ```
 
 不加载 `fonts.css` 时：token 仍生效，浏览器 fallback 到系统字体。
 
 V0 实际打包字体文件（在 `packages/theme/src/fonts/`）：
-- `space-grotesk-latin-wght-normal.woff2`（latin subset，variable wght 300-700）
-- `space-grotesk-latin-ext-wght-normal.woff2`（latin-ext subset）
+- `bricolage-grotesque-latin-opsz-wght-normal.woff2`（latin subset，variable opsz 12-96 + wght 200-800）
+- `bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`（latin-ext subset，variable opsz 12-96 + wght 200-800）
 - `space-mono-latin-400-normal.woff2`（regular）
 - `space-mono-latin-700-normal.woff2`（bold）
-- `newsreader-latin-opsz-normal.woff2`（latin subset，variable opsz 6-72 + wght 200-800）
-- `newsreader-latin-ext-opsz-normal.woff2`（latin-ext subset，variable opsz 6-72 + wght 200-800）
+- `literata-latin-opsz-wght-normal.woff2`（latin subset，variable opsz 7-72 + wght 200-900）
+- `literata-latin-ext-opsz-wght-normal.woff2`（latin-ext subset，variable opsz 7-72 + wght 200-900）
 
 License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
@@ -730,10 +730,10 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 | 场景 | Token | 备注 |
 |---|---|---|
-| 大标题（H1 / page title）| `--font-display` | Space Grotesk Latin + 系统中文 |
+| 大标题（H1 / page title）| `--font-display` | Bricolage Grotesque Latin + 系统中文 |
 | 二级 / 小标题（H2-H6）| `--font-display` | 一致性 |
 | Body 默认 | `--font-sans` | 系统字体 + 中文 fallback |
-| Body 长文 | `--font-reading` / `--reading-font-body` | Newsreader opt-in + CJK serif fallback |
+| Body 长文 | `--font-reading` / `--reading-font-body` | Literata opt-in + CJK serif fallback |
 | Tagline / hero text | `--font-display` | brand |
 | Date / reading time / meta | `--font-mono` | 等宽对齐 |
 | Tag chip label | `--font-mono` | "标签"感 |
@@ -923,7 +923,7 @@ pnpm add @ayingott/theme
 | Public exports minimal | `.` / `./index.css` / `./brutal.css` / `./fonts.css` / `./fonts/*` (5 项)| §10.1 + §7.1 + §3.6 |
 | Surface 命名 | V0 用 `--color-surface-0` ~ `-5` (numbered) | §1.1 |
 | Semantic vars 命名 | V0 用 `--text-muted` / `--text-accent` / `--accent-primary` 等 | §3.2 + §3.3 |
-| Font: Space Grotesk Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
+| Font: Bricolage Grotesque Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
 | `THIRD_PARTY_NOTICES.md` 包内 | `packages/theme/THIRD_PARTY_NOTICES.md` | §7.1 |
 | 框架无关 (DS-D-04) | 仅 CSS variables，无 framework 绑定 | §10 |
 | `focus-ring` / `focus-ring-inset` / `touch-target` / `touch-target-inline` + opt-in `pressable` | utilities/ 实现 | §4.1 + §4.2 + §4.3 |

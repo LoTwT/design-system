@@ -15,7 +15,7 @@ This repository is the source for the Ayingott design system.
 
 - Public CSS exports are limited to `.`, `./index.css`, `./brutal.css`, `./fonts.css`, and `./fonts/*`.
 - Tailwind CSS `^4.0.0` is a required peer dependency; the published package must not expose repository-only test scripts.
-- `@ayingott/theme` must not import `fonts.css`; Space Grotesk, Space Mono, and Newsreader loading is consumer opt-in.
+- `@ayingott/theme` must not import `fonts.css`; Bricolage Grotesque, Space Mono, and Literata loading is consumer opt-in.
 - `@ayingott/theme` must not import `brutal.css`; Neo-Brutalism is consumer opt-in after the default entry.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables, not guaranteed Tailwind utilities.
 - The default entry injects no global reduced-motion policy. The opt-in `pressable` utility owns only its scoped `.brutal` reduced-motion fallback.

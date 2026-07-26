@@ -47,10 +47,11 @@
   font-family: var(--font-display);
 }
 
-/* Space Grotesk at the inherited 16px plus the widened 44px logo overflows
-   the fixed sidebar-width title box (208px content) by ~33px at >=960px.
-   The slot padding override needs !important to beat VitePress's scoped
-   (.title[data-v]) padding shorthand. */
+/* The display webfont at the inherited 16px plus the widened 44px logo
+   overflows the fixed sidebar-width title box (208px content) by ~33px at
+   >=960px. The slot padding override needs !important to beat VitePress's
+   scoped (.title[data-v]) padding shorthand. Re-measure when --font-display
+   changes. */
 .VPNavBarTitle .title {
   font-size: 15px;
 }

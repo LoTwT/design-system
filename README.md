@@ -17,7 +17,7 @@ V0 is intentionally narrow:
 @import "@ayingott/theme";
 ```
 
-Opt in to self-hosted font files when the consumer wants the bundled Space Grotesk, Space Mono, and Newsreader assets:
+Opt in to self-hosted font files when the consumer wants the bundled Bricolage Grotesque, Space Mono, and Literata assets:
 
 ```css
 @import "tailwindcss";

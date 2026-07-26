@@ -2,26 +2,27 @@
 
 This package redistributes open-source font files. Keep this file in the npm package whenever font assets are published.
 
-## Space Grotesk
+## Bricolage Grotesque
 
-- Package: `@fontsource-variable/space-grotesk@5.2.10`
-- Upstream family: Space Grotesk
+- Upstream family: Bricolage Grotesque
 - Upstream source: `https://github.com/google/fonts`
-- Upstream project: `https://github.com/floriankarsten/space-grotesk`
+- Upstream project: `https://github.com/ateliertriay/bricolage`
 - License: SIL Open Font License 1.1 (`OFL-1.1`)
-- Metadata version: `v22`
-- Last modified: `2025-09-05`
-- Copyright: Copyright 2020 The Space Grotesk Project Authors (`https://github.com/floriankarsten/space-grotesk`)
+- Metadata version: `v9`
+- Last modified: `2025-09-10`
+- Copyright: Copyright 2022 The Bricolage Grotesque Project Authors (`https://github.com/ateliertriay/bricolage`)
 - Included files:
-  - `src/fonts/space-grotesk-latin-wght-normal.woff2`
-    - SHA-256: `0640890476fc1198ab4de571fb658de443c4d85b66466ec09534a8737ab1ce9d`
+  - `src/fonts/bricolage-grotesque-latin-opsz-wght-normal.woff2`
+    - SHA-256: `85f55a58a31e61a2e19e8bb25fed503181bf2a6b4cab76c589992cfaac377447`
     - Unicode range: Latin
-    - Weight range: `300 700`
+    - Weight range: `200 800`
+    - Optical size axis: packaged `opsz` variable build
     - Style: `normal`
-  - `src/fonts/space-grotesk-latin-ext-wght-normal.woff2`
-    - SHA-256: `952dddb45d2f96f71cbf3b7f510b24379afc3c89ea02fcf89d377b45d62c0166`
+  - `src/fonts/bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`
+    - SHA-256: `1d04719f1325400ea4267e630dba29b02af87eb094d7d71d2e4d80a05479d07a`
     - Unicode range: Latin Extended
-    - Weight range: `300 700`
+    - Weight range: `200 800`
+    - Optical size axis: packaged `opsz` variable build
     - Style: `normal`
 
 ## Space Mono
@@ -45,27 +46,26 @@ This package redistributes open-source font files. Keep this file in the npm pac
     - Weight: `700`
     - Style: `normal`
 
-## Newsreader
+## Literata
 
-- Package: `@fontsource-variable/newsreader@5.2.10`
-- Upstream family: Newsreader
+- Upstream family: Literata
 - Upstream source: `https://github.com/google/fonts`
-- Upstream project: `https://github.com/productiontype/Newsreader`
+- Upstream project: `https://github.com/googlefonts/literata`
 - License: SIL Open Font License 1.1 (`OFL-1.1`)
-- Metadata version: `v26`
-- Last modified: `2025-09-08`
-- Copyright: Copyright 2020 The Newsreader Project Authors (`http://github.com/productiontype/Newsreader`)
+- Metadata version: `v40`
+- Last modified: `2025-09-10`
+- Copyright: Copyright 2015 The Literata Project Authors (`https://github.com/googlefonts/literata`)
 - Included files:
-  - `src/fonts/newsreader-latin-opsz-normal.woff2`
-    - SHA-256: `6e4f2958c3a7c4a80acde4e5a679abe7e01bc1e30b92be3c7a8b696ef401d101`
+  - `src/fonts/literata-latin-opsz-wght-normal.woff2`
+    - SHA-256: `55c10c2e8178fb96a0f39842382c2c778dade7860286f47049b574d1df15c80f`
     - Unicode range: Latin
-    - Weight range: `200 800`
+    - Weight range: `200 900`
     - Optical size axis: packaged `opsz` variable build
     - Style: `normal`
-  - `src/fonts/newsreader-latin-ext-opsz-normal.woff2`
-    - SHA-256: `45683de03de37187604102316c0b42c0cb2d8dc9c4140a20ad471c3148cc1278`
+  - `src/fonts/literata-latin-ext-opsz-wght-normal.woff2`
+    - SHA-256: `2b511ea01010e9466367fc501ec946d6440d81360627ca212a682e1f0e2cfc32`
     - Unicode range: Latin Extended
-    - Weight range: `200 800`
+    - Weight range: `200 900`
     - Optical size axis: packaged `opsz` variable build
     - Style: `normal`
 
