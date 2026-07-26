@@ -18,7 +18,7 @@ Paper is the default `:root` mapping.
 
 The same semantic names are overridden under `.dark`. Ink also flattens semantic card and panel depth through `--shadow-none`.
 
-<div class="dark rounded-card border p-4" style="border-color: var(--border-default); background: var(--surface-canvas);">
+<div class="semantic-dark-preview dark rounded-card border p-4">
   <ColorSwatchGrid title="Dark surfaces" prefix="surface-" source="semantic-dark" />
   <ColorSwatchGrid title="Dark text" prefix="text-" source="semantic-dark" />
   <ColorSwatchGrid title="Dark accent" prefix="accent-" source="semantic-dark" />

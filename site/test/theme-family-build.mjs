@@ -262,6 +262,16 @@ async function verifyBrowserBehavior() {
     const paperSwatchColor = await paperSwatch.evaluate(element => getComputedStyle(element).backgroundColor)
     expect(paperSwatchColor === "rgb(250, 248, 244)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
 
+    await page.evaluate(() => {
+      document.documentElement.classList.remove("dark")
+    })
+    const inkPreviewColors = await page.locator(".semantic-dark-preview").evaluate((element) => {
+      const style = getComputedStyle(element)
+      return { background: style.backgroundColor, foreground: style.color }
+    })
+    expect(inkPreviewColors.background === "rgb(18, 16, 25)", `Ink preview must retain its dark background under Light; received ${inkPreviewColors.background}`)
+    expect(inkPreviewColors.foreground === "rgb(247, 241, 230)", `Ink preview text must retain its light foreground under Light; received ${inkPreviewColors.foreground}`)
+
     await page.goto(`${origin}/tokens/effects`)
     const transitionDurations = await page.locator(".transition-demo").first().evaluate((element) => {
       const dot = element.querySelector(".transition-demo__dot")
