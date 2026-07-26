@@ -6,7 +6,7 @@ The site imports `@ayingott/theme/fonts.css`, so this page displays the bundled 
 
 <div class="token-card p-5">
   <p style="font-family: var(--font-display); font-size: var(--text-4xl); line-height: var(--text-4xl--line-height); margin: 0;">
-    Space Grotesk + 系统中文 fallback
+    Bricolage Grotesque + 系统中文 fallback
   </p>
 </div>
 
@@ -30,16 +30,16 @@ The site imports `@ayingott/theme/fonts.css`, so this page displays the bundled 
 
 <div class="token-card p-5">
   <p style="font-family: var(--font-reading); font-size: var(--reading-font-size); line-height: var(--reading-line-height); max-inline-size: min(100%, var(--reading-measure)); margin: 0;">
-    Newsreader for long-form latin text, with Georgia and CJK serif fallbacks.
+    Literata for long-form latin text, with Georgia and CJK serif fallbacks.
     这是一段用于检查中英混排 fallback 的阅读正文。
   </p>
 </div>
 
 ## Bundled Files
 
-- `space-grotesk-latin-wght-normal.woff2`
-- `space-grotesk-latin-ext-wght-normal.woff2`
+- `bricolage-grotesque-latin-opsz-wght-normal.woff2`
+- `bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`
 - `space-mono-latin-400-normal.woff2`
 - `space-mono-latin-700-normal.woff2`
-- `newsreader-latin-opsz-normal.woff2`
-- `newsreader-latin-ext-opsz-normal.woff2`
+- `literata-latin-opsz-wght-normal.woff2`
+- `literata-latin-ext-opsz-wght-normal.woff2`

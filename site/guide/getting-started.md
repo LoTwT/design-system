@@ -13,7 +13,7 @@ Import the theme CSS:
 @import "@ayingott/theme";
 ```
 
-Opt in to bundled fonts when the project should use Space Grotesk, Space Mono, and Newsreader:
+Opt in to bundled fonts when the project should use Bricolage Grotesque, Space Mono, and Literata:
 
 ```css
 @import "tailwindcss";

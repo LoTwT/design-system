@@ -51,7 +51,7 @@ The Paper `--text-muted` literal does not change or alias public `--color-neutra
 
 ## Reading model
 
-The reading layer keeps its existing Newsreader opt-in, `65ch` measure, scale, and paragraph rhythm. It adds explicit letter-spacing and focus aliases so long-form content can use the same Paper/Ink mode response without local values.
+The reading layer keeps its Literata opt-in, `65ch` measure, scale, and paragraph rhythm. It adds explicit letter-spacing and focus aliases so long-form content can use the same Paper/Ink mode response without local values.
 
 ## Consumer boundary
 

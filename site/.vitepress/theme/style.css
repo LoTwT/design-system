@@ -47,6 +47,15 @@
   font-family: var(--font-display);
 }
 
+/* The display webfont at the inherited 16px plus the widened 44px logo
+   overflows the fixed sidebar-width title box (208px content) by ~33px at
+   >=960px. The slot padding override needs !important to beat VitePress's
+   scoped (.title[data-v]) padding shorthand. Re-measure when --font-display
+   changes. */
+.VPNavBarTitle .title {
+  font-size: 15px;
+}
+
 .VPNavBarTitle img.logo {
   width: 2.75rem !important;
   min-width: 2.75rem !important;
@@ -54,7 +63,13 @@
   max-height: none !important;
   flex: 0 0 2.75rem;
   object-fit: contain;
-  margin-inline-end: var(--spacing-3);
+  margin-inline-end: var(--spacing-2);
+}
+
+@media (min-width: 960px) {
+  .VPNavBar.has-sidebar .title {
+    padding-right: 12px !important;
+  }
 }
 
 .VPDoc a:focus-visible,
@@ -157,8 +172,19 @@
   }
 
   .theme-action {
-    transition-duration: 0s;
+    transition-duration: 0s !important;
   }
+}
+
+.demo-control {
+  border-color: var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+.demo-control:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-subtle);
 }
 
 .focus-ring-preview {
@@ -563,6 +589,11 @@
   line-height: var(--text-sm--line-height);
   text-decoration: underline;
   text-underline-offset: 0.18em;
+  touch-action: manipulation;
+}
+
+.theme-inline-link:hover {
+  color: var(--accent-primary-active);
 }
 
 .theme-form-row {
@@ -594,7 +625,13 @@
   background: var(--surface-elevated);
   font: inherit;
   font-weight: var(--font-weight-semibold);
+  touch-action: manipulation;
   transition: var(--transition-interactive);
+}
+
+.theme-action:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-subtle);
 }
 
 .theme-action--primary {

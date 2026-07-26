@@ -15,11 +15,11 @@
     "showcase": "site/.vitepress/theme/style.css"
   },
   "foundationDeclarations": {
-    "color-surface-0": "#fbf7ee",
+    "color-surface-0": "#faf8f4",
     "color-surface-1": "#fffcf6",
     "color-surface-2": "#ffffff",
-    "color-surface-3": "#f1ebdd",
-    "color-surface-4": "#e4ddcf",
+    "color-surface-3": "#f1ede5",
+    "color-surface-4": "#e5e0d7",
     "color-neutral-600": "#736a5c",
     "color-neutral-700": "#514a3e",
     "color-neutral-950": "#191713"

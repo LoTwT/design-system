@@ -30,11 +30,11 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
 ```css
---color-surface-0: #fbf7ee;   /* Paper 主底（page bg）*/
+--color-surface-0: #faf8f4;   /* Paper 主底（page bg）*/
 --color-surface-1: #fffcf6;
 --color-surface-2: #ffffff;   /* 卡片底色 */
---color-surface-3: #f1ebdd;   /* code block / quote / 装饰二级背景 */
---color-surface-4: #e4ddcf;
+--color-surface-3: #f1ede5;   /* code block / quote / 装饰二级背景 */
+--color-surface-4: #e5e0d7;
 --color-surface-5: #d8d1bf;   /* 弱化 / disabled 背景 */
 ```
 
@@ -113,13 +113,13 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.7 Typography · Family（V0.1 已 ship 4 family）
 
 ```css
---font-display: "Space Grotesk", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-display: "Bricolage Grotesque", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-sans:    system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 --font-mono:    "Space Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
---font-reading: "Newsreader", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
+--font-reading: "Literata", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
 ```
 
-`--font-reading` 是 V0.1 additive long-form token。Newsreader 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
+`--font-reading` 是 V0.1 additive long-form token。Literata 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
 
 ### 1.8 Typography · Size Scale（13 阶，各带配套 line-height）
 
@@ -710,19 +710,19 @@ V0 `packages/theme/src/fonts.css` 提供 `@font-face`：
 
 ```css
 @import "tailwindcss";
-@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Space Grotesk + Space Mono + Newsreader */
+@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Bricolage Grotesque + Space Mono + Literata */
 @import "@ayingott/theme";              /* tokens + semantic + utilities + base */
 ```
 
 不加载 `fonts.css` 时：token 仍生效，浏览器 fallback 到系统字体。
 
 V0 实际打包字体文件（在 `packages/theme/src/fonts/`）：
-- `space-grotesk-latin-wght-normal.woff2`（latin subset，variable wght 300-700）
-- `space-grotesk-latin-ext-wght-normal.woff2`（latin-ext subset）
+- `bricolage-grotesque-latin-opsz-wght-normal.woff2`（latin subset，variable opsz 12-96 + wght 200-800）
+- `bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`（latin-ext subset，variable opsz 12-96 + wght 200-800）
 - `space-mono-latin-400-normal.woff2`（regular）
 - `space-mono-latin-700-normal.woff2`（bold）
-- `newsreader-latin-opsz-normal.woff2`（latin subset，variable opsz 6-72 + wght 200-800）
-- `newsreader-latin-ext-opsz-normal.woff2`（latin-ext subset，variable opsz 6-72 + wght 200-800）
+- `literata-latin-opsz-wght-normal.woff2`（latin subset，variable opsz 7-72 + wght 200-900）
+- `literata-latin-ext-opsz-wght-normal.woff2`（latin-ext subset，variable opsz 7-72 + wght 200-900）
 
 License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
@@ -730,10 +730,10 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 | 场景 | Token | 备注 |
 |---|---|---|
-| 大标题（H1 / page title）| `--font-display` | Space Grotesk Latin + 系统中文 |
+| 大标题（H1 / page title）| `--font-display` | Bricolage Grotesque Latin + 系统中文 |
 | 二级 / 小标题（H2-H6）| `--font-display` | 一致性 |
 | Body 默认 | `--font-sans` | 系统字体 + 中文 fallback |
-| Body 长文 | `--font-reading` / `--reading-font-body` | Newsreader opt-in + CJK serif fallback |
+| Body 长文 | `--font-reading` / `--reading-font-body` | Literata opt-in + CJK serif fallback |
 | Tagline / hero text | `--font-display` | brand |
 | Date / reading time / meta | `--font-mono` | 等宽对齐 |
 | Tag chip label | `--font-mono` | "标签"感 |
@@ -763,15 +763,15 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 ### 8.1 对比度（WCAG AA）
 
-实际值按当前 Paper 实施 hex 值计算（surface-0 `#fbf7ee`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
+实际值按当前 Paper 实施 hex 值计算（surface-0 `#faf8f4`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
 
 | 文本类型 | 最小比 | 实测比（V0 hex）| 适用范围 |
 |---|---|---|---|
-| `--text-primary` (#191713) on `--surface-canvas` (#fbf7ee) | ≥ 4.5:1 | **16.74:1** ✅ | 所有正文 / heading / body |
-| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.19:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
-| Paper `--text-muted` (#6b6252) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.62 / 5.87 / 6.01:1** ✅ | normal-size meta / caption / placeholder |
+| `--text-primary` (#191713) on `--surface-canvas` (#faf8f4) | ≥ 4.5:1 | **16.87:1** ✅ | 所有正文 / heading / body |
+| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.25:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
+| Paper `--text-muted` (#6b6252) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.67 / 5.87 / 6.01:1** ✅ | normal-size meta / caption / placeholder |
 | Ink `--text-muted` (#aa9e8b) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **7.16 / 6.75 / 6.23:1** ✅ | normal-size meta / caption / placeholder |
-| `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.6:1** ✅ | 内联链接 |
+| `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.8:1** ✅ | 内联链接 |
 | `--text-accent` on `--accent-soft` (lavender-100 #eee8ff) | ≥ 4.5:1 普通 / 3:1 大字 | **~5.0:1** ✅ | chip 上文字（接近 AA 阈值）|
 
 应用约束：
@@ -923,7 +923,7 @@ pnpm add @ayingott/theme
 | Public exports minimal | `.` / `./index.css` / `./brutal.css` / `./fonts.css` / `./fonts/*` (5 项)| §10.1 + §7.1 + §3.6 |
 | Surface 命名 | V0 用 `--color-surface-0` ~ `-5` (numbered) | §1.1 |
 | Semantic vars 命名 | V0 用 `--text-muted` / `--text-accent` / `--accent-primary` 等 | §3.2 + §3.3 |
-| Font: Space Grotesk Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
+| Font: Bricolage Grotesque Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
 | `THIRD_PARTY_NOTICES.md` 包内 | `packages/theme/THIRD_PARTY_NOTICES.md` | §7.1 |
 | 框架无关 (DS-D-04) | 仅 CSS variables，无 framework 绑定 | §10 |
 | `focus-ring` / `focus-ring-inset` / `touch-target` / `touch-target-inline` + opt-in `pressable` | utilities/ 实现 | §4.1 + §4.2 + §4.3 |

@@ -28,7 +28,7 @@
 - Base styles.
 - Focus and touch target utilities.
 - Opt-in Neo-Brutal Light/Dark semantic mappings, hard shadows, structure role remapping, and the scoped pressable utility through `brutal.css`.
-- Optional self-hosted font assets for Space Grotesk, Space Mono, and Newsreader.
+- Optional self-hosted font assets for Bricolage Grotesque, Space Mono, and Literata.
 
 The semantic roles and the `--border-width-surface` / `--border-width-control` structure roles are consumer-facing. The family-local `--brutal-*` palette variables are contract-owned implementation details and are not a consumer direct-use API.
 

@@ -33,7 +33,7 @@ Public CSS exports:
 | --- | --- |
 | `@ayingott/theme` (or `@ayingott/theme/index.css`) | All foundation tokens, layer tokens, semantic vars (`:root` + `.dark`), focus and touch-target utilities, and base styles. Does **not** auto-import fonts. |
 | `@ayingott/theme/brutal.css` | Opt-in Neo-Brutal Light/Dark semantic mappings, zero-blur hard shadows, structure roles, and the scoped `pressable` utility. Import after the default entry. |
-| `@ayingott/theme/fonts.css` | `@font-face` declarations for Space Grotesk (variable, latin + latin-ext), Space Mono (400/700), and Newsreader (variable opsz/wght, latin + latin-ext). Opt-in. |
+| `@ayingott/theme/fonts.css` | `@font-face` declarations for Bricolage Grotesque (variable opsz/wght, latin + latin-ext), Space Mono (400/700), and Literata (variable opsz/wght, latin + latin-ext). Opt-in. |
 | `@ayingott/theme/fonts/<file>.woff2` | The woff2 files referenced by `fonts.css`. |
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
@@ -195,7 +195,7 @@ Use `pressable` only with the opt-in entry and compose accessibility utilities:
 
 ## Fonts (opt-in)
 
-Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Space Grotesk, Space Mono, and Newsreader in a consumer project, import `fonts.css` explicitly:
+Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Bricolage Grotesque, Space Mono, and Literata in a consumer project, import `fonts.css` explicitly:
 
 ```css
 @import "tailwindcss";
@@ -203,11 +203,11 @@ Font files ship inside the npm package, but `@ayingott/theme` does not load `fon
 @import "@ayingott/theme";
 ```
 
-Without that `fonts.css` import, the `--font-display`, `--font-mono`, and `--font-reading` token values keep their full fallback chains. The browser will not load the Space Grotesk, Space Mono, or Newsreader webfont, so it walks the chain to whichever system font matches first. This is intentional, not a regression.
+Without that `fonts.css` import, the `--font-display`, `--font-mono`, and `--font-reading` token values keep their full fallback chains. The browser will not load the Bricolage Grotesque, Space Mono, or Literata webfont, so it walks the chain to whichever system font matches first. This is intentional, not a regression.
 
 Body text uses `--font-sans` = `system-ui` with PingFang SC / Hiragino Sans GB / Microsoft YaHei fallback for CJK. The theme does not bundle a body webfont — system fallback is the contract.
 
-Long-form reading text uses `--font-reading` through the `--reading-font-body` token. Newsreader covers latin / latin-ext when `fonts.css` is imported; CJK serif fonts are fallback names only and are not bundled.
+Long-form reading text uses `--font-reading` through the `--reading-font-body` token. Literata covers latin / latin-ext when `fonts.css` is imported; CJK serif fonts are fallback names only and are not bundled.
 
 ## Voice and tone
 
@@ -238,7 +238,7 @@ When producing visual artifacts (mockups, slides, prototype HTML), follow these 
 - **Paper/Ink borders** are alpha derivatives at the default 1px (`thin`) thickness. **Neo borders** use the remapped structure width roles and semantic ink color.
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
 - **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
-- **Display headlines** (Space Grotesk) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.
+- **Display headlines** (Bricolage Grotesque) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.
 - **Backgrounds** are flat warm cream surfaces. No gradients, no images, no patterns, no textures.
 - **Decorative motif**: dots, lines, outlined circles, rotated squares — geometric primitives in `var(--accent-primary)`. Use sparingly at corners or section breaks; never as pattern fills or full bleed.
 

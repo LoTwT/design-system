@@ -27,7 +27,7 @@ Opt in to bundled fonts:
 @import "@ayingott/theme";
 ```
 
-`fonts.css` currently provides Space Grotesk, Space Mono, and Newsreader. The
+`fonts.css` currently provides Bricolage Grotesque, Space Mono, and Literata. The
 reading layer uses the `--font-reading` token, but the webfont file is still
 loaded only when the consumer imports `fonts.css`.
 

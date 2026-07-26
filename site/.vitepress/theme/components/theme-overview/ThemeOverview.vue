@@ -36,7 +36,7 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
       <div class="theme-form-row">
         <label class="theme-field">
           <span>Input</span>
-          <input class="theme-input" type="text" value="Paper &amp; Ink" aria-label="Theme name">
+          <input class="theme-input" type="text" value="Paper &amp; Ink">
         </label>
         <label class="theme-choice">
           <input type="radio" name="theme-example" checked>

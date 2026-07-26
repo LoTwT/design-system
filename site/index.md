@@ -19,7 +19,7 @@ features:
   - title: Two-axis themes
     details: "Scheme and family stay independent: Paper and Ink by default, Neo Light and Dark by opt-in."
   - title: Opt-in Fonts
-    details: Space Grotesk, Space Mono, and Newsreader are available through a separate fonts.css entry.
+    details: Bricolage Grotesque, Space Mono, and Literata are available through a separate fonts.css entry.
 ---
 
 ## Showcase Scope

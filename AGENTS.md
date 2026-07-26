@@ -15,7 +15,7 @@ This repository is the source for the Ayingott design system.
 
 - Public CSS exports are limited to `.`, `./index.css`, `./brutal.css`, `./fonts.css`, and `./fonts/*`.
 - Tailwind CSS `^4.0.0` is a required peer dependency; the published package must not expose repository-only test scripts.
-- `@ayingott/theme` must not import `fonts.css`; Space Grotesk, Space Mono, and Newsreader loading is consumer opt-in.
+- `@ayingott/theme` must not import `fonts.css`; Bricolage Grotesque, Space Mono, and Literata loading is consumer opt-in.
 - `@ayingott/theme` must not import `brutal.css`; Neo-Brutalism is consumer opt-in after the default entry.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables, not guaranteed Tailwind utilities.
 - The default entry injects no global reduced-motion policy. The opt-in `pressable` utility owns only its scoped `.brutal` reduced-motion fallback.
@@ -29,12 +29,17 @@ Run:
 pnpm check
 pnpm site:typecheck
 pnpm site:build
+CHROME_PATH=<chrome-binary> pnpm site:browser
 ```
 
 `pnpm check` covers source smoke, package dry-run, real-tarball consumer
 install/compile, and site contrast checks. The `site:typecheck` and `site:build`
-commands validate the VitePress implementation. Pull requests still run the
-`check` and `site` CI jobs, but no `main` ruleset currently enforces them.
+commands validate the VitePress implementation. `site:browser` runs the
+Playwright browser contract (theme-family init plus live-Chrome behavior); it
+needs a Chrome binary via `CHROME_PATH` and also runs in the `site` CI job and
+the release workflow, so run it before pushing browser-visible changes. Pull
+requests still run the `check` and `site` CI jobs, but no `main` ruleset
+currently enforces them.
 
 ## Release
 
