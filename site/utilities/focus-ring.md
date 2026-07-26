@@ -2,7 +2,7 @@
 
 V0 ships two focus utilities:
 
-```css
+```txt
 focus-ring
 focus-ring-inset
 ```
@@ -10,10 +10,10 @@ focus-ring-inset
 ## Preview
 
 <div class="grid gap-4 sm:grid-cols-2">
-  <button class="touch-target rounded-control border px-4 focus-ring-preview" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-primary);">
+  <button class="theme-action focus-ring-preview">
     focus-ring
   </button>
-  <button class="touch-target rounded-control border px-4 focus-ring-preview focus-ring-preview--inset" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-primary);">
+  <button class="theme-action focus-ring-preview focus-ring-preview--inset">
     focus-ring-inset
   </button>
 </div>
@@ -24,10 +24,10 @@ only on `:focus-visible` so mouse interaction does not leave a persistent ring.
 ## Keyboard behavior
 
 <div class="grid gap-4 sm:grid-cols-2">
-  <button class="touch-target rounded-control border px-4 focus-ring" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-primary);">
+  <button class="theme-action focus-ring">
     Tab focus-ring
   </button>
-  <button class="touch-target rounded-control border px-4 focus-ring-inset" style="border-color: var(--border-default); background: var(--surface-elevated); color: var(--text-primary);">
+  <button class="theme-action focus-ring-inset">
     Tab focus-ring-inset
   </button>
 </div>

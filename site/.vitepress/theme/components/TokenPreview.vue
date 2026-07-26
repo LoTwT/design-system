@@ -47,12 +47,12 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
         </div>
 
         <div
-          class="min-h-16 rounded-md p-3"
+          class="min-h-16 rounded-card p-3"
           :style="{ backgroundColor: preview === 'shadow' ? 'var(--surface-canvas)' : 'var(--surface-subtle)' }"
         >
           <div
             v-if="preview === 'spacing'"
-            class="h-6 rounded-sm bg-[var(--accent-primary)]"
+            class="h-6 rounded-control bg-[var(--accent-primary)]"
             :style="{ width: `var(--${token.name})` }"
           />
           <div
