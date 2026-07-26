@@ -53,6 +53,11 @@ currently enforces them.
 
 The display-only VitePress showcase remains separate from the package contract.
 
+## Documentation Lifecycle
+
+- Living docs are pinned by contract tests (`site/`, `skills/`, `packages/theme/README.md`, and the `docs/spec/` contract baselines); change them only together with the implementation they describe.
+- Everything else under `docs/` is a point-in-time record (RFCs, decisions, release records, QA snapshots): use dated or numbered filenames and do not retro-edit; supersede with a new document instead.
+
 ## More Context
 
 - RFC: `docs/rfc/0001-theme-v0.md`
