@@ -23,6 +23,7 @@ Repo-specific notes:
 - The `npm-publish` environment, Trusted Publisher binding, and `v*.*.*`
   tag-protection ruleset are repository settings, not source files.
 
-Current V0.1.x / Phase 5 controls, package/showcase boundaries, accepted
-residuals, and rehearsal requirements are canonical in
-[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md).
+Current V0.2.x controls, accepted residuals, and release gates are canonical in
+[`DS-D-12-v0.2-release-controls.md`](DS-D-12-v0.2-release-controls.md).
+[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md) remains the
+point-in-time record for the V0.1.x / Phase 5 control decision.

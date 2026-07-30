@@ -173,8 +173,8 @@ function sha256(file) {
 }
 
 const config = readConfig()
-const packageVersion = JSON.parse(readSource("package.json")).version
-const isPreNeoRelease = packageVersion === "0.1.0" || packageVersion.includes("-")
+const hasNeoStableRelease = /^## 0\.2\.0(?:\s|$)/m.test(readSource("CHANGELOG.md"))
+const isPreNeoRelease = !hasNeoStableRelease
 
 const homepageSource = expectSourceIncludes("site/index.md", [
   "text: Compare theme families",

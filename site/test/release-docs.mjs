@@ -16,6 +16,11 @@ function expect(condition, message) {
     throw new Error(message)
 }
 
+function expectSourcesUnchanged(before, after, operation) {
+  for (const [index, source] of after.entries())
+    expect(source === before[index], `${operation} must leave ${files[index]} unchanged`)
+}
+
 function createFixture() {
   const fixtureDir = mkdtempSync(join(tmpdir(), "release-docs-"))
   for (const file of files) {
@@ -42,11 +47,9 @@ const prereleaseFixture = createFixture()
 const stableFixture = createFixture()
 
 try {
+  const prereleaseBefore = sources(prereleaseFixture)
   sync("0.2.0-next.1", prereleaseFixture)
-  const [prereleaseHomepage, prereleaseGettingStarted, prereleasePackageContract] = sources(prereleaseFixture)
-  expect(prereleaseHomepage.includes("not included in npm `latest`"), "Prerelease homepage must retain the npm latest warning")
-  expect(prereleaseGettingStarted.includes("not included in npm `latest`"), "Prerelease Getting Started must retain the npm latest warning")
-  expect(prereleasePackageContract.includes("npm `latest` is `0.1.0`"), "Prerelease Package Contract must retain the npm latest warning")
+  expectSourcesUnchanged(prereleaseBefore, sources(prereleaseFixture), "Prerelease sync")
 
   sync("0.2.0", stableFixture)
   let [homepage, gettingStarted, packageContract] = sources(stableFixture)
@@ -55,6 +58,10 @@ try {
 
   expect(homepage.includes("Paper & Ink defaults with opt-in Neo-Brutal Light and Dark"), "Stable release docs must promote the Neo homepage copy")
   expect(packageContract.includes("`@ayingott/theme` exposes five public entries:"), "Stable release docs must promote the public package contract")
+
+  const stableBeforePrerelease = sources(stableFixture)
+  sync("0.2.1-next.1", stableFixture)
+  expectSourcesUnchanged(stableBeforePrerelease, sources(stableFixture), "Post-release prerelease sync")
 
   sync("0.2.1", stableFixture)
   ;[homepage, gettingStarted, packageContract] = sources(stableFixture)
