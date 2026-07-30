@@ -10,6 +10,7 @@ const files = [
   "site/guide/getting-started.md",
   "site/guide/package-contract.md",
 ]
+const releaseWorkflow = readFileSync(join(rootDir, ".github/workflows/release.yml"), "utf8")
 
 function expect(condition, message) {
   if (!condition)
@@ -42,6 +43,11 @@ function sync(version, fixtureDir) {
 function sources(fixtureDir) {
   return files.map(file => readFileSync(join(fixtureDir, file), "utf8"))
 }
+
+expect(
+  releaseWorkflow.includes('npm publish "./${TARBALLS[0]}" --access public --tag "$NPM_TAG" --ignore-scripts'),
+  "Release publish must pass an explicit local tarball path to npm",
+)
 
 const prereleaseFixture = createFixture()
 const stableFixture = createFixture()
