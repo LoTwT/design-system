@@ -213,7 +213,7 @@ jobs:
           set -euo pipefail
           mapfile -t TARBALLS < <(find release-artifact -maxdepth 1 -type f -name '*.tgz' -print)
           test "${#TARBALLS[@]}" -eq 1 || { echo "expected exactly one release tarball, found ${#TARBALLS[@]}" >&2; exit 1; }
-          npm publish "${TARBALLS[0]}" --access public --tag "$NPM_TAG" --ignore-scripts
+          npm publish "./${TARBALLS[0]}" --access public --tag "$NPM_TAG" --ignore-scripts
 
   github-release:
     name: Create GitHub Release
