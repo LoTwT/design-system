@@ -328,8 +328,25 @@ jobs:
           grep -q -- '.bg-lavender-500' output.css
           grep -q -- '.font-reading' output.css
           grep -q -- '@font-face' output.css
-          grep -q -- 'newsreader-latin-opsz-normal.woff2' output.css
-          grep -q -- 'newsreader-latin-ext-opsz-normal.woff2' output.css
-          grep -q -- 'space-grotesk-latin-wght-normal.woff2' output.css
+          node <<'NODE'
+          const fs = require("node:fs")
+
+          const fontsCssPath = require.resolve("@ayingott/theme/fonts.css")
+          const fontsCss = fs.readFileSync(fontsCssPath, "utf8")
+          const outputCss = fs.readFileSync("output.css", "utf8")
+          const fontFiles = [...new Set(
+            [...fontsCss.matchAll(/url\(["']?\.\/fonts\/([^"')]+)["']?\)/g)]
+              .map(([, file]) => file),
+          )]
+
+          if (fontFiles.length === 0)
+            throw new Error(`No bundled font references found in ${fontsCssPath}`)
+
+          const missing = fontFiles.filter(file => !outputCss.includes(file))
+          if (missing.length > 0)
+            throw new Error(`Compiled CSS is missing bundled fonts: ${missing.join(", ")}`)
+
+          console.log(`verified bundled fonts: ${fontFiles.join(", ")}`)
+          NODE
           grep -q -- '.focus-ring' output.css
           grep -q -- '.touch-target' output.css
