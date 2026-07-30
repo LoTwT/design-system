@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Ayingott Design System
-  text: Paper & Ink defaults with an upcoming opt-in Neo-Brutal family on one semantic API.
+  text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.
   tagline: A first-party showcase for the current main branch of @ayingott/theme.
   actions:
     - theme: brand
@@ -23,9 +23,6 @@ features:
 ---
 
 ## Showcase Scope
-
-> [!IMPORTANT]
-> This site follows the current `main` branch. Neo-Brutalism and the `brutal.css` entry are not included in npm `latest` (`0.1.0`) yet.
 
 This site only displays the design system. It is not a playground, component library, or consumer integration test.
 

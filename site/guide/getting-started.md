@@ -35,9 +35,6 @@ The same semantic variables update through CSS cascade. Typography, spacing, lay
 
 ## Choose a family and scheme
 
-> [!IMPORTANT]
-> The Neo-Brutal family is available on the current `main` branch but is not included in npm `latest` (`0.1.0`) yet. The import below will work after a release that publishes the `brutal.css` export.
-
 Paper and Ink remain the defaults. Import the opt-in family entry after the default theme to add Neo-Brutal Light and Dark:
 
 ```css

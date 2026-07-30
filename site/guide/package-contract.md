@@ -1,9 +1,6 @@
 # Package Contract
 
-> [!IMPORTANT]
-> This page describes the current `main` branch. npm `latest` is `0.1.0` and does not include the `./brutal.css` export yet.
-
-`@ayingott/theme` on `main` exposes five public entries:
+`@ayingott/theme` exposes five public entries:
 
 ```json
 {

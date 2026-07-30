@@ -1,3 +1,41 @@
+## 0.2.0 - 2026-07-30
+
+### Added
+
+- Add experience baseline safeguards (#28)
+- Add Paper and Ink paired theme (#36)
+- Add opt-in Neo-Brutalism family (#39)
+- Add Theme Family switch (#42)
+- Add cross-family border structure roles (#43)
+- Improve release readiness (#45)
+- Neutralize Paper surfaces, de-yellow Neo palette, and swap bundled fonts (#46)
+- Remap Neo chrome and regroup the Theme Family switch (#47)
+
+### Changed
+
+- Harden registry smoke propagation
+- Harden publish trust boundaries (#23)
+- Add stable verifier checks (#27)
+
+### Documentation
+
+- Fix focus ring preview
+- Record phase 5 readiness boundaries (#33)
+- Record Dependabot settings readback (#35)
+- Record Ink dependency policy (#37)
+- Clarify Neo consumer boundaries (#40)
+- Record main ruleset removal and promote AGENTS.md as the primary guide (#44)
+- Archive design-qa snapshot and record documentation lifecycle (#48)
+
+### Fixed
+
+- Enforce accessible CTA contrast (#24)
+- Enforce real tarball contract (#26)
+- Increase muted text headroom (#38)
+- Preserve dark semantic preview in light mode (#50)
+- Derive registry smoke fonts from package (#51)
+- Unblock v0.2 release gates (#52)
+
 ## Unreleased
 
 ### Added
