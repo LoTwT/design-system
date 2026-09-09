@@ -82,12 +82,17 @@
   }
 }
 
-.VPDoc a:focus-visible,
+.VPDoc a:focus-visible:not(.focus-ring, .focus-ring-inset),
 .VPButton:focus-visible,
 .VPSwitchAppearance:focus-visible {
   outline: 2px solid var(--focus-ring-color);
   outline-offset: 2px;
   box-shadow: var(--focus-ring-shadow);
+}
+
+/* Let the package utilities own these specimens below VitePress's reset. */
+.VPDoc :is(.focus-ring, .focus-ring-inset):focus-visible {
+  outline: revert-layer;
 }
 
 .VPButton.brand,

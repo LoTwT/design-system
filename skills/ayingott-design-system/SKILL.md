@@ -66,7 +66,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--text-primary` | All body and heading text. |
 | `--text-secondary` | Captions, supporting prose. |
 | `--text-muted` | De-emphasized labels, helper text. |
-| `--text-inverse` | Text on solid `--accent-primary` surfaces (e.g. button labels). |
+| `--text-inverse` | Inverse text on a contrasting surface; check the foreground/background pair. |
 | `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. |
 | `--border-subtle` | Default divider weight. Alpha-on-cream in light, alpha-on-warm-white in dark. |
 | `--border-default` | Card outlines. |
@@ -74,7 +74,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--accent-primary` | Primary brand surfaces (CTA backgrounds, active toggle, brand decoration). |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |
-| `--accent-contrast` | Text or icons on `--accent-soft`. |
+| `--accent-contrast` / `-hover` / `-active` | Text or icons on the matching `--accent-primary` / `-hover` / `-active` backgrounds. |
 | `--focus-ring-color` / `--focus-ring-shadow` | Focus indicator. |
 | `--status-success` / `-warning` / `-danger` / `-info` | State communication. Mirror decorative hues mint / amber / rose / sky. |
 
@@ -181,7 +181,7 @@ The family keeps the semantic API and component anatomy. It maps card/control ra
 }
 ```
 
-Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import. The surface/control width roles are foundation roles that resolve in every family; `.brutal` only remaps them to heavy widths.
+Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import and default to `currentColor` in every family. Neo card/panel shadows and `pressable` feedback use family ink independently of the physical shadow color. The surface/control width roles are foundation roles that resolve in every family; `.brutal` only remaps them to heavy widths.
 
 Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
 
@@ -231,7 +231,7 @@ When producing visual artifacts (mockups, slides, prototype HTML), follow these 
 
 - **Page background is warm cream**, not grey, not pure white. Use `var(--surface-canvas)`.
 - **Cards** sit on `var(--surface-elevated)` with `border: var(--border-width-surface) solid var(--border-subtle)`, `border-radius: var(--radius-card)`, and `box-shadow: var(--shadow-card)`. Paper/Ink resolve to the existing soft anatomy; Neo resolves to a 3px border, zero radius, and hard depth.
-- **Primary buttons** use `background: var(--accent-primary)` + `color: var(--text-inverse)`, `border-radius: var(--radius-control)` (`0.375rem`), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`.
+- **Primary buttons** use `background: var(--accent-primary)` + `color: var(--accent-contrast)`, `border-radius: var(--radius-control)` (`0.375rem` in Paper/Ink, `0` in Neo), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`. Pair hover and active backgrounds with `--accent-contrast-hover` and `--accent-contrast-active` respectively.
 - **Paper/Ink hover** may lift by `translateY(-1px)` with `var(--shadow-md)` when the consumer owns that interaction.
 - **Neo press feedback** uses the shipped `pressable` utility; do not reproduce its movement locally.
 - **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Never strip the outline.

@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { defineConfig } from 'bumpp'
 
@@ -9,16 +9,16 @@ export default defineConfig({
   ],
   commit: true,
   tag: true,
-  push: true,
+  push: false,
   install: false,
   recursive: false,
   noGitCheck: false,
   execute: (operation) => {
-    execSync(`node scripts/sync-release-docs.mjs ${operation.state.newVersion}`, {
+    execFileSync(process.execPath, ['scripts/sync-release-docs.mjs', operation.state.newVersion], {
       cwd: operation.options.cwd,
       stdio: 'inherit',
     })
-    execSync('pnpm changelog', {
+    execFileSync('pnpm', ['changelog'], {
       cwd: operation.options.cwd,
       stdio: 'inherit',
     })

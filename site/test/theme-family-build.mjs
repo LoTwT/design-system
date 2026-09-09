@@ -131,8 +131,8 @@ async function expectSchemeStable(page, dark) {
   expect(result.dark === dark && result.changes === 0, `Family interaction must preserve ${dark ? "Dark" : "Light"} through the post-render stability window`)
 }
 
-async function focusByTab(page, locator, label) {
-  for (let index = 0; index < 24; index++) {
+async function focusByTab(page, locator, label, maximumTabs = 24) {
+  for (let index = 0; index < maximumTabs; index++) {
     await page.keyboard.press("Tab")
     if (await locator.evaluate(element => document.activeElement === element))
       return
@@ -273,6 +273,75 @@ async function verifyBrowserBehavior() {
     expect(inkPreviewColors.foreground === "rgb(247, 241, 230)", `Ink preview text must retain its light foreground under Light; received ${inkPreviewColors.foreground}`)
 
     await page.goto(`${origin}/tokens/effects`)
+    // Read the rendered role, not the parsed Paper value shown in the label.
+    for (const neo of [false, true, false]) {
+      await page.evaluate(neo => document.documentElement.classList.toggle("brutal", neo), neo)
+      for (const name of ["border-width-surface", "border-width-control"]) {
+        const sample = page.locator(".token-card").filter({ has: page.locator(".token-label", { hasText: `--${name}` }) }).locator(".h-12")
+        const width = await sample.evaluate(element => getComputedStyle(element).borderTopWidth)
+        expect(width === (neo ? "3px" : "1px"), `${name} preview must follow the active family; received ${width}`)
+      }
+    }
+
+    for (const classes of [[], ["dark"], ["brutal"], ["brutal", "dark"]]) {
+      const result = await page.evaluate((classes) => {
+        document.documentElement.classList.remove("dark", "brutal")
+        document.documentElement.classList.add(...classes)
+        const card = document.createElement("div")
+        card.style.cssText = "color: var(--text-secondary); box-shadow: var(--shadow-card)"
+        const target = document.createElement("button")
+        target.className = "touch-target"
+        target.textContent = "X"
+        const link = document.createElement("a")
+        link.className = "touch-target-inline"
+        link.style.display = "inline-flex"
+        link.textContent = "X"
+        document.body.append(card, target, link)
+        const shadow = getComputedStyle(card).boxShadow
+        card.style.boxShadow = "var(--shadow-panel)"
+        const panel = getComputedStyle(card).boxShadow
+        card.style.removeProperty("box-shadow")
+        card.className = "shadow-hard-md"
+        const physical = getComputedStyle(card).boxShadow
+        const foreground = getComputedStyle(card).color
+        card.style.color = "var(--brutal-ink)"
+        const ink = getComputedStyle(card).color
+        const targetRect = target.getBoundingClientRect()
+        const linkRect = link.getBoundingClientRect()
+        const result = { shadow, panel, physical, foreground, ink, width: targetRect.width, height: targetRect.height, linkHeight: linkRect.height }
+        card.remove()
+        target.remove()
+        link.remove()
+        return result
+      }, classes)
+      expect(result.width >= 44 && result.height >= 44, `touch-target must render at least 44×44 in ${classes.join(" ") || "Paper"}; received ${result.width}×${result.height}`)
+      expect(result.linkHeight >= 44, "touch-target-inline must render at least 44px high with consumer inline-flex layout")
+      expect(result.physical === `${result.foreground} 6px 6px 0px 0px`, `Physical hard shadows must retain currentColor in every family; received ${result.physical}`)
+      if (classes.includes("brutal")) {
+        expect(result.shadow === `${result.ink} 6px 6px 0px 0px`, `Semantic card shadow must use family ink independently of text color; received ${result.shadow}`)
+        expect(result.panel === `${result.ink} 8px 8px 0px 0px`, `Semantic panel shadow must use family ink; received ${result.panel}`)
+        await page.evaluate(() => {
+          const button = document.createElement("button")
+          button.id = "contract-pressable"
+          button.className = "pressable touch-target"
+          button.textContent = "X"
+          button.style.color = "var(--text-secondary)"
+          document.body.append(button)
+        })
+        const control = page.locator("#contract-pressable")
+        await control.hover()
+        expect(await control.evaluate(element => getComputedStyle(element).boxShadow) === `${result.ink} 8px 8px 0px 0px`, "Pressable hover shadow must use family ink independently of text color")
+        await page.mouse.down()
+        try {
+          expect(await control.evaluate(element => getComputedStyle(element).boxShadow) === `${result.ink} 0px 0px 0px 0px`, "Pressable active shadow must use family ink")
+        }
+        finally {
+          await page.mouse.up()
+          await control.evaluate(element => element.remove())
+        }
+      }
+    }
+
     const transitionDurations = await page.locator(".transition-demo").first().evaluate((element) => {
       const dot = element.querySelector(".transition-demo__dot")
       return {
@@ -281,6 +350,30 @@ async function verifyBrowserBehavior() {
       }
     })
     expect(isZero(transitionDurations.container) && isZero(transitionDurations.dot), "Transition specimens must compute to zero duration under reduced motion")
+
+    await page.setViewportSize({ height: 844, width: 1280 })
+    for (const classes of [[], ["dark"], ["brutal"], ["brutal", "dark"]]) {
+      await page.goto(`${origin}/utilities/focus-ring`)
+      await page.evaluate((classes) => {
+        document.documentElement.classList.remove("dark", "brutal")
+        document.documentElement.classList.add(...classes)
+      }, classes)
+      for (const [utility, offset] of [["focus-ring", "2px"], ["focus-ring-inset", "-2px"]]) {
+        const button = page.locator(`.theme-action.${utility}`).first()
+        await focusByTab(page, button, utility, 64)
+        const focus = await button.evaluate((element) => {
+          const style = getComputedStyle(element)
+          const reference = document.createElement("span")
+          reference.style.color = "var(--focus-ring-color)"
+          element.append(reference)
+          const color = getComputedStyle(reference).color
+          reference.remove()
+          return { visible: element.matches(":focus-visible"), outline: style.outline, offset: style.outlineOffset, color }
+        })
+        expect(focus.visible && focus.outline === `${focus.color} solid 2px` && focus.offset === offset,
+          `${utility} demo must render its semantic keyboard outline; received ${JSON.stringify(focus)}`)
+      }
+    }
 
     console.log(`site Theme Family browser contract passed with Chrome ${version}`)
   }

@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os"
 import { basename, dirname, join, relative, sep } from "node:path"
 import { fileURLToPath } from "node:url"
+import postcss from "postcss"
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
 const repoRoot = dirname(dirname(packageDir))
@@ -213,7 +214,30 @@ for (const [specifier, suffix] of Object.entries(expected)) {
       throw new Error(`Consumer compile output is missing: ${needle}`)
   }
 
-  console.log(`real tarball consumer passed: ${basename(tarball)}`)
+  // Compile the actual documented recipe against the installed tarball.
+  const spec = readFileSync(join(repoRoot, "docs/spec/design-system-v1.0.md"), "utf8")
+  const recipeSection = spec.split("## §6 ·")[1]?.split("\n---")[0]
+  const recipe = recipeSection?.match(/```css\n([\s\S]*?)```/)?.[1]
+  const classList = recipeSection?.match(/这样 consumer 即可使用：(.+?) 等 utility class/)?.[1]
+  const candidates = [...(classList ?? "").matchAll(/`([^`]+)`/g)].map(match => match[1])
+  if (!recipe || candidates.length < 5)
+    throw new Error("Consumer recipe and its promised utilities must be present in §6")
+  const recipeInput = join(consumerDir, "recipe.css")
+  const recipeOutput = join(consumerDir, "recipe.output.css")
+  writeFileSync(recipeInput, `${recipe}\n@source inline(${JSON.stringify(candidates.join(" "))});\n`)
+  execFileSync("pnpm", ["exec", "tailwindcss", "-i", recipeInput, "-o", recipeOutput], {
+    cwd: consumerDir,
+    stdio: "inherit",
+  })
+  const recipeCss = postcss.parse(readFileSync(recipeOutput, "utf8"))
+  for (const candidate of candidates) {
+    const rules = []
+    recipeCss.walkRules(`.${candidate}`, rule => rules.push(rule))
+    if (rules.length === 0)
+      throw new Error(`Documented consumer utility was not generated: ${candidate}`)
+  }
+
+  console.log(`real tarball consumer and documented recipe passed: ${basename(tarball)}`)
 }
 finally {
   rmSync(tempDir, { recursive: true, force: true })

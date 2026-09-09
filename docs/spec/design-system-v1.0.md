@@ -527,11 +527,13 @@ V0 `packages/theme/src/utilities/touch-target.css`：
 
 应用规则：所有 button / link / icon-button / theme-toggle 必须用 `touch-target` 或 `touch-target-inline` 之一。
 
+最小尺寸生效的前提是 consumer 使用 `inline-flex`、`block`、grid item 等支持 min-size 的布局；普通 `display: inline` 链接不受这些最小尺寸约束。
+
 > [FUTURE]：UX baseline 曾在 utility 内置 `display: inline-flex; align-items / justify-content`；V0 不 ship 这些（避免 utility 越界做 layout，consumer 自决）。
 
 ### 4.3 `pressable`（opt-in `brutal.css`）
 
-`packages/theme/src/utilities/pressable.css` 只在 `.brutal` self/descendant 生效。Hover `translate(-2px, -2px)` + `--shadow-hard-lg`；active `translate(6px, 6px)` + zero-offset shadow；native / ARIA / data-disabled 均保持 `transform: none`。duration 使用现有 `--duration-fast`（120ms）。
+`packages/theme/src/utilities/pressable.css` 只在 `.brutal` self/descendant 生效。Hover `translate(-2px, -2px)` + 8px family-ink hard shadow；active `translate(6px, 6px)` + zero-offset family-ink shadow；native / ARIA / data-disabled 均保持 `transform: none`。交互阴影独立于默认使用 `currentColor` 的物理 `shadow-hard-*` tokens。duration 使用现有 `--duration-fast`（120ms）。
 
 使用时组合现有 a11y utilities：
 
@@ -662,7 +664,7 @@ V0 theme 不 ship `float-gentle` keyframes（参考 §1.15 [FUTURE]）。consume
 
 ## §6 · Consumer-side Recipe（教程，不进 V0 契约）
 
-如果 consumer 想要 `bg-surface-canvas` / `text-primary` 等 Tailwind utility 形式（而非 `var()`），可在自己 app CSS 中加：
+如果 consumer 想要 `bg-surface-canvas` / `text-text-primary` 等 Tailwind utility 形式（而非 `var()`），可在自己 app CSS 中加：
 
 ```css
 /* consumer-app.css */
@@ -694,7 +696,7 @@ V0 theme 不 ship `float-gentle` keyframes（参考 §1.15 [FUTURE]）。consume
 }
 ```
 
-这样 consumer 即可使用：`bg-surface-canvas` / `text-primary` / `border-default` / `bg-accent-soft` / `text-accent` 等 utility class。
+这样 consumer 即可使用：`bg-surface-canvas` / `text-text-primary` / `border-border-default` / `bg-accent-soft` / `text-text-accent` 等 utility class。Tailwind 将 `--color-` 后的完整名称作为颜色名称，再添加 `text-`、`border-` 等 utility 前缀。
 
 注意：
 - 这是 **consumer 决定**，不是 theme 包契约

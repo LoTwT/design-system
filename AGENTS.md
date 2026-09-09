@@ -47,6 +47,7 @@ currently enforces them.
 - Use `pnpm release:bump` for a patch bump, or `pnpm release:bump X.Y.Z` for an explicit version.
 - Run release bumps only from `main` after the release PR has merged.
 - The release script uses bumpp's built-in commit/tag format: `chore: release vX.Y.Z` and `vX.Y.Z`.
+- `pnpm release:bump` requires a clean `main` matching live `origin/main`; it atomically pushes only the new release commit and its exact tag. `--no-push` prepares them locally. Use this wrapper for releases; `bump.config.ts` disables bumpp's all-tags push.
 - The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; an unprivileged validation job produces a checksummed tarball and release notes, the publish job receives only artifact-read and OIDC permissions, a separate job creates the GitHub Release, and a final job runs registry install smoke.
 - Pass repository-relative tarballs to `npm publish` with an explicit `./` prefix (or an absolute path); npm 11 can otherwise parse a slash-containing relative path as a Git package spec.
 - Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
@@ -66,5 +67,6 @@ The display-only VitePress showcase remains separate from the package contract.
 - V0.1.x release controls: `docs/release/DS-D-10-v0-auto-publish.md`
 - Current V0.2.x release controls: `docs/release/DS-D-12-v0.2-release-controls.md`
 - V0.2.0 publish recovery: `docs/release/DS-D-13-v0.2.0-publish-recovery.md`
+- Exact release push: `docs/release/DS-D-14-exact-release-push.md`
 - Package: `packages/theme/README.md`
 - Notices: `packages/theme/THIRD_PARTY_NOTICES.md`
