@@ -181,9 +181,11 @@ The family keeps the semantic API and component anatomy. It maps card/control ra
 }
 ```
 
-Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import and default to `currentColor` in every family. Neo card/panel shadows and `pressable` feedback use family ink independently of the physical shadow color. The surface/control width roles are foundation roles that resolve in every family; `.brutal` only remaps them to heavy widths.
+Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens at `:root`. Those physical tokens and the three size utilities are entry-global after import and default to `currentColor` in every family. Neo card/panel shadows and `pressable` feedback use a separate family depth color. The surface/control width roles are foundation roles that resolve in every family; `.brutal` only remaps them to heavy widths.
 
 Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
+
+Neo Dark separates ivory text, default/strong borders, and dark hard shadows on warm charcoal surfaces. Use `--border-default` or `--border-strong` for essential control boundaries; reserve `--border-subtle` for decoration. Use `--accent-soft` for selected surfaces, keeping them distinct from `--surface-muted`. The internal `--brutal-shadow` depth color is not a consumer API; keep using the semantic shadow roles and `pressable` in every state.
 
 Use `pressable` only with the opt-in entry and compose accessibility utilities:
 
@@ -315,6 +317,7 @@ These live in the design-system repository. Read them when the skill is not enou
 - `docs/rfc/0001-theme-v0.md` — the implementation RFC.
 - `docs/rfc/0002-reading-token-layer-v0.1.md` — the reading token layer RFC.
 - `docs/spec/rfc-brutal-theme.md` — the accepted Neo-Brutalism family RFC.
+- `docs/decisions/2026-09-09-brutal-dark-refinement.md` — the implemented Neo Dark refinement; supersedes the RFC's text-ink shadow mapping.
 - `docs/spec/brutal-theme-contract.json` — the executable family declarations, invariants, and legal pairs.
 - `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.

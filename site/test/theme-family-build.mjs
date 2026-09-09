@@ -1,11 +1,23 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs"
+import { createHash } from "node:crypto"
+import { existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs"
 import { createServer } from "node:http"
 import { dirname, extname, join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
 import { runInNewContext } from "node:vm"
 import { chromium } from "playwright-core"
+import { contrastRatio } from "./theme-contract-helpers.mjs"
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const distDir = join(rootDir, "site/.vitepress/dist")
+const brutalContract = JSON.parse(readFileSync(join(rootDir, "docs/spec/brutal-theme-contract.json"), "utf8"))
+const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...brutalContract.modeDeclarations.light })
+  .filter(name => !name.startsWith("brutal-")).sort()
+// Captured from the built 3c20675 baseline before changing Neo Dark. Hash only
+// resolved public roles; internal palette aliases can change without an API change.
+const unchangedModeDigests = {
+  paper: "d471c5ecc3f9f2ecf6d48164a63fcd6848b384d5596bf2c1935ed3241d4aca83",
+  ink: "6e5601da8d2873b5060aa0c684e2c9482e37f39f63cc29d75a031bed3b1724f3",
+  neoLight: "9d9f57e9b091a8be2c1061138e8a4a7f86add96bd9cae51a849bc42f619032d5",
+}
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
 function expect(condition, message) {
   if (!condition)
@@ -138,6 +150,229 @@ async function focusByTab(page, locator, label, maximumTabs = 24) {
       return
   }
   throw new Error(`${label} must be reachable by keyboard Tab navigation`)
+}
+
+async function verifyUnchangedModes(page) {
+  expect(publicRoles.length === 69, "Unchanged-mode public role set drifted")
+  for (const [mode, classes] of [["paper", []], ["ink", ["dark"]], ["neoLight", ["brutal"]]]) {
+    const values = await page.evaluate(({ classes, roles }) => {
+      document.documentElement.classList.remove("brutal", "dark")
+      document.documentElement.classList.add(...classes)
+      const style = getComputedStyle(document.documentElement)
+      return Object.fromEntries(roles.map(role => [role, style.getPropertyValue(`--${role}`).trim()
+        .replace(/#[a-f0-9]{3,8}\b/gi, hex => hex.length === 4 || hex.length === 5
+          ? `#${[...hex.slice(1)].map(character => character + character).join("").toLowerCase()}`
+          : hex.toLowerCase())]))
+    }, { classes, roles: publicRoles })
+    const digest = createHash("sha256").update(JSON.stringify(values)).digest("hex")
+    expect(digest === unchangedModeDigests[mode], `${mode} computed public roles changed: ${JSON.stringify(values)}`)
+  }
+}
+
+async function verifyPressableStates(page, dark) {
+  const depth = dark ? "rgb(8, 8, 8)" : "rgb(17, 17, 17)"
+  const shadow = offset => `${depth} ${offset}px ${offset}px 0px 0px`
+  await page.evaluate(() => {
+    const button = document.createElement("button")
+    button.id = "contract-pressable"
+    button.className = "theme-action theme-action--primary pressable focus-ring touch-target"
+    button.textContent = "Pressable"
+    button.style.cssText = "position: fixed; top: 100px; left: 30px; z-index: 999; width: 160px"
+    document.body.append(button)
+  })
+  const control = page.locator("#contract-pressable")
+  async function state(expected) {
+    try {
+      await page.waitForFunction((expected) => {
+        const style = getComputedStyle(document.querySelector("#contract-pressable"))
+        return Object.entries(expected).every(([property, value]) => style[property] === value)
+      }, expected)
+    }
+    catch (cause) {
+      const actual = await control.evaluate((element, properties) => {
+        const style = getComputedStyle(element)
+        return Object.fromEntries(properties.map(property => [property, style[property]]))
+      }, Object.keys(expected))
+      throw new Error(`Neo ${dark ? "Dark" : "Light"} pressable expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`, { cause })
+    }
+  }
+  try {
+    for (const reducedMotion of ["no-preference", "reduce"]) {
+      await page.emulateMedia({ reducedMotion, forcedColors: "none" })
+      await page.mouse.move(0, 0)
+      await state({ transform: "none", boxShadow: shadow(6), backgroundColor: "rgb(255, 208, 47)", color: "rgb(17, 17, 17)" })
+      await control.hover()
+      await state({ transform: reducedMotion === "reduce" ? "none" : "matrix(1, 0, 0, 1, -2, -2)", boxShadow: shadow(8), backgroundColor: "rgb(255, 122, 184)" })
+      await page.mouse.down()
+      try {
+        await state({ transform: reducedMotion === "reduce" ? "none" : "matrix(1, 0, 0, 1, 6, 6)", boxShadow: shadow(0), backgroundColor: "rgb(255, 107, 74)" })
+      }
+      finally {
+        await page.mouse.up()
+      }
+      const durations = await control.evaluate(element => getComputedStyle(element).transitionDuration)
+      expect(durations.split(",").every(value => Number.parseFloat(value) === (reducedMotion === "reduce" ? 0 : 0.12)), `Unexpected pressable duration: ${durations}`)
+
+      for (const attribute of ["disabled", "aria-disabled", "data-disabled"]) {
+        await control.evaluate((element, attribute) => element.setAttribute(attribute, "true"), attribute)
+        await page.mouse.move(0, 0)
+        await state({ transform: "none", boxShadow: shadow(6) })
+        await control.hover()
+        await page.mouse.down()
+        try {
+          await state({ transform: "none", boxShadow: shadow(6) })
+        }
+        finally {
+          await page.mouse.up()
+          await control.evaluate((element, attribute) => element.removeAttribute(attribute), attribute)
+        }
+      }
+    }
+
+    await page.emulateMedia({ forcedColors: "active" })
+    const system = await control.evaluate((element) => {
+      const reference = document.createElement("button")
+      reference.style.cssText = "border: 3px solid ButtonText; outline: 2px solid Highlight"
+      element.after(reference)
+      const style = getComputedStyle(reference)
+      const colors = { border: style.borderTopColor, outline: style.outlineColor }
+      reference.remove()
+      return colors
+    })
+    // Chromium maps the showcase's authored hover/active border to Highlight.
+    // Also test the standalone utility, whose explicit ButtonText wins in every
+    // state. Forced colors suppresses box shadows at paint/computed-value time.
+    for (const standalone of [false, true]) {
+      if (standalone) {
+        await control.evaluate((element) => {
+          element.classList.remove("theme-action", "theme-action--primary")
+          element.style.borderStyle = "solid"
+          element.style.borderWidth = "3px"
+        })
+      }
+      await page.mouse.move(0, 0)
+      await state({ borderTopColor: system.border, boxShadow: "none" })
+      await control.hover()
+      const activeBorder = standalone ? system.border : system.outline
+      await state({ borderTopColor: activeBorder, boxShadow: "none" })
+      await page.mouse.down()
+      try {
+        await state({ borderTopColor: activeBorder, boxShadow: "none" })
+      }
+      finally {
+        await page.mouse.up()
+      }
+    }
+    await focusByTab(page, control, "forced-colors pressable", 128)
+    await state({ outlineColor: system.outline })
+    // Chromium may replace the authored outline with its wider native auto ring.
+    const focus = await control.evaluate((element) => {
+      const style = getComputedStyle(element)
+      return { visible: element.matches(":focus-visible"), style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) }
+    })
+    expect(focus.visible && !["none", "hidden"].includes(focus.style) && focus.width >= 2, "Forced-colors pressable must retain a visible system-colored keyboard outline")
+  }
+  finally {
+    await control.evaluate(element => element.remove())
+    await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "none" })
+  }
+}
+
+async function verifyNeoOverview(page, origin) {
+  await page.goto(`${origin}/guide/theme-overview`)
+  await page.locator(".theme-family-control.is-ready").first().waitFor()
+  await page.evaluate(() => document.fonts.ready)
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ height: 844, width })
+    for (const dark of [false, true]) {
+      await page.evaluate((dark) => {
+        document.documentElement.classList.add("brutal")
+        document.documentElement.classList.toggle("dark", dark)
+      }, dark)
+      const layout = await page.evaluate(() => {
+        const root = document.documentElement
+        const controls = [...document.querySelectorAll(".theme-showcase button, .theme-input, .theme-choice")]
+        const undersized = controls.filter((element) => {
+          const rect = element.getBoundingClientRect()
+          return rect.width < 44 || rect.height < 44
+        }).map(element => element.className)
+        const clipped = [...document.querySelectorAll(".theme-brutal-specimen__panel")].filter((element) => {
+          const rect = element.getBoundingClientRect()
+          if (rect.left < 0 || rect.right + 8 > root.clientWidth)
+            return true
+          for (let parent = element.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+            const style = getComputedStyle(parent)
+            const bounds = parent.getBoundingClientRect()
+            if (/(hidden|clip|auto|scroll)/.test(style.overflowX) && (rect.left < bounds.left || rect.right + 8 > bounds.right))
+              return true
+            if (/(hidden|clip|auto|scroll)/.test(style.overflowY) && (rect.top < bounds.top || rect.bottom + 8 > bounds.bottom))
+              return true
+          }
+          return false
+        }).length
+        const selected = getComputedStyle(document.querySelector(".theme-choice")).backgroundColor
+        return { client: root.clientWidth, scroll: root.scrollWidth, undersized, clipped, selected, controlCount: controls.length }
+      })
+      expect(layout.scroll <= layout.client, `Neo ${dark ? "Dark" : "Light"} overview overflows at ${width}px`)
+      expect(layout.controlCount > 0 && layout.undersized.length === 0, `Undersized overview targets at ${width}px: ${layout.undersized.join(", ")}`)
+      expect(layout.clipped === 0, `Neo hard shadows are clipped at ${width}px`)
+      expect(layout.selected === (dark ? "rgb(55, 48, 68)" : "rgb(195, 166, 255)"), "Selected surface must retain its own color")
+
+      if (dark) {
+        const pairs = await page.evaluate(() => {
+          const probe = document.createElement("span")
+          document.body.append(probe)
+          const pairs = []
+          for (const role of ["border-default", "border-strong"]) {
+            probe.style.border = `3px solid var(--${role})`
+            for (const background of ["surface-canvas", "surface-panel", "surface-elevated", "surface-subtle", "surface-muted", "accent-soft"]) {
+              probe.style.backgroundColor = `var(--${background})`
+              const style = getComputedStyle(probe)
+              pairs.push({ role, background, foreground: style.borderTopColor, color: style.backgroundColor })
+            }
+          }
+          probe.remove()
+          return pairs
+        })
+        const hex = rgb => `#${rgb.match(/\d+/g).map(channel => Number(channel).toString(16).padStart(2, "0")).join("")}`
+        for (const pair of pairs)
+          expect(contrastRatio(hex(pair.foreground), hex(pair.color)) >= 3.2, `Compiled ${pair.role}/${pair.background} misses 3.2:1`)
+      }
+
+      const input = page.locator(".theme-input")
+      await focusByTab(page, input, "overview input", 128)
+      const focus = await input.evaluate((element) => {
+        const style = getComputedStyle(element)
+        return { visible: element.matches(":focus-visible"), outline: style.outline, shadow: style.boxShadow }
+      })
+      const ring = dark ? "rgb(255, 208, 47)" : "rgb(61, 90, 254)"
+      const outer = dark ? "rgb(61, 90, 254)" : "rgb(255, 208, 47)"
+      expect(focus.visible && focus.outline === `${ring} solid 2px` && focus.shadow === `${outer} 0px 0px 0px 4px`, `Overview keyboard focus drifted: ${JSON.stringify(focus)}`)
+
+      const artifacts = process.env.THEME_BROWSER_ARTIFACT_DIR
+      if (artifacts && dark) {
+        mkdirSync(artifacts, { recursive: true })
+        async function capture(selector, name) {
+          const specimen = page.locator(selector)
+          await specimen.evaluate(element => element.scrollIntoView({ block: "center", behavior: "instant" }))
+          const box = await specimen.boundingBox()
+          expect(box, `Missing screenshot specimen ${selector}`)
+          const viewport = page.viewportSize()
+          const x = Math.max(0, box.x - 12)
+          const y = Math.max(0, box.y - 12)
+          // Locator screenshots crop outlines and hard shadows at the border box.
+          await page.screenshot({ path: join(artifacts, `neo-dark-${name}.png`), clip: {
+            x, y, width: Math.min(viewport.width - x, box.width + 24), height: Math.min(viewport.height - y, box.height + 24),
+          } })
+        }
+        await capture(".theme-field-states", `fields-${width}`)
+        if (width === 1280) {
+          for (const [name, selector] of [["cards", ".theme-brutal-grid"], ["reading", ".theme-section--reading"], ["states", ".theme-state-grid"]])
+            await capture(selector, name)
+        }
+      }
+    }
+  }
 }
 
 async function verifyBrowserBehavior() {
@@ -273,6 +508,7 @@ async function verifyBrowserBehavior() {
     expect(inkPreviewColors.foreground === "rgb(247, 241, 230)", `Ink preview text must retain its light foreground under Light; received ${inkPreviewColors.foreground}`)
 
     await page.goto(`${origin}/tokens/effects`)
+    await verifyUnchangedModes(page)
     // Read the rendered role, not the parsed Paper value shown in the label.
     for (const neo of [false, true, false]) {
       await page.evaluate(neo => document.documentElement.classList.toggle("brutal", neo), neo)
@@ -304,11 +540,9 @@ async function verifyBrowserBehavior() {
         card.className = "shadow-hard-md"
         const physical = getComputedStyle(card).boxShadow
         const foreground = getComputedStyle(card).color
-        card.style.color = "var(--brutal-ink)"
-        const ink = getComputedStyle(card).color
         const targetRect = target.getBoundingClientRect()
         const linkRect = link.getBoundingClientRect()
-        const result = { shadow, panel, physical, foreground, ink, width: targetRect.width, height: targetRect.height, linkHeight: linkRect.height }
+        const result = { shadow, panel, physical, foreground, width: targetRect.width, height: targetRect.height, linkHeight: linkRect.height }
         card.remove()
         target.remove()
         link.remove()
@@ -318,27 +552,10 @@ async function verifyBrowserBehavior() {
       expect(result.linkHeight >= 44, "touch-target-inline must render at least 44px high with consumer inline-flex layout")
       expect(result.physical === `${result.foreground} 6px 6px 0px 0px`, `Physical hard shadows must retain currentColor in every family; received ${result.physical}`)
       if (classes.includes("brutal")) {
-        expect(result.shadow === `${result.ink} 6px 6px 0px 0px`, `Semantic card shadow must use family ink independently of text color; received ${result.shadow}`)
-        expect(result.panel === `${result.ink} 8px 8px 0px 0px`, `Semantic panel shadow must use family ink; received ${result.panel}`)
-        await page.evaluate(() => {
-          const button = document.createElement("button")
-          button.id = "contract-pressable"
-          button.className = "pressable touch-target"
-          button.textContent = "X"
-          button.style.color = "var(--text-secondary)"
-          document.body.append(button)
-        })
-        const control = page.locator("#contract-pressable")
-        await control.hover()
-        expect(await control.evaluate(element => getComputedStyle(element).boxShadow) === `${result.ink} 8px 8px 0px 0px`, "Pressable hover shadow must use family ink independently of text color")
-        await page.mouse.down()
-        try {
-          expect(await control.evaluate(element => getComputedStyle(element).boxShadow) === `${result.ink} 0px 0px 0px 0px`, "Pressable active shadow must use family ink")
-        }
-        finally {
-          await page.mouse.up()
-          await control.evaluate(element => element.remove())
-        }
+        const depth = classes.includes("dark") ? "rgb(8, 8, 8)" : "rgb(17, 17, 17)"
+        expect(result.shadow === `${depth} 6px 6px 0px 0px`, `Semantic card shadow must use family depth independently of text color; received ${result.shadow}`)
+        expect(result.panel === `${depth} 8px 8px 0px 0px`, `Semantic panel shadow must use family depth; received ${result.panel}`)
+        await verifyPressableStates(page, classes.includes("dark"))
       }
     }
 
@@ -375,6 +592,8 @@ async function verifyBrowserBehavior() {
       }
     }
 
+    await verifyNeoOverview(page, origin)
+    console.log(`Neo refinement browser checks passed: 3 unchanged modes × 69 roles; Light/Dark pressable states and media fallbacks; 1280/390/320px overview, border contrast and keyboard focus`)
     console.log(`site Theme Family browser contract passed with Chrome ${version}`)
   }
   catch (error) {
