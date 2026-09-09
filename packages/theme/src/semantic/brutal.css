@@ -5,6 +5,7 @@
 
   --brutal-canvas: #fcf6ea;
   --brutal-ink: #111111;
+  --brutal-shadow: #111111;
   --brutal-sticker-ink: #111111;
   --brutal-sticker-paper: #ffffff;
   --brutal-yellow: #ffd02f;
@@ -60,8 +61,8 @@
   --status-info-bg: var(--brutal-blue);
   --status-info-border: var(--brutal-sticker-ink);
 
-  --shadow-card: 6px 6px 0 var(--brutal-ink);
-  --shadow-panel: 8px 8px 0 var(--brutal-ink);
+  --shadow-card: 6px 6px 0 var(--brutal-shadow);
+  --shadow-panel: 8px 8px 0 var(--brutal-shadow);
   --radius-card: var(--radius-none);
   --radius-control: var(--radius-none);
   --border-width-surface: var(--border-width-heavy);
@@ -95,8 +96,9 @@
 .brutal.dark {
   color-scheme: dark;
 
-  --brutal-canvas: #161412;
-  --brutal-ink: #f5f2ea;
+  --brutal-canvas: #191918;
+  --brutal-ink: #e8e6df;
+  --brutal-shadow: #080808;
   --brutal-sticker-ink: #111111;
   --brutal-sticker-paper: #ffffff;
   --brutal-yellow: #ffd02f;
@@ -107,25 +109,25 @@
   --brutal-orange: #ff6b4a;
 
   --surface-canvas: var(--brutal-canvas);
-  --surface-panel: #211e16;
-  --surface-elevated: #2c281e;
-  --surface-subtle: #3a3427;
-  --surface-muted: #4c4432;
+  --surface-panel: #222220;
+  --surface-elevated: #2b2b28;
+  --surface-subtle: #343430;
+  --surface-muted: #3e3e38;
 
   --text-primary: var(--brutal-ink);
-  --text-secondary: #e7dfd2;
-  --text-muted: #cac1b0;
+  --text-secondary: #c3c1b8;
+  --text-muted: #aaa89e;
   --text-inverse: var(--brutal-sticker-ink);
   --text-accent: var(--brutal-purple);
 
-  --border-subtle: rgb(245 242 234 / 0.62);
-  --border-default: var(--brutal-ink);
-  --border-strong: var(--brutal-ink);
+  --border-subtle: rgb(232 230 223 / 0.28);
+  --border-default: #908e84;
+  --border-strong: #d1cec4;
 
   --accent-primary: var(--brutal-yellow);
   --accent-primary-hover: var(--brutal-pink);
   --accent-primary-active: var(--brutal-orange);
-  --accent-soft: #4c4432;
+  --accent-soft: #373044;
   --accent-contrast: var(--brutal-sticker-ink);
   --accent-contrast-hover: var(--brutal-sticker-ink);
   --accent-contrast-active: var(--brutal-sticker-ink);
@@ -152,8 +154,8 @@
   --status-info-bg: var(--brutal-blue);
   --status-info-border: var(--brutal-sticker-ink);
 
-  --shadow-card: 6px 6px 0 var(--brutal-ink);
-  --shadow-panel: 8px 8px 0 var(--brutal-ink);
+  --shadow-card: 6px 6px 0 var(--brutal-shadow);
+  --shadow-panel: 8px 8px 0 var(--brutal-shadow);
   --radius-card: var(--radius-none);
   --radius-control: var(--radius-none);
   --border-width-surface: var(--border-width-heavy);

@@ -8,12 +8,12 @@
 
   &:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):hover {
     transform: translate(-2px, -2px);
-    box-shadow: 8px 8px 0 var(--brutal-ink);
+    box-shadow: 8px 8px 0 var(--brutal-shadow);
   }
 
   &:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):active {
     transform: translate(6px, 6px);
-    box-shadow: 0 0 0 var(--brutal-ink);
+    box-shadow: 0 0 0 var(--brutal-shadow);
   }
 
   &:where(.brutal, .brutal *):is(:disabled, [aria-disabled="true"], [data-disabled]) {

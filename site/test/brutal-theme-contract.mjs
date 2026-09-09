@@ -24,11 +24,11 @@ const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 const paperInkContract = JSON.parse(readFileSync(join(rootDir, paperInkContractFile), "utf8"))
 
 const requiredDigests = {
-  declarations: "789f61da2cecead08d5c399d9810d3b0b9f45d68695a17ef0ab923c0711733ee",
+  declarations: "b94db57467813be651baadf2f2322fe11b216888a8507ed3cdb6cb48d50ecaf8",
   invariants: "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
-  interaction: "2b0795c50b6868c85017131e47510cd6c445142d71de046ec42ac3aa1c3048d6",
+  interaction: "6278f6ff3b8d69c059fce88684f1e49236cb469573f0f05d729b1e9301ad51e8",
   stateMappings: "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
-  legalPairs: "c2e7b151684d3bdecce9d75afa505e14d8d875eb169ea0dd43912be9eb2036fe",
+  legalPairs: "9dd17b631c22dc933031cbe28345cd4dd7daa601a75a29c57d1c9de0ba9cde8c",
 }
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
@@ -76,6 +76,15 @@ function validateContractShape(value) {
 
   const pairIds = value.legalPairs.map(pair => pair.id)
   expect(new Set(pairIds).size === pairIds.length, "Duplicate Brutal legal pair id")
+  const requiredDarkPairs = [
+    ...["border-default", "border-strong"].flatMap(role =>
+      ["canvas", "panel", "elevated", "subtle", "muted", "selected"].map(background => `${role}-${background}`)),
+    ...["primary", "secondary"].flatMap(role =>
+      ["panel", "elevated", "subtle", "muted", "selected"].map(background => `${role}-${background}`)),
+    "muted-subtle", "muted-selected", "link-selected", "focus-selected",
+  ]
+  for (const pair of requiredDarkPairs)
+    expect(pairIds.includes(`brutal-dark-${pair}`), `Missing required Brutal dark pair: ${pair}`)
   for (const pair of value.legalPairs) {
     expect(["light", "dark"].includes(pair.mode), `Unsupported Brutal mode in ${pair.id}`)
     expect(["text", "focus", "non-text"].includes(pair.kind), `Unsupported Brutal pair kind in ${pair.id}`)
@@ -169,8 +178,7 @@ function topLevelRule(root, selector, file) {
   return matches[0]
 }
 
-function verifySemanticSource() {
-  const source = readSource(rootDir, contract.sources.semantic)
+function verifySemanticSource(source = readSource(rootDir, contract.sources.semantic)) {
   const root = parseCss(source, contract.sources.semantic)
   const variants = root.nodes.filter(node => node.type === "atrule" && node.name === "custom-variant")
   expect(variants.length === 1, "Expected one Brutal custom variant")
@@ -291,8 +299,7 @@ function selectorSetRule(container, selectors, label) {
   return matches[0]
 }
 
-function verifyInteractionSource() {
-  const source = readSource(rootDir, contract.sources.utility)
+function verifyInteractionSource(source = readSource(rootDir, contract.sources.utility)) {
   const root = parseCss(source, contract.sources.utility)
   const utilities = root.nodes.filter(node => node.type === "atrule" && node.name === "utility" && node.params === contract.interaction.utility)
   expect(utilities.length === 1, "Expected exactly one pressable utility")
@@ -355,6 +362,7 @@ function verifyInteractionSource() {
     "pressable forced-colors base",
   ), "pressable forced-colors base")
   expect(forcedBase["border-color"] === contract.interaction.forcedColorsBorder, "Forced-colors border drifted")
+  expect(forcedBase["box-shadow"] === "4px 4px 0 ButtonText", "Forced-colors shadow must use ButtonText")
   const forcedFocus = propertyMap(selectorSetRule(
     forcedColors[0],
     [".brutal.pressable:focus-visible", ".brutal .pressable:focus-visible"],
@@ -429,6 +437,64 @@ verifyNoGradients(readSource(rootDir, contract.sources.entry), contract.sources.
 verifyNoGradients(readSource(rootDir, contract.sources.semantic), contract.sources.semantic)
 verifyNoGradients(readSource(rootDir, contract.sources.utility), contract.sources.utility)
 verifyShowcase()
+
+function changedSemantic(mode, role, value) {
+  const root = parseCss(readSource(rootDir, contract.sources.semantic), contract.sources.semantic)
+  const rule = topLevelRule(root, contract.selectors[mode], contract.sources.semantic)
+  const declaration = rule.nodes.find(node => node.type === "decl" && node.prop === `--${role}`)
+  expect(declaration, `Missing mutation target --${role}`)
+  if (value === undefined)
+    declaration.remove()
+  else
+    declaration.value = value
+  return root.toString()
+}
+
+for (const mode of ["light", "dark"]) {
+  expectFailure(
+    `${mode} missing depth color`,
+    () => verifySemanticSource(changedSemantic(mode, "brutal-shadow")),
+    "declaration set drifted",
+  )
+}
+for (const [role, offset] of [["shadow-card", 6], ["shadow-panel", 8]]) {
+  expectFailure(
+    `dark ${role} bound to text ink`,
+    () => verifySemanticSource(changedSemantic("dark", role, `${offset}px ${offset}px 0 var(--brutal-ink)`)),
+    `--${role} must be`,
+  )
+}
+expectFailure(
+  "selected surface collapsed into muted",
+  () => verifySemanticSource(changedSemantic("dark", "accent-soft", expectedMode("dark")["surface-muted"])),
+  "--accent-soft must be",
+)
+for (const [state, oldShadow] of [["hover", "8px 8px 0 var(--brutal-ink)"], ["active", "0 0 0 var(--brutal-ink)"]]) {
+  expectFailure(
+    `${state} shadow restored to text ink`,
+    () => verifyInteractionSource(readSource(rootDir, contract.sources.utility).replace(contract.interaction[`${state}Shadow`], oldShadow)),
+    `Pressable ${state} shadow drifted`,
+  )
+}
+expectFailure(
+  "forced-colors shadow restored to family depth",
+  () => verifyInteractionSource(readSource(rootDir, contract.sources.utility).replace("4px 4px 0 ButtonText", "4px 4px 0 var(--brutal-shadow)")),
+  "Forced-colors shadow must use ButtonText",
+)
+for (const pair of contract.legalPairs.slice(58)) {
+  expectFailure(
+    `removed ${pair.id}`,
+    () => validateContractShape({ ...contract, legalPairs: contract.legalPairs.filter(item => item.id !== pair.id) }),
+    "Missing required Brutal dark pair",
+  )
+}
+expectFailure(
+  "dark border without contrast headroom",
+  () => verifyPair(contract.legalPairs.find(pair => pair.id === "brutal-dark-border-default-muted"), [
+    { ...expectedMode("dark"), "border-default": "#8a887e" },
+  ]),
+  "below target 3.2:1",
+)
 
 expectFailure(
   "missing semantic role",

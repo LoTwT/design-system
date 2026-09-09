@@ -67,7 +67,9 @@ V0 supports the four co-located root states: no classes for Paper, `.dark` for I
 
 Keep consumer styles on semantic roles and the two structure roles. `--border-width-surface` and `--border-width-control` are foundation roles that default to `--border-width-thin`; `.brutal` remaps them to `--border-width-heavy`. Importing `brutal.css` makes `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens available at `:root`. The family-local `--brutal-*` palette variables are contract-owned implementation details, not a consumer direct-use API.
 
-Physical hard shadows default to `currentColor` in all four root states. Neo card/panel shadows and `pressable` feedback use family ink independently of that physical color.
+Physical hard shadows default to `currentColor` in all four root states. Neo card/panel shadows and `pressable` feedback use a separate family depth color.
+
+Neo Dark uses warm charcoal surfaces, ivory text, separate default/strong borders, and dark hard shadows. Use `--border-default` or `--border-strong` for essential control boundaries; `--border-subtle` is decorative. `--accent-soft` is the deep-purple selected surface, distinct from the muted/disabled surface. The independent depth color preserves Neo Light's existing shadows; consumers continue to use `--shadow-card`, `--shadow-panel`, and `pressable`.
 
 Use the scoped interaction utility with the existing accessibility utilities:
 
