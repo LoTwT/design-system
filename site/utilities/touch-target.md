@@ -1,9 +1,11 @@
 # Touch Target
 
-V0 ships two touch utilities with different guarantees:
+V0 ships two touch utilities with different minimum-size rules:
 
-- `touch-target` guarantees both the minimum width and minimum height.
-- `touch-target-inline` guarantees the minimum height and adds horizontal padding for text links; it does not independently guarantee a 44px minimum width.
+- `touch-target` sets both the minimum width and minimum height.
+- `touch-target-inline` sets the minimum height and adds horizontal padding for text links; it does not independently guarantee a 44px minimum width.
+
+Consumers must choose a layout that honors minimum sizes, such as `inline-flex`, `block`, or a grid item. Ordinary `display: inline` links ignore these minimum sizes. Neither utility sets display or alignment.
 
 ```txt
 touch-target
@@ -16,7 +18,7 @@ touch-target-inline
   <button class="touch-target rounded-control border demo-control">
     44px target
   </button>
-  <a class="touch-target-inline rounded-control border no-underline demo-control" href="#neo-brutal-pressable" style="color: var(--text-accent);">
+  <a class="inline-flex items-center touch-target-inline rounded-control border no-underline demo-control" href="#neo-brutal-pressable" style="color: var(--text-accent);">
     inline touch target
   </a>
 </div>

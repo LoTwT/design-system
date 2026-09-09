@@ -67,6 +67,8 @@ V0 supports the four co-located root states: no classes for Paper, `.dark` for I
 
 Keep consumer styles on semantic roles and the two structure roles. `--border-width-surface` and `--border-width-control` are foundation roles that default to `--border-width-thin`; `.brutal` remaps them to `--border-width-heavy`. Importing `brutal.css` makes `--shadow-hard-color` and the `--shadow-hard-sm` / `md` / `lg` size tokens available at `:root`. The family-local `--brutal-*` palette variables are contract-owned implementation details, not a consumer direct-use API.
 
+Physical hard shadows default to `currentColor` in all four root states. Neo card/panel shadows and `pressable` feedback use family ink independently of that physical color.
+
 Use the scoped interaction utility with the existing accessibility utilities:
 
 ```html

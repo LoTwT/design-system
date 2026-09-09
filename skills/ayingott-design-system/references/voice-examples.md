@@ -49,7 +49,7 @@ Even error states stay flat. Apologies and reassurance read as marketing on this
 > Buttons are super flexible! You can use them anywhere — they automatically adapt to any context with our magical variant system.
 
 **Right**
-> A primary button uses `var(--accent-primary)` background and `var(--text-inverse)` text. Hover lifts (`translateY(-1px)`, `--shadow-md`); press settles. Min-height matches `--touch-target-min`.
+> A primary button uses `var(--accent-primary)` background and `var(--accent-contrast)` text. Hover and active backgrounds use the matching `--accent-contrast-hover` and `--accent-contrast-active` text. Paper/Ink hover lifts (`translateY(-1px)`, `--shadow-md`); press settles. Min-height matches `--touch-target-min`.
 
 Describe the contract, not the feeling.
 

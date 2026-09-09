@@ -116,7 +116,7 @@ Import `@ayingott/theme/brutal.css` after the default entry. Keep the family and
 | --- | --- | --- |
 | Semantic roles such as `--surface-canvas` and `--text-muted` | Remapped inside `.brutal` / `.brutal.dark` | Primary consumer API |
 | `--border-width-surface`, `--border-width-control` | Foundation roles defaulting to `--border-width-thin`; remapped to `--border-width-heavy` inside `.brutal` / `.brutal.dark` | Reference directly across families |
-| `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, `--shadow-hard-lg` | Defined at `:root` | Entry-global physical tokens for direct composition; size utilities exist for `sm` / `md` / `lg` |
+| `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, `--shadow-hard-lg` | Defined at `:root` | Entry-global physical tokens default to `currentColor` in every family; size utilities exist for `sm` / `md` / `lg`; Neo semantic shadows independently use family ink |
 | `--brutal-*` palette variables | Family-local implementation values | Contract-owned; do not use directly in consumer CSS |
 
 Use `--text-muted` for active muted UI copy. Physical color utilities remain valid for decorative or fixed-color work. `subtle`, `muted`, and `soft` are family-relative intents, not promises of equal alpha, literal color, or visual weight.
@@ -184,6 +184,6 @@ Use `--text-muted` for active muted UI copy. Physical color utilities remain val
 `@ayingott/theme` ships exactly two utility families. Both apply to all elements; they are not Tailwind variants, they are static utility classes.
 
 - `.focus-ring` / `.focus-ring-inset` — applies `--focus-ring-color` outline + `--focus-ring-shadow`. Use `inset` on inputs, plain on buttons.
-- `.touch-target` / `.touch-target-inline` — enforces `min-height` / `min-width` of `--touch-target-min` (44px).
+- `.touch-target` — sets `min-width` and `min-height` to `--touch-target-min` (44px). `.touch-target-inline` sets only the minimum height plus horizontal padding. Consumers choose a layout such as `inline-flex` that honors minimum sizes; ordinary inline links ignore them.
 
 Anything else you want — color utilities, spacing utilities, layout utilities — comes from Tailwind v4 reading the `@theme` block, not from a file in this package.

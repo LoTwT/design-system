@@ -60,9 +60,8 @@
   --status-info-bg: var(--brutal-blue);
   --status-info-border: var(--brutal-sticker-ink);
 
-  --shadow-hard-color: var(--brutal-ink);
-  --shadow-card: 6px 6px 0 var(--shadow-hard-color);
-  --shadow-panel: 8px 8px 0 var(--shadow-hard-color);
+  --shadow-card: 6px 6px 0 var(--brutal-ink);
+  --shadow-panel: 8px 8px 0 var(--brutal-ink);
   --radius-card: var(--radius-none);
   --radius-control: var(--radius-none);
   --border-width-surface: var(--border-width-heavy);
@@ -153,9 +152,8 @@
   --status-info-bg: var(--brutal-blue);
   --status-info-border: var(--brutal-sticker-ink);
 
-  --shadow-hard-color: var(--brutal-ink);
-  --shadow-card: 6px 6px 0 var(--shadow-hard-color);
-  --shadow-panel: 8px 8px 0 var(--shadow-hard-color);
+  --shadow-card: 6px 6px 0 var(--brutal-ink);
+  --shadow-panel: 8px 8px 0 var(--brutal-ink);
   --radius-card: var(--radius-none);
   --radius-control: var(--radius-none);
   --border-width-surface: var(--border-width-heavy);

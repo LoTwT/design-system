@@ -3,6 +3,7 @@ import { createHash } from "node:crypto"
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+import postcss from "postcss"
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
 const rootDir = dirname(dirname(packageDir))
@@ -38,6 +39,21 @@ for (const [fixtureInput, fixtureOutput] of [
 const css = readFileSync(output, "utf8")
 const themeOnlyCss = readFileSync(themeOnlyOutput, "utf8")
 const brutalCss = readFileSync(brutalOutput, "utf8")
+const compiled = postcss.parse(css, { from: output })
+for (const [utility, properties] of [
+  ["touch-target", ["min-width", "min-height"]],
+  ["touch-target-inline", ["min-height"]],
+]) {
+  const rules = []
+  compiled.walkRules(`.${utility}`, rule => rules.push(rule))
+  if (rules.length !== 1)
+    throw new Error(`Expected one compiled .${utility} rule`)
+  for (const property of properties) {
+    const declarations = rules[0].nodes.filter(node => node.type === "decl" && node.prop === property)
+    if (declarations.length !== 1 || declarations[0].value !== "var(--touch-target-min)")
+      throw new Error(`Compiled .${utility} must constrain ${property} with --touch-target-min`)
+  }
+}
 const themeOnlySha256 = createHash("sha256").update(themeOnlyCss).digest("hex")
 const requiredThemeOnlySha256 = brutalContract.defaultBaseline.compiledSha256
 

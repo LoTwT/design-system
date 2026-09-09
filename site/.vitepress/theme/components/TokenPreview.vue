@@ -68,7 +68,7 @@ const tokens = computed(() => byPrefix(parseTokens(cssBySource[props.source]), p
           <div
             v-else-if="preview === 'border'"
             class="h-12 rounded-card bg-[var(--surface-elevated)]"
-            :style="{ borderWidth: token.value, borderStyle: 'solid', borderColor: 'var(--accent-primary)' }"
+            :style="{ borderWidth: `var(--${token.name})`, borderStyle: 'solid', borderColor: 'var(--accent-primary)' }"
           />
           <div
             v-else-if="preview === 'motion'"

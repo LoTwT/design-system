@@ -24,9 +24,9 @@ const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 const paperInkContract = JSON.parse(readFileSync(join(rootDir, paperInkContractFile), "utf8"))
 
 const requiredDigests = {
-  declarations: "f53f8a8232d6c7196635e6a7efc1de806418558f89516511c96cf76a9151a906",
+  declarations: "789f61da2cecead08d5c399d9810d3b0b9f45d68695a17ef0ab923c0711733ee",
   invariants: "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
-  interaction: "d13711208ae566c5792cc2aa4110429be4870d35809cef2650471412a8bf53aa",
+  interaction: "2b0795c50b6868c85017131e47510cd6c445142d71de046ec42ac3aa1c3048d6",
   stateMappings: "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
   legalPairs: "c2e7b151684d3bdecce9d75afa505e14d8d875eb169ea0dd43912be9eb2036fe",
 }

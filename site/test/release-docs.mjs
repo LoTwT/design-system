@@ -1,7 +1,8 @@
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs"
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"
+import { createHash } from "node:crypto"
 import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
-import { execFileSync } from "node:child_process"
+import { execFileSync, spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
@@ -48,6 +49,46 @@ expect(
   releaseWorkflow.includes('npm publish "./${TARBALLS[0]}" --access public --tag "$NPM_TAG" --ignore-scripts'),
   "Release publish must pass an explicit local tarball path to npm",
 )
+
+// Execute each consuming job's actual integrity step against intact and
+// corrupted artifacts, so removing the check cannot leave this verifier green.
+for (const job of ["publish", "github-release"]) {
+  const jobSource = releaseWorkflow.split(`\n  ${job}:\n`)[1]?.split(/\n  [\w-]+:\n/)[0]
+  const integrityStep = jobSource?.match(/      - name: Verify artifact integrity\n        shell: bash\n        run: \|\n((?: {10}[^\n]*\n)+)/)?.[1]
+  expect(integrityStep, `${job} must verify artifact integrity before consuming it`)
+  const fixture = mkdtempSync(join(tmpdir(), "release-integrity-"))
+  const artifact = join(fixture, "release-artifact")
+  const files = { "theme.tgz": "validated package", "release-notes.md": "validated notes" }
+  try {
+    mkdirSync(artifact)
+    // macOS ships shasum rather than GNU sha256sum; both accept this step's
+    // --check manifest format. Keep the workflow command itself unchanged.
+    const env = { ...process.env }
+    if (spawnSync("sha256sum", ["--version"]).error?.code === "ENOENT") {
+      const bin = join(fixture, "bin")
+      mkdirSync(bin)
+      writeFileSync(join(bin, "sha256sum"), '#!/bin/sh\nexec shasum -a 256 "$@"\n', { mode: 0o755 })
+      env.PATH = `${bin}:${env.PATH}`
+    }
+    for (const [file, content] of Object.entries(files))
+      writeFileSync(join(artifact, file), content)
+    writeFileSync(join(artifact, "SHA256SUMS"), Object.entries(files)
+      .map(([file, content]) => `${createHash("sha256").update(content).digest("hex")}  ./${file}\n`).join(""))
+    const verify = () => spawnSync("bash", ["-c", integrityStep], { cwd: fixture, env, encoding: "utf8" })
+    const intact = verify()
+    expect(intact.status === 0, `${job} intact artifact verification failed: ${intact.stderr}`)
+    for (const [file, content] of Object.entries(files)) {
+      writeFileSync(join(artifact, file), "corrupted")
+      expect(verify().status !== 0, `${job} must reject a corrupted ${file}`)
+      writeFileSync(join(artifact, file), content)
+    }
+    rmSync(join(artifact, "SHA256SUMS"))
+    expect(verify().status !== 0, `${job} must reject a missing checksum manifest`)
+  }
+  finally {
+    rmSync(fixture, { force: true, recursive: true })
+  }
+}
 
 const prereleaseFixture = createFixture()
 const stableFixture = createFixture()

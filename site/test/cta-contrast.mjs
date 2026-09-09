@@ -147,6 +147,32 @@ const states = [
 ]
 
 const failures = []
+const skill = readSource("skills/ayingott-design-system/SKILL.md")
+const voice = readSource("skills/ayingott-design-system/references/voice-examples.md")
+const recipes = [
+  ["skill primary button", skill.match(/\*\*Primary buttons\*\* use `background: var\(--([^)]*)\)` \+ `color: var\(--([^)]*)\)`/)],
+  ["voice primary button", voice.match(/A primary button uses `var\(--([^)]*)\)` background and `var\(--([^)]*)\)` text/)],
+]
+const brutalLight = readVariables("packages/theme/src/semantic/brutal.css", ".brutal")
+const brutalDark = readVariables("packages/theme/src/semantic/brutal.css", ".brutal.dark")
+for (const [label, recipe] of recipes) {
+  if (!recipe)
+    throw new Error(`Missing executable foreground/background pair in ${label}`)
+  for (const [mode, maps] of [
+    ...modes,
+    ["neo light", [foundation, lightSemantic, brutalLight]],
+    ["neo dark", [foundation, lightSemantic, darkSemantic, brutalLight, brutalDark]],
+  ]) {
+    const background = resolveVariable(recipe[1], maps)
+    const foreground = resolveVariable(recipe[2], maps)
+    const ratio = contrastRatio(foreground, background)
+    if (ratio < 4.5)
+      failures.push(`${label} ${mode} contrast ${foreground} on ${background} = ${ratio.toFixed(2)}:1`)
+    else
+      console.log(`${label} ${mode}: ${ratio.toFixed(2)}:1`)
+  }
+}
+
 for (const [state, textVariable, backgroundVariable, borderVariable, textToken, colorToken] of states) {
   const expectedText = `var(--${textToken})`
   const expectedColor = `var(--${colorToken})`
