@@ -27,9 +27,26 @@ Opt in to bundled fonts:
 @import "@ayingott/theme";
 ```
 
-`fonts.css` currently provides Bricolage Grotesque, Space Mono, and Literata. The
-reading layer uses the `--font-reading` token, but the webfont file is still
-loaded only when the consumer imports `fonts.css`.
+`fonts.css` provides Bricolage Grotesque, Space Mono, Literata, and original
+LXGW WenKai (霞鹜文楷) v1.522. WenKai supplies Chinese glyphs in all four font
+roles, while Latin text keeps Bricolage Grotesque for display, system UI for
+body, Literata for reading, and Space Mono for code. Loading remains opt-in.
+
+WenKai includes real Regular `400` and Medium `500` faces. Use `font-regular`
+for normal text or `font-medium` for a slightly heavier treatment, including
+on a body/reading container if preferred. The default body weight stays `400`.
+WenKai is not variable: `300`, `600`, and `700` do not select additional bundled
+weights, and browsers may synthesize bold. Chinese glyph widths are not
+guaranteed to equal two Space Mono cells.
+
+The self-hosted WOFF2 files preserve all upstream glyphs. CSS `unicode-range`
+limits WenKai to Han characters, CJK punctuation, and related Chinese ranges,
+excluding emoji/text presentation selectors (`FE0E` / `FE0F`),
+so Latin-only text does not request it. Each requested weight downloads a full
+file (Regular 7.65 MiB; Medium 8.54 MiB); these are not subsets. All faces use `font-display: swap`. macOS and
+Windows use the same loaded font files, followed by each role's system fallback
+stack when needed. See `THIRD_PARTY_NOTICES.md` for source, sizes, checksums,
+and the included font license.
 
 ## Paper & Ink
 

@@ -113,13 +113,13 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.7 Typography · Family（V0.1 已 ship 4 family）
 
 ```css
---font-display: "Bricolage Grotesque", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
---font-sans:    system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
---font-mono:    "Space Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
---font-reading: "Literata", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
+--font-display: "Bricolage Grotesque", "LXGW WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-sans:    "LXGW WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-mono:    "Space Mono", "LXGW WenKai", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+--font-reading: "Literata", "LXGW WenKai", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
 ```
 
-`--font-reading` 是 V0.1 additive long-form token。Literata 通过 `fonts.css` opt-in 加载；不 import `fonts.css` 时浏览器按 fallback chain 使用 Georgia / CJK serif / serif。
+`--font-reading` 是 V0.1 additive long-form token。Literata 与霞鹜文楷原版通过 `fonts.css` opt-in 加载，分别用于拉丁文与中文；不 import `fonts.css` 时浏览器按 fallback chain 使用本地 / 系统字体。
 
 ### 1.8 Typography · Size Scale（13 阶，各带配套 line-height）
 
@@ -712,7 +712,7 @@ V0 `packages/theme/src/fonts.css` 提供 `@font-face`：
 
 ```css
 @import "tailwindcss";
-@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Bricolage Grotesque + Space Mono + Literata */
+@import "@ayingott/theme/fonts.css";   /* opt-in: 加载 Bricolage Grotesque + Space Mono + Literata + LXGW WenKai */
 @import "@ayingott/theme";              /* tokens + semantic + utilities + base */
 ```
 
@@ -726,20 +726,25 @@ V0 实际打包字体文件（在 `packages/theme/src/fonts/`）：
 - `literata-latin-opsz-wght-normal.woff2`（latin subset，variable opsz 7-72 + wght 200-900）
 - `literata-latin-ext-opsz-wght-normal.woff2`（latin-ext subset，variable opsz 7-72 + wght 200-900）
 
+- `lxgw-wenkai-400-normal.woff2`（原版 v1.522 Regular，完整字形）
+- `lxgw-wenkai-500-normal.woff2`（原版 v1.522 Medium，完整字形）
+
+文楷仅做 WOFF2 压缩，未裁剪字形。`unicode-range` 将使用范围限定为汉字、CJK 标点和相关中文区段，保留各角色原有拉丁字体；每个被请求的字重仍需下载完整文件。全部字体使用 `font-display: swap`。中文正文默认 `400`，偏粗可用 `font-medium` / `500`；`300`、`600`、`700` 不对应额外的已打包文楷字重，浏览器可能匹配已有字重或合成加粗。
+
 License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 ### 7.2 何时用哪个 family token
 
 | 场景 | Token | 备注 |
 |---|---|---|
-| 大标题（H1 / page title）| `--font-display` | Bricolage Grotesque Latin + 系统中文 |
+| 大标题（H1 / page title）| `--font-display` | Bricolage Grotesque Latin + 文楷中文 |
 | 二级 / 小标题（H2-H6）| `--font-display` | 一致性 |
-| Body 默认 | `--font-sans` | 系统字体 + 中文 fallback |
-| Body 长文 | `--font-reading` / `--reading-font-body` | Literata opt-in + CJK serif fallback |
+| Body 默认 | `--font-sans` | system-ui Latin + 文楷中文 |
+| Body 长文 | `--font-reading` / `--reading-font-body` | Literata Latin + 文楷中文，opt-in |
 | Tagline / hero text | `--font-display` | brand |
-| Date / reading time / meta | `--font-mono` | 等宽对齐 |
+| Date / reading time / meta | `--font-mono` | Latin 等宽，中文文楷 |
 | Tag chip label | `--font-mono` | "标签"感 |
-| Code block / inline code | `--font-mono` | 等宽 |
+| Code block / inline code | `--font-mono` | Latin 等宽；中文不保证两个 Space Mono 字格宽 |
 | Footer copyright | `--font-mono` | meta 风 |
 
 > [FUTURE]：UX baseline 曾提议 17 个 type-role tokens（如 `--type-h1` / `--type-meta` / `--type-overline` 等组合 token）。V0 不 ship；consumer 当前组合 `var(--font-display)` + `var(--text-3xl)` + `var(--font-weight-bold)` 即可。
@@ -925,7 +930,7 @@ pnpm add @ayingott/theme
 | Public exports minimal | `.` / `./index.css` / `./brutal.css` / `./fonts.css` / `./fonts/*` (5 项)| §10.1 + §7.1 + §3.6 |
 | Surface 命名 | V0 用 `--color-surface-0` ~ `-5` (numbered) | §1.1 |
 | Semantic vars 命名 | V0 用 `--text-muted` / `--text-accent` / `--accent-primary` 等 | §3.2 + §3.3 |
-| Font: Bricolage Grotesque Variable + Space Mono r+b | fonts/ 4 个 woff2 | §7 |
+| Font: Bricolage Grotesque + Space Mono + Literata + LXGW WenKai | fonts/ 8 个 woff2，文楷 400 / 500 | §7 |
 | `THIRD_PARTY_NOTICES.md` 包内 | `packages/theme/THIRD_PARTY_NOTICES.md` | §7.1 |
 | 框架无关 (DS-D-04) | 仅 CSS variables，无 framework 绑定 | §10 |
 | `focus-ring` / `focus-ring-inset` / `touch-target` / `touch-target-inline` + opt-in `pressable` | utilities/ 实现 | §4.1 + §4.2 + §4.3 |

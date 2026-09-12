@@ -11,12 +11,13 @@ const distDir = join(rootDir, "site/.vitepress/dist")
 const brutalContract = JSON.parse(readFileSync(join(rootDir, "docs/spec/brutal-theme-contract.json"), "utf8"))
 const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...brutalContract.modeDeclarations.light })
   .filter(name => !name.startsWith("brutal-")).sort()
-// Captured from the built 3c20675 baseline before changing Neo Dark. Hash only
-// resolved public roles; internal palette aliases can change without an API change.
+// Original color/structure baseline: 3c20675. Refreshed on 2026-09-12 for the
+// approved WenKai font stacks; removing only those family additions reproduces
+// all three original digests. Hash resolved public roles, not internal aliases.
 const unchangedModeDigests = {
-  paper: "d471c5ecc3f9f2ecf6d48164a63fcd6848b384d5596bf2c1935ed3241d4aca83",
-  ink: "6e5601da8d2873b5060aa0c684e2c9482e37f39f63cc29d75a031bed3b1724f3",
-  neoLight: "9d9f57e9b091a8be2c1061138e8a4a7f86add96bd9cae51a849bc42f619032d5",
+  paper: "51c33eb5037f6b785bded27906fd5b14c0f397ef29610df6b7f7fb3a824fd32e",
+  ink: "0d918322fc1fe4f55fff7de1de2034df9682001c45f218cf3546aa5fdb474da4",
+  neoLight: "a23cdab04e7f427f5d438d51ca10879de9b4134b57fa016012621266d2e93b8a",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
 function expect(condition, message) {
@@ -375,6 +376,87 @@ async function verifyNeoOverview(page, origin) {
   }
 }
 
+async function verifyWenKaiFonts(context, origin) {
+  const page = await context.newPage()
+  const session = await context.newCDPSession(page)
+  const failedFonts = []
+  const requestedFonts = new Set()
+  page.on("request", request => {
+    if (request.url().includes("lxgw-wenkai-"))
+      requestedFonts.add(request.url())
+  })
+  page.on("response", response => {
+    if (response.url().includes("lxgw-wenkai-") && !response.ok())
+      failedFonts.push(`${response.status()} ${response.url()}`)
+  })
+  try {
+    await page.goto(`${origin}/`)
+    await deadline(page.evaluate(() => document.fonts.ready), "Latin font specimens load")
+    expect(requestedFonts.size === 0, "Latin-only homepage must not download WenKai")
+    // Exercise non-CJK text before any Chinese page can warm the font cache.
+    for (const weight of [400, 500]) {
+      await page.evaluate(weight => {
+        const sample = document.createElement("p")
+        sample.id = "wenkai-emoji-probe"
+        sample.style.cssText = `font-family: var(--font-sans); font-weight: ${weight}`
+        sample.textContent = "Hello ❤️ ☀️ ✈︎ 1️⃣ 📦"
+        document.body.append(sample)
+      }, weight)
+      await deadline(page.evaluate(() => document.fonts.ready), `Emoji ${weight} fonts settle`, 30000)
+      expect(requestedFonts.size === 0, `English with emoji at ${weight} must not download WenKai: ${[...requestedFonts].join(", ")}`)
+      await page.locator("#wenkai-emoji-probe").evaluate(element => element.remove())
+    }
+    await page.goto(`${origin}/fonts`)
+    await deadline(page.evaluate(() => document.fonts.ready), "WenKai fonts load", 30000)
+    expect(failedFonts.length === 0, `WenKai font requests failed: ${failedFonts.join(", ")}`)
+    expect(requestedFonts.size === 2, `Chinese specimens must request both WenKai assets: ${[...requestedFonts].join(", ")}`)
+    await session.send("DOM.enable")
+    await session.send("CSS.enable")
+    const { root } = await session.send("DOM.getDocument")
+    async function platformFonts(selector) {
+      const { nodeId } = await session.send("DOM.querySelector", { nodeId: root.nodeId, selector })
+      expect(nodeId, `Missing font specimen: ${selector}`)
+      const { fonts } = await session.send("CSS.getPlatformFontsForNode", { nodeId })
+      return fonts.filter(font => font.glyphCount > 0)
+    }
+    for (const [weight, style] of [[400, "Regular"], [500, "Medium"]]) {
+      const selector = `[data-wenkai-weight="${weight}"]`
+      const fonts = await platformFonts(`${selector} [data-wenkai-glyphs]`)
+      expect(fonts.length === 1 && fonts[0].isCustomFont && fonts[0].postScriptName === `LXGWWenKai-${style}`,
+        `WenKai ${weight} must render its real bundled ${style} face: ${JSON.stringify(fonts)}`)
+      const computed = await page.locator(selector).evaluate(element => {
+        const style = getComputedStyle(element)
+        return { weight: style.fontWeight, synthesis: style.fontSynthesis }
+      })
+      expect(computed.weight === String(weight) && computed.synthesis === "none", `WenKai ${weight} specimen must use its real weight without synthesis`)
+    }
+    for (const [role, family] of [["display", "Bricolage Grotesque"], ["sans", null], ["mono", "Space Mono"], ["reading", "Literata"]]) {
+      const chinese = await platformFonts(`[data-font-chinese="${role}"]`)
+      expect(chinese.length === 1 && chinese[0].isCustomFont && chinese[0].postScriptName === "LXGWWenKai-Regular",
+        `${role} Chinese must use bundled WenKai: ${JSON.stringify(chinese)}`)
+      const latin = await platformFonts(`[data-font-latin="${role}"]`)
+      // Variable faces can report an instance name, e.g. "Bricolage Grotesque
+      // 96pt ExtraBold", instead of the authored CSS family name.
+      expect(latin.length > 0 && latin.every(font => family ? font.isCustomFont && font.postScriptName.startsWith(family.replaceAll(" ", "")) : !font.isCustomFont),
+        `${role} Latin must retain ${family ?? "the system font"}: ${JSON.stringify(latin)}`)
+    }
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ height: 844, width })
+      const layout = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
+      expect(layout.scroll <= layout.client, `Fonts page overflows at ${width}px: ${JSON.stringify(layout)}`)
+      if (process.env.THEME_BROWSER_ARTIFACT_DIR) {
+        mkdirSync(process.env.THEME_BROWSER_ARTIFACT_DIR, { recursive: true })
+        await page.screenshot({ path: join(process.env.THEME_BROWSER_ARTIFACT_DIR, `wenkai-${width}.png`), fullPage: true })
+      }
+    }
+    console.log("WenKai browser checks passed: emoji avoids CJK downloads, real 400/500, CJK/Latin roles, responsive specimens")
+  }
+  finally {
+    await session.detach()
+    await page.close()
+  }
+}
+
 async function verifyBrowserBehavior() {
   const server = staticServer()
   let browser
@@ -395,6 +477,7 @@ async function verifyBrowserBehavior() {
     page.setDefaultNavigationTimeout(deadlineMs)
     page.setDefaultTimeout(deadlineMs)
     const origin = `http://127.0.0.1:${server.address().port}`
+    await verifyWenKaiFonts(context, origin)
     await page.goto(`${origin}/`)
     await waitForState(page, { controls: 1, dark: false, family: "default", storage: null })
     const desktop = page.locator(".theme-family-control--header")

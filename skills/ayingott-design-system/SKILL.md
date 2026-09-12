@@ -33,7 +33,7 @@ Public CSS exports:
 | --- | --- |
 | `@ayingott/theme` (or `@ayingott/theme/index.css`) | All foundation tokens, layer tokens, semantic vars (`:root` + `.dark`), focus and touch-target utilities, and base styles. Does **not** auto-import fonts. |
 | `@ayingott/theme/brutal.css` | Opt-in Neo-Brutal Light/Dark semantic mappings, zero-blur hard shadows, structure roles, and the scoped `pressable` utility. Import after the default entry. |
-| `@ayingott/theme/fonts.css` | `@font-face` declarations for Bricolage Grotesque (variable opsz/wght, latin + latin-ext), Space Mono (400/700), and Literata (variable opsz/wght, latin + latin-ext). Opt-in. |
+| `@ayingott/theme/fonts.css` | `@font-face` declarations for Bricolage Grotesque (variable opsz/wght, latin + latin-ext), Space Mono (400/700), Literata (variable opsz/wght, latin + latin-ext), and original LXGW WenKai (400/500, CJK use). Opt-in. |
 | `@ayingott/theme/fonts/<file>.woff2` | The woff2 files referenced by `fonts.css`. |
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
@@ -197,7 +197,7 @@ Use `pressable` only with the opt-in entry and compose accessibility utilities:
 
 ## Fonts (opt-in)
 
-Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Bricolage Grotesque, Space Mono, and Literata in a consumer project, import `fonts.css` explicitly:
+Font files ship inside the npm package, but `@ayingott/theme` does not load `fonts.css` automatically. Webfonts are not loaded by default. To enable Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai in a consumer project, import `fonts.css` explicitly:
 
 ```css
 @import "tailwindcss";
@@ -205,11 +205,13 @@ Font files ship inside the npm package, but `@ayingott/theme` does not load `fon
 @import "@ayingott/theme";
 ```
 
-Without that `fonts.css` import, the `--font-display`, `--font-mono`, and `--font-reading` token values keep their full fallback chains. The browser will not load the Bricolage Grotesque, Space Mono, or Literata webfont, so it walks the chain to whichever system font matches first. This is intentional, not a regression.
+Without that `fonts.css` import, all four family tokens keep their full fallback chains. The browser does not download the bundled webfonts; it uses available local/system fonts from those chains.
 
-Body text uses `--font-sans` = `system-ui` with PingFang SC / Hiragino Sans GB / Microsoft YaHei fallback for CJK. The theme does not bundle a body webfont — system fallback is the contract.
+With `fonts.css`, original LXGW WenKai v1.522 supplies Chinese glyphs in all four roles. Its CSS `unicode-range` excludes Latin: body text keeps `system-ui`, display keeps Bricolage Grotesque, mono keeps Space Mono, and reading keeps Literata for Latin. Body/display retain system-ui / PingFang SC / Hiragino Sans GB / Microsoft YaHei fallbacks; reading and mono retain their role-specific system stacks.
 
-Long-form reading text uses `--font-reading` through the `--reading-font-body` token. Literata covers latin / latin-ext when `fonts.css` is imported; CJK serif fonts are fallback names only and are not bundled.
+Long-form reading text uses `--font-reading` through `--reading-font-body`: Literata for Latin and WenKai for Chinese. WenKai ships real static Regular `400` and Medium `500`; use `font-medium` for slightly heavier Chinese text. The default body weight remains `400`. Do not promise additional real WenKai weights for `300`, `600`, or `700`; browser matching or synthetic bold may apply. Chinese glyph widths are not guaranteed to equal two Space Mono cells.
+
+WenKai's two WOFF2 files retain all upstream glyphs. CSS ranges prevent Latin-only text from requesting them and exclude emoji/text presentation selectors (`FE0E` / `FE0F`), but each requested weight downloads a full file. All bundled faces use `font-display: swap`; preserve the packaged font notices. See the showcase Fonts page for the 400/500 comparison.
 
 ## Voice and tone
 

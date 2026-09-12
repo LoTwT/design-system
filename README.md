@@ -17,7 +17,7 @@ V0 is intentionally narrow:
 @import "@ayingott/theme";
 ```
 
-Opt in to self-hosted font files when the consumer wants the bundled Bricolage Grotesque, Space Mono, and Literata assets:
+Opt in to self-hosted font files when the consumer wants the bundled Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai assets:
 
 ```css
 @import "tailwindcss";
@@ -32,7 +32,7 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs the source smoke, package dry-run, real-tarball consumer install/compile, and site contrast gates.
+`pnpm check` runs font-vendoring failure tests, source smoke, package dry-run, real-tarball consumer install/compile, and site contrast gates. Python 3 is required for the vendoring tests; they use only the standard library and run offline.
 
 ## Release
 

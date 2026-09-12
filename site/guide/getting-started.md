@@ -13,7 +13,7 @@ Import the theme CSS:
 @import "@ayingott/theme";
 ```
 
-Opt in to bundled fonts when the project should use Bricolage Grotesque, Space Mono, and Literata:
+Opt in to bundled fonts when the project should use Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai for Chinese text:
 
 ```css
 @import "tailwindcss";
