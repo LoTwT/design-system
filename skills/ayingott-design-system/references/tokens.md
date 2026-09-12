@@ -134,7 +134,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Type
 
-- Families: `--font-display` (Bricolage Grotesque), `--font-sans` (system-ui), `--font-mono` (Space Mono), `--font-reading` (Literata + serif fallback chain).
+- Families: `--font-display` (Bricolage Grotesque), `--font-sans` (system-ui for Latin), `--font-mono` (Space Mono), `--font-reading` (Literata + serif fallback chain). With `fonts.css`, all four roles use original LXGW WenKai for Chinese glyphs; real bundled weights are `400` / `500`.
 - Scale: `--text-2xs` `10px` → `--text-7xl` `72px`. 13 steps. Each pairs with `--text-{size}--line-height`.
 - Reading leading: `--leading-reading 1.7`.
 - Tracking: `--tracking-tighter` `-0.04em`, `--tracking-tight` `-0.02em`, `--tracking-normal` `0`, `--tracking-wide` `0.02em`, `--tracking-wider` `0.04em`, `--tracking-widest` `0.08em`.

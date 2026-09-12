@@ -32,7 +32,7 @@ const requiredDigests = {
 }
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "8780df7a753b0e3943ab681e2cb76e008b27c7b0a31aa37f839662308ee93e9f",
+  compiledSha256: "5c82e40560b77e692bd2ed0c4c55485b762e1546f47bee06b7f54350c8e8f380",
   paperInkContractSha256: "cfe541ae7d369e32fcac9c4afecf6c14179b92750011609c4e4a32e120f73492",
 }
 

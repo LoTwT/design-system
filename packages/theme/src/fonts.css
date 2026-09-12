@@ -1,3 +1,53 @@
+/* Original LXGW WenKai v1.522. Full font files; CSS limits use to CJK text. */
+/* Exclude FE0E/FE0F so emoji presentation does not request unused CJK fonts. */
+@font-face {
+  font-family: "LXGW WenKai";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("./fonts/lxgw-wenkai-400-normal.woff2") format("woff2");
+  unicode-range:
+    U+2E80-2FFF,
+    U+3000-303F,
+    U+3100-312F,
+    U+31A0-31BF,
+    U+31C0-31EF,
+    U+3400-4DBF,
+    U+4E00-9FFF,
+    U+F900-FAFF,
+    U+FE00-FE0D,
+    U+FE10-FE1F,
+    U+FE30-FE4F,
+    U+FF01-FF60,
+    U+FFE0-FFE6,
+    U+20000-3FFFF,
+    U+E0100-E01EF;
+}
+
+@font-face {
+  font-family: "LXGW WenKai";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("./fonts/lxgw-wenkai-500-normal.woff2") format("woff2");
+  unicode-range:
+    U+2E80-2FFF,
+    U+3000-303F,
+    U+3100-312F,
+    U+31A0-31BF,
+    U+31C0-31EF,
+    U+3400-4DBF,
+    U+4E00-9FFF,
+    U+F900-FAFF,
+    U+FE00-FE0D,
+    U+FE10-FE1F,
+    U+FE30-FE4F,
+    U+FF01-FF60,
+    U+FFE0-FFE6,
+    U+20000-3FFFF,
+    U+E0100-E01EF;
+}
+
 @font-face {
   font-family: "Bricolage Grotesque";
   font-style: normal;

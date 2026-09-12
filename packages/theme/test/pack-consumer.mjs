@@ -124,6 +124,8 @@ try {
     "src/fonts/literata-latin-ext-opsz-wght-normal.woff2",
     "src/fonts/space-mono-latin-400-normal.woff2",
     "src/fonts/space-mono-latin-700-normal.woff2",
+    "src/fonts/lxgw-wenkai-400-normal.woff2",
+    "src/fonts/lxgw-wenkai-500-normal.woff2",
   ]
   for (const file of requiredPackageFiles) {
     if (!existsSync(join(installedPackageDir, file)))
@@ -140,6 +142,8 @@ const expected = ${JSON.stringify({
   "@ayingott/theme/brutal.css": "src/brutal.css",
   "@ayingott/theme/fonts.css": "src/fonts.css",
   "@ayingott/theme/fonts/space-mono-latin-400-normal.woff2": "src/fonts/space-mono-latin-400-normal.woff2",
+  "@ayingott/theme/fonts/lxgw-wenkai-400-normal.woff2": "src/fonts/lxgw-wenkai-400-normal.woff2",
+  "@ayingott/theme/fonts/lxgw-wenkai-500-normal.woff2": "src/fonts/lxgw-wenkai-500-normal.woff2",
 }, null, 2)}
 
 for (const [specifier, suffix] of Object.entries(expected)) {
@@ -208,6 +212,8 @@ for (const [specifier, suffix] of Object.entries(expected)) {
     "literata-latin-ext-opsz-wght-normal.woff2",
     "space-mono-latin-400-normal.woff2",
     "space-mono-latin-700-normal.woff2",
+    "lxgw-wenkai-400-normal.woff2",
+    "lxgw-wenkai-500-normal.woff2",
   ]
   for (const needle of requiredOutput) {
     if (!css.includes(needle))

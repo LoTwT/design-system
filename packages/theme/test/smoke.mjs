@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process"
+import assert from "node:assert/strict"
 import { createHash } from "node:crypto"
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -15,6 +16,8 @@ const themeOnlyInput = join(rootDir, brutalContract.defaultBaseline.compiledInpu
 const themeOnlyOutput = join(rootDir, brutalContract.defaultBaseline.compiledOutput)
 const brutalInput = join(tmpDir, "smoke.brutal.css")
 const brutalOutput = join(tmpDir, "smoke.brutal.output.css")
+
+execFileSync("python3", ["-B", join(packageDir, "test/vendor-wenkai.py")], { stdio: "inherit" })
 
 rmSync(tmpDir, { recursive: true, force: true })
 mkdirSync(tmpDir, { recursive: true })
@@ -40,6 +43,55 @@ const css = readFileSync(output, "utf8")
 const themeOnlyCss = readFileSync(themeOnlyOutput, "utf8")
 const brutalCss = readFileSync(brutalOutput, "utf8")
 const compiled = postcss.parse(css, { from: output })
+const fontFaces = []
+const fontSource = postcss.parse(readFileSync(join(packageDir, "src/fonts.css"), "utf8"))
+const fontNotices = readFileSync(join(packageDir, "THIRD_PARTY_NOTICES.md"), "utf8")
+fontSource.walkAtRules("font-face", rule => {
+  const face = Object.fromEntries(rule.nodes.filter(node => node.type === "decl").map(node => [node.prop, node.value]))
+  fontFaces.push(face)
+  const asset = face.src?.match(/url\("\.\/(fonts\/[^\"]+\.woff2)"\)/)?.[1]
+  if (!asset)
+    throw new Error(`Bundled font must reference a relative WOFF2 asset: ${face.src}`)
+  const bytes = readFileSync(join(packageDir, "src", asset))
+  const hash = createHash("sha256").update(bytes).digest("hex")
+  if (bytes.toString("ascii", 0, 4) !== "wOF2" || !fontNotices.includes(hash))
+    throw new Error(`Invalid WOFF2 or missing checksum in notices: ${asset}`)
+})
+const wenkaiFaces = fontFaces.filter(face => face["font-family"] === '"LXGW WenKai"')
+if (wenkaiFaces.length !== 2)
+  throw new Error("WenKai must expose exactly Regular and Medium")
+for (const weight of ["400", "500"]) {
+  const face = wenkaiFaces.find(face => face["font-weight"] === weight)
+  if (!face || face["font-display"] !== "swap" || face["font-style"] !== "normal" || !face.src.includes(`lxgw-wenkai-${weight}-normal.woff2`))
+    throw new Error(`WenKai ${weight} must use its corresponding normal face with swap loading`)
+  const ranges = face["unicode-range"].split(",").map(range => {
+    const [start, end = start] = range.trim().replace(/^U\+/i, "").split("-")
+    return [Number.parseInt(start, 16), Number.parseInt(end, 16)]
+  })
+  const includes = character => ranges.some(([start, end]) => character.codePointAt(0) >= start && character.codePointAt(0) <= end)
+  if (![..."霞鹜文楷中文繁體，。！？"].every(includes) || [..."ABCxyz0123"].some(includes))
+    throw new Error(`WenKai ${weight} ranges must cover Chinese without replacing Latin`)
+  if (["\uFE0E", "\uFE0F"].some(includes))
+    throw new Error(`WenKai ${weight} must exclude emoji/text presentation selectors`)
+}
+function verifyWenKaiLicense(notices) {
+  const text = notices.match(/```text\r?\n([\s\S]*?)\r?\n```/)?.[1] ?? ""
+  const normalized = text.replaceAll("\r\n", "\n").split("\n").map(line => line.trimEnd()).join("\n").trim()
+  // Complete v1.522 OFL.txt, including both copyright notices; normalize only
+  // line endings and trailing whitespace, not the license wording.
+  const digest = createHash("sha256").update(normalized).digest("hex")
+  if (digest !== "56d993776ca24f083170c9b88bbafb6ad6f835abdf27d20df86aea18531a205b")
+    throw new Error("WenKai must retain the complete upstream OFL text")
+}
+verifyWenKaiLicense(fontNotices)
+verifyWenKaiLicense(fontNotices.replaceAll("\n", "\r\n"))
+for (const incomplete of [
+  fontNotices.replace(/\nPREAMBLE[\s\S]*?\n```/, "\n```"),
+  fontNotices.replace("1) Neither the Font Software nor any of its individual components,", ""),
+]) {
+  assert.throws(() => verifyWenKaiLicense(incomplete), /complete upstream OFL text/)
+}
+
 for (const [utility, properties] of [
   ["touch-target", ["min-width", "min-height"]],
   ["touch-target-inline", ["min-height"]],
@@ -117,6 +169,8 @@ const requiredOutput = [
   ["Literata latin-ext font", "literata-latin-ext-opsz-wght-normal.woff2"],
   ["Space Mono regular font", "space-mono-latin-400-normal.woff2"],
   ["Space Mono bold font", "space-mono-latin-700-normal.woff2"],
+  ["LXGW WenKai regular font", "lxgw-wenkai-400-normal.woff2"],
+  ["LXGW WenKai medium font", "lxgw-wenkai-500-normal.woff2"],
 ]
 
 const missing = requiredOutput.filter(([, needle]) => !css.includes(needle))
@@ -155,6 +209,8 @@ const requiredFiles = [
   "src/fonts/literata-latin-ext-opsz-wght-normal.woff2",
   "src/fonts/space-mono-latin-400-normal.woff2",
   "src/fonts/space-mono-latin-700-normal.woff2",
+  "src/fonts/lxgw-wenkai-400-normal.woff2",
+  "src/fonts/lxgw-wenkai-500-normal.woff2",
   "THIRD_PARTY_NOTICES.md",
 ].filter((file) => !existsSync(join(packageDir, file)))
 

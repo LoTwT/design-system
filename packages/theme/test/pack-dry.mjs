@@ -30,6 +30,8 @@ const required = [
   "src/fonts/literata-latin-ext-opsz-wght-normal.woff2",
   "src/fonts/space-mono-latin-400-normal.woff2",
   "src/fonts/space-mono-latin-700-normal.woff2",
+  "src/fonts/lxgw-wenkai-400-normal.woff2",
+  "src/fonts/lxgw-wenkai-500-normal.woff2",
   "src/foundation/colors.css",
   "src/foundation/typography.css",
   "src/semantic/light.css",
