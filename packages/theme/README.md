@@ -94,13 +94,14 @@ Use the scoped interaction utility with the existing accessibility utilities:
 <button class="pressable focus-ring touch-target">Action</button>
 ```
 
-`pressable` moves only inside `.brutal`, excludes disabled states, and owns a local reduced-motion and forced-colors fallback. The default entry still injects no global reduced-motion policy.
+`pressable` moves only inside `.brutal`, excludes disabled states, and owns a local reduced-motion and forced-colors fallback. The media fallbacks are preserved with Tailwind variants such as `md:pressable` and `brutal:pressable`, and with `@apply pressable`. The default entry still injects no global reduced-motion policy.
 
 ## Contract
 
 - Foundation tokens use `@theme static` so all token CSS variables are emitted and Tailwind utilities are generated.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables.
 - Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
+- `focus-ring` and `focus-ring-inset` use a 3px outline without shadow under `prefers-contrast: more`, and a system Highlight outline under forced colors; variants and `@apply` preserve these fallbacks.
 - Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases.
 - Long-form reading variables such as `--reading-measure`, `--reading-line-height`, and `--reading-link` live in the semantic layer and inherit light/dark runtime variables.
 - `--container-reading` / `--layout-prose-width` are layout width tokens. `--reading-measure` is the font-relative measure for long-form body copy.

@@ -486,15 +486,39 @@ V0 `packages/theme/src/utilities/focus.css`：
 
 ```css
 @utility focus-ring {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: 2px;
-  box-shadow: var(--focus-ring-shadow);
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring-shadow);
+
+    @media (prefers-contrast: more) {
+      outline-width: 3px;
+      box-shadow: none;
+    }
+
+    @media (forced-colors: active) {
+      outline-color: Highlight;
+      box-shadow: none;
+    }
+  }
 }
 
 @utility focus-ring-inset {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: -2px;
-  box-shadow: inset 0 0 0 1px var(--focus-ring-color);
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 1px var(--focus-ring-color);
+
+    @media (prefers-contrast: more) {
+      outline-width: 3px;
+      box-shadow: none;
+    }
+
+    @media (forced-colors: active) {
+      outline-color: Highlight;
+      box-shadow: none;
+    }
+  }
 }
 ```
 
@@ -502,6 +526,8 @@ V0 `packages/theme/src/utilities/focus.css`：
 - `focus-ring` 标准外层焦点（外侧 2px outline + alpha glow shadow）— 适合 button / link / tab 等独立交互元素
 - `focus-ring-inset` 内嵌焦点（内偏移 outline + inner ring）— 适合 input / textarea / 卡片内可点击区域
 - light/dark 切换通过 `--focus-ring-color` / `--focus-ring-shadow` semantic vars cascade，不重定义 utility
+
+两种 utility 的媒体回退随 Tailwind 变体与 `@apply` 编译：高对比度偏好下使用 3px outline、无 shadow；forced-colors 下使用系统 Highlight。outline offset 保持各自的内外方向。
 
 应用规则：所有交互元素必须 `:focus-visible` 状态使用 `focus-ring` 或 `focus-ring-inset` 之一。
 
@@ -541,7 +567,7 @@ V0 `packages/theme/src/utilities/touch-target.css`：
 <button class="pressable focus-ring touch-target">Action</button>
 ```
 
-该 opt-in utility 自带局部 `prefers-reduced-motion` transform fallback 与 forced-colors boundary/focus fallback；它不改变默认入口无全局 reduced-motion 注入的承诺。
+该 opt-in utility 自带局部 `prefers-reduced-motion` transform fallback 与 forced-colors boundary/focus fallback；回退定义在 utility 内，随 `md:pressable`、`brutal:pressable` 和 `@apply pressable` 保留；它不改变默认入口无全局 reduced-motion 注入的承诺。
 
 ### 4.4 V0 Base CSS（`packages/theme/src/base.css`）
 

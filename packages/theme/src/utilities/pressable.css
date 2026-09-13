@@ -20,31 +20,26 @@
     transform: none;
     box-shadow: var(--shadow-card);
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .brutal.pressable,
-  .brutal .pressable {
-    transition-duration: var(--duration-instant);
+  /* Keep media fallbacks with the utility so variants and @apply retain them. */
+  @media (prefers-reduced-motion: reduce) {
+    &:where(.brutal, .brutal *) {
+      transition-duration: var(--duration-instant);
+    }
+
+    &:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):is(:hover, :active) {
+      transform: none;
+    }
   }
 
-  .brutal.pressable:hover,
-  .brutal.pressable:active,
-  .brutal .pressable:hover,
-  .brutal .pressable:active {
-    transform: none;
-  }
-}
+  @media (forced-colors: active) {
+    &:where(.brutal, .brutal *) {
+      border-color: ButtonText;
+      box-shadow: 4px 4px 0 ButtonText;
+    }
 
-@media (forced-colors: active) {
-  .brutal.pressable,
-  .brutal .pressable {
-    border-color: ButtonText;
-    box-shadow: 4px 4px 0 ButtonText;
-  }
-
-  .brutal.pressable:focus-visible,
-  .brutal .pressable:focus-visible {
-    outline-color: Highlight;
+    &:where(.brutal, .brutal *):focus-visible {
+      outline-color: Highlight;
+    }
   }
 }

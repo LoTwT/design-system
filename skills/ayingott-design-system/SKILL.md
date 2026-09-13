@@ -193,7 +193,7 @@ Use `pressable` only with the opt-in entry and compose accessibility utilities:
 <button class="pressable focus-ring touch-target">Action</button>
 ```
 
-`pressable` excludes disabled movement and owns a local reduced-motion and forced-colors fallback. Consumers still own family persistence and initial class placement. Removing `.brutal` is the clean fallback to Paper or Ink.
+`pressable` excludes disabled movement and owns a local reduced-motion and forced-colors fallback. These fallbacks travel with Tailwind variants and `@apply pressable`. Consumers still own family persistence and initial class placement. Removing `.brutal` is the clean fallback to Paper or Ink.
 
 ## Fonts (opt-in)
 
@@ -238,7 +238,7 @@ When producing visual artifacts (mockups, slides, prototype HTML), follow these 
 - **Primary buttons** use `background: var(--accent-primary)` + `color: var(--accent-contrast)`, `border-radius: var(--radius-control)` (`0.375rem` in Paper/Ink, `0` in Neo), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`. Pair hover and active backgrounds with `--accent-contrast-hover` and `--accent-contrast-active` respectively.
 - **Paper/Ink hover** may lift by `translateY(-1px)` with `var(--shadow-md)` when the consumer owns that interaction.
 - **Neo press feedback** uses the shipped `pressable` utility; do not reproduce its movement locally.
-- **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Never strip the outline.
+- **Focus** is always visible. Use the `focus-ring` utility for buttons, `focus-ring-inset` for inputs. Under increased contrast, both focus utilities use a 3px outline without shadow; under forced colors, they use the system Highlight color. Never strip the outline.
 - **Paper/Ink borders** are alpha derivatives at the default 1px (`thin`) thickness. **Neo borders** use the remapped structure width roles and semantic ink color.
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
 - **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
