@@ -339,33 +339,33 @@ function verifyInteractionSource(source = readSource(rootDir, contract.sources.u
   const motion = variableMap(rootDir, "packages/theme/src/foundation/motion.css", "@theme static")
   verifyMotionWindow(resolveRawVariable("duration-fast", [motion]))
 
-  const reducedMotion = root.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(prefers-reduced-motion: reduce)")
+  const reducedMotion = utility.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(prefers-reduced-motion: reduce)")
   expect(reducedMotion.length === 1, "Expected one pressable reduced-motion fallback")
   const reducedBase = propertyMap(selectorSetRule(
     reducedMotion[0],
-    [".brutal.pressable", ".brutal .pressable"],
+    ["&:where(.brutal, .brutal *)"],
     "pressable reduced-motion base",
   ), "pressable reduced-motion base")
   expect(reducedBase["transition-duration"] === contract.interaction.reducedMotionDuration, "Reduced-motion duration drifted")
   const reducedStates = propertyMap(selectorSetRule(
     reducedMotion[0],
-    [".brutal.pressable:hover", ".brutal.pressable:active", ".brutal .pressable:hover", ".brutal .pressable:active"],
+    ['&:where(.brutal, .brutal *):not(:disabled, [aria-disabled="true"], [data-disabled]):is(:hover, :active)'],
     "pressable reduced-motion states",
   ), "pressable reduced-motion states")
   expect(reducedStates.transform === contract.interaction.reducedMotionTransform, "Reduced-motion transform drifted")
 
-  const forcedColors = root.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(forced-colors: active)")
+  const forcedColors = utility.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(forced-colors: active)")
   expect(forcedColors.length === 1, "Expected one pressable forced-colors fallback")
   const forcedBase = propertyMap(selectorSetRule(
     forcedColors[0],
-    [".brutal.pressable", ".brutal .pressable"],
+    ["&:where(.brutal, .brutal *)"],
     "pressable forced-colors base",
   ), "pressable forced-colors base")
   expect(forcedBase["border-color"] === contract.interaction.forcedColorsBorder, "Forced-colors border drifted")
   expect(forcedBase["box-shadow"] === "4px 4px 0 ButtonText", "Forced-colors shadow must use ButtonText")
   const forcedFocus = propertyMap(selectorSetRule(
     forcedColors[0],
-    [".brutal.pressable:focus-visible", ".brutal .pressable:focus-visible"],
+    ["&:where(.brutal, .brutal *):focus-visible"],
     "pressable forced-colors focus",
   ), "pressable forced-colors focus")
   expect(forcedFocus["outline-color"] === contract.interaction.forcedColorsOutline, "Forced-colors focus drifted")
@@ -481,6 +481,23 @@ expectFailure(
   () => verifyInteractionSource(readSource(rootDir, contract.sources.utility).replace("4px 4px 0 ButtonText", "4px 4px 0 var(--brutal-shadow)")),
   "Forced-colors shadow must use ButtonText",
 )
+for (const [query, label] of [["(prefers-reduced-motion: reduce)", "reduced-motion"], ["(forced-colors: active)", "forced-colors"]]) {
+  expectFailure(
+    `${label} fallback detached from utility`,
+    () => {
+      const root = parseCss(readSource(rootDir, contract.sources.utility), contract.sources.utility)
+      const fallbacks = []
+      root.walkAtRules("media", rule => {
+        if (rule.params === query)
+          fallbacks.push(rule)
+      })
+      for (const fallback of fallbacks)
+        root.append(fallback.remove())
+      verifyInteractionSource(root.toString())
+    },
+    `Expected one pressable ${label} fallback`,
+  )
+}
 for (const pair of contract.legalPairs.slice(58)) {
   expectFailure(
     `removed ${pair.id}`,

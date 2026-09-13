@@ -694,6 +694,14 @@
   cursor: not-allowed;
 }
 
+/* Let the package's system border color through VitePress's unlayered reset.
+   Authored hover/active borders retain the browser's system mapping. */
+@media (forced-colors: active) {
+  .pressable {
+    border-color: revert-layer;
+  }
+}
+
 .theme-focus-preview {
   outline: 2px solid var(--focus-ring-color);
   outline-offset: 2px;

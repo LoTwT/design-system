@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url"
 import { runInNewContext } from "node:vm"
 import { chromium } from "playwright-core"
 import { contrastRatio } from "./theme-contract-helpers.mjs"
+import { verifyUtilityComposition } from "../../packages/theme/test/utility-browser.mjs"
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const distDir = join(rootDir, "site/.vitepress/dist")
 const brutalContract = JSON.parse(readFileSync(join(rootDir, "docs/spec/brutal-theme-contract.json"), "utf8"))
@@ -474,6 +475,7 @@ async function verifyBrowserBehavior() {
       expect(version === process.env.EXPECTED_CHROME_VERSION, `expected Chrome ${process.env.EXPECTED_CHROME_VERSION}, received ${version}`)
     const context = await browser.newContext({ colorScheme: "light", reducedMotion: "reduce", viewport: { height: 844, width: 1280 } })
     const page = await context.newPage()
+    await verifyUtilityComposition(context)
     page.setDefaultNavigationTimeout(deadlineMs)
     page.setDefaultTimeout(deadlineMs)
     const origin = `http://127.0.0.1:${server.address().port}`
@@ -661,20 +663,26 @@ async function verifyBrowserBehavior() {
       for (const [utility, offset] of [["focus-ring", "2px"], ["focus-ring-inset", "-2px"]]) {
         const button = page.locator(`.theme-action.${utility}`).first()
         await focusByTab(page, button, utility, 64)
-        const focus = await button.evaluate((element) => {
-          const style = getComputedStyle(element)
-          const reference = document.createElement("span")
-          reference.style.color = "var(--focus-ring-color)"
-          element.append(reference)
-          const color = getComputedStyle(reference).color
-          reference.remove()
-          return { visible: element.matches(":focus-visible"), outline: style.outline, offset: style.outlineOffset, color }
-        })
-        expect(focus.visible && focus.outline === `${focus.color} solid 2px` && focus.offset === offset,
-          `${utility} demo must render its semantic keyboard outline; received ${JSON.stringify(focus)}`)
+        for (const contrast of ["no-preference", "more"]) {
+          await page.emulateMedia({ contrast })
+          const focus = await button.evaluate((element) => {
+            const style = getComputedStyle(element)
+            const reference = document.createElement("span")
+            reference.style.color = "var(--focus-ring-color)"
+            element.append(reference)
+            const color = getComputedStyle(reference).color
+            reference.remove()
+            return { visible: element.matches(":focus-visible"), outline: style.outline, offset: style.outlineOffset, shadow: style.boxShadow, color }
+          })
+          const width = contrast === "more" ? "3px" : "2px"
+          expect(focus.visible && focus.outline === `${focus.color} solid ${width}` && focus.offset === offset,
+            `${utility} demo must render its semantic keyboard outline with contrast=${contrast}; received ${JSON.stringify(focus)}`)
+          expect(contrast === "more" ? focus.shadow === "none" : focus.shadow !== "none", `${utility} demo shadow must follow contrast=${contrast}`)
+        }
       }
     }
 
+    await page.emulateMedia({ contrast: "no-preference" })
     await verifyNeoOverview(page, origin)
     console.log(`Neo refinement browser checks passed: 3 unchanged modes × 69 roles; Light/Dark pressable states and media fallbacks; 1280/390/320px overview, border contrast and keyboard focus`)
     console.log(`site Theme Family browser contract passed with Chrome ${version}`)

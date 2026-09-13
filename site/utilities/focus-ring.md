@@ -34,3 +34,5 @@ only on `:focus-visible` so mouse interaction does not leave a persistent ring.
 
 Use keyboard navigation to inspect the real utility behavior. These controls
 render the ring only when they match `:focus-visible`.
+
+Both utilities retain their offsets under `prefers-contrast: more`, increase the outline to 3px, and remove the shadow. Under forced colors they use the system Highlight outline. These fallbacks also apply when the utility is used through Tailwind variants or `@apply`.
