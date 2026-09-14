@@ -1,3 +1,19 @@
+## 0.3.0 - 2026-09-14
+
+### Added
+
+- Add opt-in LXGW WenKai Chinese fonts (#56)
+
+### Documentation
+
+- Establish v0.3 release controls
+
+### Fixed
+
+- Correct theme behavior and scope release pushes (#54)
+- Refine dark palette and semantic shadows (#55)
+- Preserve accessibility fallbacks in utility composition (#57)
+
 ## 0.2.0 - 2026-07-30
 
 ### Added
