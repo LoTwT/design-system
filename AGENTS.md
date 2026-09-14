@@ -66,7 +66,8 @@ The display-only VitePress showcase remains separate from the package contract.
 - RFC: `docs/rfc/0001-theme-v0.md`
 - Release: `docs/release/DS-D-09-release.md`
 - V0.1.x release controls: `docs/release/DS-D-10-v0-auto-publish.md`
-- Current V0.2.x release controls: `docs/release/DS-D-12-v0.2-release-controls.md`
+- V0.2.x release controls: `docs/release/DS-D-12-v0.2-release-controls.md`
+- Current V0.3.x release controls: `docs/release/DS-D-15-v0.3-release-controls.md`
 - V0.2.0 publish recovery: `docs/release/DS-D-13-v0.2.0-publish-recovery.md`
 - Exact release push: `docs/release/DS-D-14-exact-release-push.md`
 - Package: `packages/theme/README.md`
