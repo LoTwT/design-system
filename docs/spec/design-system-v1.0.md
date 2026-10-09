@@ -100,13 +100,24 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.6 Color · Syntax Highlight（V0 ship 6 个 token）
 
 ```css
---color-syntax-keyword:   #7f70bf  /* lavender-600 派生 */
---color-syntax-string:    #1f8b68  /* mint-600 派生 */
---color-syntax-function:  #1d65bd  /* sky-600 派生 */
---color-syntax-number:    #dc8a08  /* amber-500 派生 */
---color-syntax-comment:   #8b7f68  /* neutral-500 派生 */
---color-syntax-operator:  #6d624f  /* legacy syntax neutral */
+/* Paper（:root）与 Neo Light（.brutal） */
+--color-syntax-keyword:   #66569d  /* = lavender-700 */
+--color-syntax-string:    #1d6f55  /* = mint-700 */
+--color-syntax-function:  #1d65bd  /* = sky-600 */
+--color-syntax-number:    #944b0f  /* = amber-700 */
+--color-syntax-comment:   #6b6252  /* = Paper --text-muted */
+--color-syntax-operator:  #514a3e  /* = neutral-700 */
+
+/* Ink（.dark）与 Neo Dark（.brutal.dark） */
+--color-syntax-keyword:   #c7b6f5  /* = lavender-300 */
+--color-syntax-string:    #84dfbd  /* = mint-300 */
+--color-syntax-function:  #8dc5ff  /* = sky-300 */
+--color-syntax-number:    #ffc94a  /* = amber-300 */
+--color-syntax-comment:   #aa9e8b  /* = Ink --text-muted */
+--color-syntax-operator:  #d7cdbc  /* = Ink --text-secondary */
 ```
+
+Syntax token 随主题族与明暗模式切换；四种 root 状态下均在 canvas 与 `--reading-code-bg` 上达到 4.5:1，由两份 theme contract 的 legal pairs 校验。
 
 > [FUTURE]：UX baseline 曾提议 14 syntax token（含 boolean / class-name / tag / attr-* / punct / bg / line-num 等）；V0 仅 6 个。后续按真实代码高亮库需要扩。
 
@@ -171,10 +182,10 @@ V0 token：`--spacing-px / -0 / -0-5 / -1 / -1-5 / -2 / -2-5 / -3 / -3-5 / -4 / 
 
 > [FUTURE]：UX baseline 曾提议 9 阶含 `3xl: 24px`；V0 不 ship。
 
-### 1.13 Shadow（6 size + 3 semantic）
+### 1.13 Shadow（8 size + 3 semantic）
 
 ```css
---shadow-none / -xs / -sm / -md / -lg / -xl   (6 size)
+--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl   (8 size，-2xs / -2xl 以暖色覆盖 Tailwind 默认黑色阴影)
 --shadow-card:  var(--shadow-sm)
 --shadow-panel: var(--shadow-md)
 --shadow-focus: 0 0 0 4px rgb(156 143 217 / 0.24)   /* lavender-500 + alpha */
@@ -221,13 +232,14 @@ V0 keyframes 命名带 `ayingott-` 前缀避免与 consumer 自有 keyframes 冲
 --breakpoint-xs / -sm / -md / -lg / -xl / -2xl
 ```
 
-### 2.3 Container（9 个 — 按 size 6 + 按用途 3）
+### 2.3 Container（按用途 3 个）
 ```css
---container-xs / -sm / -md / -lg / -xl / -2xl     (size 6 阶)
 --container-reading: 42rem                           (blog detail 推荐宽度)
 --container-content: 64rem                           (page 内容默认宽度)
 --container-wide:    80rem                           (full-width layout)
 ```
+
+尺寸阶 `max-w-*` / `@container` 变体沿用 Tailwind 默认 container scale；主题不覆盖 `--container-xs` … `--container-7xl`，避免与默认 `3xl`–`7xl` 混合后出现非单调顺序。
 
 ### 2.4 Grid（4 个语义 gap + columns）
 ```css
@@ -755,7 +767,7 @@ V0 实际打包字体文件（在 `packages/theme/src/fonts/`）：
 - `lxgw-wenkai-400-normal.woff2`（原版 v1.522 Regular，完整字形）
 - `lxgw-wenkai-500-normal.woff2`（原版 v1.522 Medium，完整字形）
 
-文楷仅做 WOFF2 压缩，未裁剪字形。`unicode-range` 将使用范围限定为汉字、CJK 标点和相关中文区段，保留各角色原有拉丁字体；每个被请求的字重仍需下载完整文件。全部字体使用 `font-display: swap`。中文正文默认 `400`，偏粗可用 `font-medium` / `500`；`300`、`600`、`700` 不对应额外的已打包文楷字重，浏览器可能匹配已有字重或合成加粗。
+文楷仅做 WOFF2 压缩，未裁剪字形。`unicode-range` 将使用范围限定为汉字、CJK 标点和相关中文区段，保留各角色原有拉丁字体；每个被请求的字重仍需下载完整文件。全部字体使用 `font-display: swap`。中文正文默认 `400`，偏粗可用 `font-medium` / `500`；`300`、`600`、`700` 不对应额外的已打包文楷字重。Chrome 中 `600` 及以上的中文由 Medium 合成加粗，semibold / bold / 更粗的效果相同；中文强调最高使用 `font-medium`。
 
 License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 

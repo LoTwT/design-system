@@ -68,6 +68,13 @@
   --border-width-surface: var(--border-width-heavy);
   --border-width-control: var(--border-width-heavy);
 
+  --color-syntax-keyword: #66569d;
+  --color-syntax-string: #1d6f55;
+  --color-syntax-function: #1d65bd;
+  --color-syntax-number: #944b0f;
+  --color-syntax-comment: #6b6252;
+  --color-syntax-operator: #514a3e;
+
   --reading-font-body: var(--font-reading);
   --reading-font-heading: var(--font-reading);
   --reading-font-mono: var(--font-mono);
@@ -160,6 +167,13 @@
   --radius-control: var(--radius-none);
   --border-width-surface: var(--border-width-heavy);
   --border-width-control: var(--border-width-heavy);
+
+  --color-syntax-keyword: #c7b6f5;
+  --color-syntax-string: #84dfbd;
+  --color-syntax-function: #8dc5ff;
+  --color-syntax-number: #ffc94a;
+  --color-syntax-comment: #aa9e8b;
+  --color-syntax-operator: #d7cdbc;
 
   --reading-font-body: var(--font-reading);
   --reading-font-heading: var(--font-reading);

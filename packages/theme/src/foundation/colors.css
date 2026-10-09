@@ -110,10 +110,10 @@
   --color-info-700: #19519a;
   --color-info-950: #112640;
 
-  --color-syntax-keyword: #7f70bf;
-  --color-syntax-string: #1f8b68;
+  --color-syntax-keyword: #66569d;
+  --color-syntax-string: #1d6f55;
   --color-syntax-function: #1d65bd;
-  --color-syntax-number: #dc8a08;
-  --color-syntax-comment: #8b7f68;
-  --color-syntax-operator: #6d624f;
+  --color-syntax-number: #944b0f;
+  --color-syntax-comment: #6b6252;
+  --color-syntax-operator: #514a3e;
 }

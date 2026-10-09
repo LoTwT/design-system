@@ -51,4 +51,11 @@
 
   --shadow-card: var(--shadow-none);
   --shadow-panel: var(--shadow-none);
+
+  --color-syntax-keyword: #c7b6f5;
+  --color-syntax-string: #84dfbd;
+  --color-syntax-function: #8dc5ff;
+  --color-syntax-number: #ffc94a;
+  --color-syntax-comment: #aa9e8b;
+  --color-syntax-operator: #d7cdbc;
 }

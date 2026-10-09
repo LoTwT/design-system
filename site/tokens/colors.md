@@ -38,4 +38,8 @@ Color tokens come from `packages/theme/src/foundation/colors.css`.
 
 ## Syntax
 
-<ColorSwatchGrid title="Syntax" prefix="color-syntax-" />
+`.dark`, `.brutal`, and `.brutal.dark` redeclare these tokens so code highlighting meets 4.5:1 on the canvas and on `--reading-code-bg` in every family. Neo Light uses the Paper values and Neo Dark uses the Ink values.
+
+<ColorSwatchGrid title="Syntax · Paper" prefix="color-syntax-" />
+
+<ColorSwatchGrid title="Syntax · Ink" prefix="color-syntax-" source="semantic-dark" />

@@ -84,6 +84,9 @@ const requiredLegalPairIds = [
   "ink-warning-border",
   "ink-danger-border",
   "ink-info-border",
+  ...["paper", "ink"].flatMap(mode =>
+    ["code", "canvas"].flatMap(background =>
+      ["keyword", "string", "function", "number", "comment", "operator"].map(token => `${mode}-syntax-${token}-${background}`))),
 ]
 const requiredTargetPairIds = [
   "paper-muted-canvas",
@@ -95,7 +98,7 @@ const requiredTargetPairIds = [
 ]
 const requiredContrastExemptionIds = ["disabled-action"]
 const requiredStateMappingsSha256 = "235f87738e12826d74009aed396c34ec985b6fad0a2aaa31c3188f70e06d2f80"
-const requiredLegalPairsSha256 = "fd2e8b1c08694d2cdf07d5112185c936aab35bd8e64da2a55d9d6d2bf35f5c50"
+const requiredLegalPairsSha256 = "8e2fb7cbb5a273d9832c601024302bbdd910b4b80e3a9da2ae3e7f02a950b691"
 const requiredContrastExemptionsSha256 = "20d9abd4f87114673b955184bcee2534d0bd2d1f39f66b2feb3188315c2324a7"
 
 const readSource = file => readSourceFromRoot(rootDir, file)

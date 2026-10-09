@@ -130,7 +130,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 - **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
 - **Status families** (4 steps each): `success`, `warning`, `danger`, `info` at `50 / 500 / 700 / 950`.
-- **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`.
+- **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`. Mode-aware: `.dark`, `.brutal`, and `.brutal.dark` redeclare them, and every family meets 4.5:1 on the canvas and on `--reading-code-bg`.
 
 ## Type
 
@@ -138,7 +138,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 - Scale: `--text-2xs` `10px` → `--text-7xl` `72px`. 13 steps. Each pairs with `--text-{size}--line-height`.
 - Reading leading: `--leading-reading 1.7`.
 - Tracking: `--tracking-tighter` `-0.04em`, `--tracking-tight` `-0.02em`, `--tracking-normal` `0`, `--tracking-wide` `0.02em`, `--tracking-wider` `0.04em`, `--tracking-widest` `0.08em`.
-- Font weights: `--font-weight-light 300`, `--font-weight-regular 400`, `--font-weight-medium 500`, `--font-weight-semibold 600`, `--font-weight-bold 700`.
+- Font weights: `--font-weight-light 300`, `--font-weight-regular 400`, `--font-weight-medium 500`, `--font-weight-semibold 600`, `--font-weight-bold 700`. Chinese WenKai text has real `400` / `500` only; `600` and heavier render as identical synthetic bold.
 
 ## Spacing
 
@@ -158,7 +158,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Shadow
 
-- Levels: `--shadow-none / -xs / -sm / -md / -lg / -xl`. Two-layer warm shadows; base alpha-color is `--color-neutral-900`.
+- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Warm shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same warm tint.
 - Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow.
 - No inset shadows in V0.
 
@@ -177,7 +177,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 - `--z-*`: 9 steps from `--z-base 0` to `--z-toast 1000`. Header sits at `--z-header 200`.
 - `--breakpoint-*`: 6 steps (xs, sm, md, lg, xl, 2xl).
-- `--container-*`: includes `--container-reading 42rem` for prose width.
+- `--container-*`: the theme adds only `--container-reading 42rem`, `--container-content 64rem`, and `--container-wide 80rem`. Size steps (`max-w-md`, `@md`, …) keep Tailwind's default container scale.
 - `--touch-target-min: 44px` (used by the `touch-target` utility).
 - `--opacity-disabled 0.45`, `-muted 0.62`, `-subtle 0.72`, `-overlay 0.76`, `-emphasis 0.88`.
 
