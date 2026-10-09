@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os"
 import { basename, dirname, join, relative, sep } from "node:path"
 import { fileURLToPath } from "node:url"
+import { stripVTControlCharacters } from "node:util"
 import postcss from "postcss"
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -58,7 +59,8 @@ try {
     cwd: missingPeerDir,
     encoding: "utf8",
   })
-  const missingPeerOutput = `${missingPeerInstall.stdout}${missingPeerInstall.stderr}`
+  // FORCE_COLOR can make pnpm color the peer name, splitting the expected text.
+  const missingPeerOutput = stripVTControlCharacters(`${missingPeerInstall.stdout}${missingPeerInstall.stderr}`)
   if (missingPeerInstall.status === 0 || !missingPeerOutput.includes("missing peer tailwindcss@^4.0.0"))
     throw new Error(`Missing Tailwind peer fixture did not fail as expected:\n${missingPeerOutput}`)
 

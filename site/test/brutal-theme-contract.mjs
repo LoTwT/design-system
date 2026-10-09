@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import {
@@ -135,6 +135,17 @@ function verifyDefaultBaselines() {
   expect(
     existsSync(join(rootDir, contract.defaultBaseline.compiledOutput)),
     "Default compiled output missing; run pnpm smoke first",
+  )
+  const outputTime = statSync(join(rootDir, contract.defaultBaseline.compiledOutput)).mtimeMs
+  const inputs = [
+    contract.defaultBaseline.compiledInput,
+    ...readdirSync(join(rootDir, "packages/theme/src"), { recursive: true })
+      .filter(file => file.endsWith(".css"))
+      .map(file => join("packages/theme/src", file)),
+  ]
+  expect(
+    inputs.every(file => statSync(join(rootDir, file)).mtimeMs <= outputTime),
+    "Default compiled output is older than theme sources; run pnpm smoke first",
   )
   expect(
     fileSha256(contract.defaultBaseline.compiledOutput) === contract.defaultBaseline.compiledSha256,

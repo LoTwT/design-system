@@ -106,6 +106,31 @@ for (const [utility, properties] of [
       throw new Error(`Compiled .${utility} must constrain ${property} with --touch-target-min`)
   }
 }
+// The pinned theme-only baseline has no utilities layer, so utility behavior is
+// asserted on the package build, which imports Tailwind.
+function compiledRuleText(selector) {
+  const rules = []
+  compiled.walkRules(selector, rule => rules.push(rule))
+  if (rules.length !== 1)
+    throw new Error(`Expected one compiled ${selector} rule`)
+  return rules[0].toString().replace(/\s+/g, " ")
+}
+const darkUtility = compiledRuleText(".dark\\:bg-lavender-300")
+if (!darkUtility.includes("&:where(.dark, .dark *)") || darkUtility.includes("prefers-color-scheme"))
+  throw new Error("dark: variant must follow the .dark class, not prefers-color-scheme")
+// Chromium forces these values in forced-colors mode, so the browser contract
+// cannot observe a missing fallback; keep the authored fallbacks pinned here.
+for (const utility of ["focus-ring", "focus-ring-inset"]) {
+  const text = compiledRuleText(`.${utility}`)
+  for (const fallback of [
+    "@media (prefers-contrast: more) { outline-width: 3px; box-shadow: none; }",
+    "@media (forced-colors: active) { outline-color: Highlight; box-shadow: none; }",
+  ]) {
+    if (!text.includes(fallback))
+      throw new Error(`Compiled .${utility} must keep fallback: ${fallback}`)
+  }
+}
+
 const themeOnlySha256 = createHash("sha256").update(themeOnlyCss).digest("hex")
 const requiredThemeOnlySha256 = brutalContract.defaultBaseline.compiledSha256
 
@@ -247,6 +272,21 @@ function resolveVar(name, maps, seen = new Set()) {
   const reference = value.match(/^var\(--([A-Za-z0-9_-]+)\)$/)
   return reference ? resolveVar(reference[1], maps, seen) : value
 }
+
+for (const [name, value] of Object.entries(readCssVarMap("src/foundation/spacing.css"))) {
+  const step = name.match(/^spacing-(\d+)(-5)?$/)
+  const expected = name === "spacing-px" ? "1px" : step && `${(Number(step[1]) + (step[2] ? 0.5 : 0)) * 0.25}rem`
+  if (!expected)
+    throw new Error(`--${name} is not a 0.25rem step-scale spacing token`)
+  if (value !== expected && !(expected === "0rem" && value === "0"))
+    throw new Error(`--${name} must follow the 0.25rem step scale: expected ${expected}, received ${value}`)
+}
+const zLayers = ["base", "raised", "sticky", "header", "popover", "tooltip", "overlay", "modal", "toast"]
+const zIndex = readCssVarMap("src/layers/z-index.css")
+const zValues = zLayers.map(layer => Number(zIndex[`z-${layer}`]))
+if (Object.keys(zIndex).join() !== zLayers.map(layer => `z-${layer}`).join()
+  || zValues.some((value, index) => !Number.isInteger(value) || (index > 0 && value <= zValues[index - 1])))
+  throw new Error(`z-index layers must stay strictly ordered: ${zLayers.join(" < ")}`)
 
 const foundationMaps = [
   readCssVarMap("src/foundation/colors.css"),

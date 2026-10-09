@@ -34,8 +34,8 @@ CHROME_PATH=<chrome-binary> pnpm site:browser
 
 `pnpm check` requires Python 3 for the stdlib-only font-vendoring failure tests.
 It covers those tests, source smoke, package dry-run, real-tarball consumer
-install/compile, and site contrast checks. The `site:typecheck` and `site:build`
-commands validate the VitePress implementation. `site:browser` runs the
+install/compile, site contrast checks, and living-doc token checks. The
+`site:typecheck` and `site:build` commands validate the VitePress implementation. `site:browser` runs the
 Playwright browser contract (theme-family init plus live-Chrome behavior); it
 needs a Chrome binary via `CHROME_PATH` and also runs in the `site` CI job and
 the release workflow, so run it before pushing browser-visible changes. Pull
@@ -58,7 +58,7 @@ The display-only VitePress showcase remains separate from the package contract.
 
 ## Documentation Lifecycle
 
-- Living docs are pinned by contract tests (`site/`, `skills/`, `packages/theme/README.md`, and the `docs/spec/` contract baselines); change them only together with the implementation they describe.
+- Living docs (`site/`, `skills/`, `packages/theme/README.md`, and the `docs/spec/` contract baselines) are guarded by contract tests for required phrases; README, `skills/`, and `site/` CSS variable names and the README export list are also checked. Token values restated in prose are not checked. Change them only together with the implementation they describe.
 - Everything else under `docs/` is a point-in-time record (RFCs, decisions, release records, QA snapshots): use dated or numbered filenames and do not retro-edit; supersede with a new document instead.
 
 ## More Context
