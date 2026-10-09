@@ -16,10 +16,12 @@ const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...bruta
 // approved WenKai font stacks; removing only those family additions reproduces
 // all three original digests. Refreshed on 2026-10-10 for the six mode-aware
 // --color-syntax-* roles; removing only those roles reproduces the 2026-09-12
-// digests. Hash resolved public roles, not internal aliases.
+// digests. Paper and Ink were refreshed again for the solid 3:1 --border-strong
+// control boundary; restoring its previous alpha values reproduces the earlier
+// 2026-10-10 digests. Hash resolved public roles, not internal aliases.
 const unchangedModeDigests = {
-  paper: "2b4524ceb3a698aa51f3340dffe9abfd46a0dd43f009a81a093a0b568c6cf501",
-  ink: "1879201b57686315d25eb8d175e1a62730f11a72b4cf4b1ed030547a2d35532c",
+  paper: "187aa950c1c5d7ea1c6e017d841cd1da1f50eeba4cc36b3f420821f2072a05d2",
+  ink: "abb99afd11c15bd223c33c298d7536a266b5b9b824f045892e5e580344ce8230",
   neoLight: "15fd119c2afe2efd784c3f194b16e90cb867ce5da7a689be821a679f42f07437",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)

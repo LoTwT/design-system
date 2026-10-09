@@ -105,6 +105,7 @@ Use the scoped interaction utility with the existing accessibility utilities:
 - Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
 - `focus-ring` and `focus-ring-inset` use a 3px outline without shadow under `prefers-contrast: more`, and a system Highlight outline under forced colors; variants and `@apply` preserve these fallbacks.
 - Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases. The legacy aliases (`--status-success`, `--status-warning`, …) are not contrast-checked against surfaces; use `-fg` for text and `-border` for standalone icons or outlines.
+- `--border-strong` is the control-boundary role: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces in every family. Use it for text inputs and other controls identified by their border.
 - `--color-syntax-*` code-highlighting colors respond to Paper, Ink, Neo Light, and Neo Dark, and meet 4.5:1 on the canvas and on `--reading-code-bg`.
 - Long-form reading variables such as `--reading-measure`, `--reading-line-height`, and `--reading-link` live in the semantic layer and inherit light/dark runtime variables.
 - `--container-reading` / `--layout-prose-width` are layout width tokens. `--reading-measure` is the font-relative measure for long-form body copy.

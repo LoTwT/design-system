@@ -719,7 +719,7 @@
   min-height: var(--touch-target-min);
   padding-inline: var(--spacing-3);
   border: var(--border-width-control) solid;
-  border-color: var(--border-default);
+  border-color: var(--border-strong);
   border-radius: var(--radius-control);
   color: var(--text-primary);
   background: var(--surface-elevated);

@@ -33,6 +33,8 @@ Active normal-size `--text-muted` retains the WCAG 2.2 minimum of `4.5:1` and ad
 
 `surface-subtle` is not a declared active muted pair until a real component needs it. `text-muted` on `surface-muted` remains limited to the native disabled state and its inactive-component exemption. The reading layer keeps its separate `--reading-fg-muted` mapping and is not governed by this role-specific target.
 
+`--border-strong` is the control-boundary role. It is a solid literal in both modes so the contract can check it at the non-text minimum of `3:1` against canvas, panel, elevated, and subtle surfaces; the showcase text input uses it.
+
 Code-highlighting `--color-syntax-*` tokens are redeclared by Ink, and the contract checks all six against the canvas and `--reading-code-bg` at the text minimum of `4.5:1` in both modes.
 
 Status treatments use a five-part contract for each status: legacy accent, foreground, background, border, and a non-color text label in the consuming interface.

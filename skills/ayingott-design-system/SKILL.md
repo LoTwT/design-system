@@ -70,7 +70,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. |
 | `--border-subtle` | Default divider weight. Alpha-on-cream in light, alpha-on-warm-white in dark. |
 | `--border-default` | Card outlines. |
-| `--border-strong` | Outline buttons, focus emphasis. |
+| `--border-strong` | Essential control boundaries such as text inputs (at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family), outline buttons, and hover emphasis. |
 | `--accent-primary` | Primary brand surfaces (CTA backgrounds, active toggle, brand decoration). |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |

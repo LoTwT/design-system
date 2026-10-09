@@ -45,6 +45,20 @@ Tailwind 默认的 `shadow-2xs` 与 `shadow-2xl` 使用纯黑。主题新增 `--
 - **中文字重**：在 Chrome 中实测，文楷在 `600`、`700`、`800` 下渲染结果完全相同，都比 `500` 粗，说明从 `600` 起由 Medium 合成加粗。README、skill、Fonts 页面与 v1.0 spec 明确写出：中文强调最高使用 `font-medium`。不改 CSS。
 - **状态色**：`--status-*` 旧别名与 mint / amber / rose / sky 相关但并不等值，也不在契约中对表面做对比度校验（Paper warning 在画布上约 2.2:1）。skill 与 README 明确写出：文字用 `-fg`，单独的图标或描边用 `-border`。
 
+### 5. `--border-strong` 成为控件边界角色
+
+Paper / Ink 原来没有能满足 WCAG 2.2 SC 1.4.11 控件边界 3:1 的边框角色：展示页输入框使用的 `--border-default` 在 Paper 中约 1.4:1、Ink 中约 1.6:1，`--border-strong` 也只有 1.85:1 / 2.37:1。用户选择加深 `--border-strong`，不新增 token。
+
+- Paper `--border-strong` 由 `rgb(25 23 19 / 0.28)` 改为实色 `#85837f`（约等于 52% 墨色叠在画布上），Ink 由 `rgb(247 241 230 / 0.28)` 改为实色 `#7d797b`（约等于 45% 米白）。改用实色是为了让契约能校验；Neo Dark 的边框已采用同样做法。
+- Paper & Ink 契约新增 8 个 non-text legal pair，覆盖 canvas、panel、elevated、subtle 四种表面，最低值为 Paper subtle 3.24:1。
+- 展示页 `.theme-input` 与契约 `input` 状态映射改用 `--border-strong`。Neo 中该角色已是 `--brutal-ink`（Light）或 `#d1cec4`（Dark），所以 Neo Dark 输入框边框比原来的 `#908e84` 更亮。
+- `--border-default` 与 `--border-subtle` 不变，卡片和分隔线保持原来的柔和观感。悬停时使用 `--border-strong` 的地方会比原来更深。
+- 浏览器契约中 Paper 与 Ink 的计算值摘要已刷新。临时把 `--border-strong` 改回旧值后，三种模式的摘要都与刷新前一致，说明只有这个角色变化。
+
+### 6. `--ease-emphasized` 去掉回弹
+
+原曲线 `cubic-bezier(0.2, 0, 0, 1.2)` 的 y2 大于 1，会超调回弹，与 spec 中"V0 不 ship back-out / spring"和 skill 中"No bounces, no springs"矛盾。改为 `cubic-bezier(0.05, 0.7, 0.1, 1)`：减速比 `--ease-standard` 更强，但不超调。该曲线目前只用于 `animate-pop-in`。
+
 ## 有意不改的项
 
 | 项 | 原因 |
@@ -56,11 +70,6 @@ Tailwind 默认的 `shadow-2xs` 与 `shadow-2xl` 使用纯黑。主题新增 `--
 | `font-regular` 与 Tailwind `font-normal` 并存 | `font-regular` 是文档中的推荐写法，`font-normal` 来自 Tailwind 默认主题 |
 | `--opacity-muted` / `--opacity-subtle` 命名、`--text-md`、`--color-surface-*` 编号顺序 | 改名或删除属于破坏性改动，收益不足 |
 | Paper 卡片层级 | 截图复核时卡片、代码块与画布可以区分 |
-
-## 待定
-
-- **Paper / Ink 控件边界对比度**：`.theme-input` 使用 `--border-default`，在 Paper 中约 1.4:1，在 Ink 中约 1.6:1；`--border-strong` 也只有 1.85:1 / 2.37:1。Paper / Ink 没有能满足 WCAG 2.2 SC 1.4.11 控件边界 3:1 的边框角色，契约也未覆盖。需要单独决策。
-- **`--ease-emphasized` 有回弹**：`cubic-bezier(0.2, 0, 0, 1.2)` 的 y2 大于 1，会产生回弹，与 skill 中"No bounces, no springs"的说法不一致。需要决定改曲线还是改文档。
 
 ## 验收
 

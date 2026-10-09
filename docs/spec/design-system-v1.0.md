@@ -326,7 +326,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   /* Border (rgb + alpha 派生 Paper text-primary) */
   --border-subtle:     rgb(25 23 19 / 0.10);
   --border-default:    rgb(25 23 19 / 0.16);
-  --border-strong:     rgb(25 23 19 / 0.28);
+  --border-strong:     #85837f;  /* 控件边界：四种表面上 ≥3:1 */
 
   /* Accent */
   --accent-primary:        var(--color-lavender-500);
@@ -385,7 +385,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 
   --border-subtle:     rgb(247 241 230 / 0.10);
   --border-default:    rgb(247 241 230 / 0.16);
-  --border-strong:     rgb(247 241 230 / 0.28);
+  --border-strong:     #7d797b;  /* 控件边界：四种表面上 ≥3:1 */
 
   --accent-primary:        var(--color-lavender-300);
   --accent-primary-hover:  var(--color-lavender-200);

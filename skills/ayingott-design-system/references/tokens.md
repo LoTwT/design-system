@@ -44,7 +44,9 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | --- | --- | --- |
 | `--border-subtle` | `rgb(25 23 19 / 0.10)` | `rgb(247 241 230 / 0.10)` |
 | `--border-default` | `rgb(25 23 19 / 0.16)` | `rgb(247 241 230 / 0.16)` |
-| `--border-strong` | `rgb(25 23 19 / 0.28)` | `rgb(247 241 230 / 0.28)` |
+| `--border-strong` | `#85837f` | `#7d797b` |
+
+`--border-strong` is a solid color so it can be contract-checked: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces. Use it wherever the border alone identifies a control.
 
 ### Accent (lavender brand)
 
@@ -169,7 +171,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 ## Motion
 
 - Durations: `--duration-instant 0`, `--duration-fast 120ms`, `--duration-normal 180ms`, `--duration-slow 260ms`, `--duration-slower 420ms`.
-- Easings: `--ease-standard cubic-bezier(.2,0,0,1)`, `--ease-emphasized`, `--ease-out-soft`, `--ease-in-soft`. No bounces, no springs.
+- Easings: `--ease-standard cubic-bezier(.2,0,0,1)`, `--ease-emphasized cubic-bezier(.05,.7,.1,1)`, `--ease-out-soft`, `--ease-in-soft`. No bounces, no springs.
 - Transitions (grouped): `--transition-interactive`, `--transition-surface`, `--transition-motion`.
 - Keyframes: `ayingott-fade-in`, `ayingott-pop-in`. Prefixed to avoid consumer collision.
 
