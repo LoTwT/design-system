@@ -36,7 +36,9 @@ WenKai includes real Regular `400` and Medium `500` faces. Use `font-regular`
 for normal text or `font-medium` for a slightly heavier treatment, including
 on a body/reading container if preferred. The default body weight stays `400`.
 WenKai is not variable: `300`, `600`, and `700` do not select additional bundled
-weights, and browsers may synthesize bold. Chinese glyph widths are not
+weights. In Chrome, Chinese text at `600` or heavier is synthesized from the
+Medium face, so `font-semibold`, `font-bold`, and heavier weights look identical;
+use `font-medium` as the strongest Chinese emphasis. Chinese glyph widths are not
 guaranteed to equal two Space Mono cells.
 
 The self-hosted WOFF2 files preserve all upstream glyphs. CSS `unicode-range`
@@ -102,8 +104,11 @@ Use the scoped interaction utility with the existing accessibility utilities:
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables.
 - Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
 - `focus-ring` and `focus-ring-inset` use a 3px outline without shadow under `prefers-contrast: more`, and a system Highlight outline under forced colors; variants and `@apply` preserve these fallbacks.
-- Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases.
+- Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases. The legacy aliases (`--status-success`, `--status-warning`, …) are not contrast-checked against surfaces; use `-fg` for text and `-border` for standalone icons or outlines.
+- `--border-strong` is the control-boundary role: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces in every family. Use it for text inputs and other controls identified by their border.
+- `--color-syntax-*` code-highlighting colors respond to Paper, Ink, Neo Light, and Neo Dark, and meet 4.5:1 on the canvas and on `--reading-code-bg`.
 - Long-form reading variables such as `--reading-measure`, `--reading-line-height`, and `--reading-link` live in the semantic layer and inherit light/dark runtime variables.
 - `--container-reading` / `--layout-prose-width` are layout width tokens. `--reading-measure` is the font-relative measure for long-form body copy.
+- The theme adds only `--container-reading`, `--container-content`, and `--container-wide`; size steps such as `max-w-md` and `@md` keep Tailwind's default container scale.
 - V0 does not publish component primitives or framework adapters.
 - The public exports are `.`, `./index.css`, `./brutal.css`, `./fonts.css`, and `./fonts/*`.

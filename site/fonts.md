@@ -22,7 +22,7 @@ Original **LXGW WenKai v1.522** supplies Chinese glyphs across display, body, re
 
 Use `font-regular` (`400`) for body text and `font-medium` (`500`) for a slightly heavier treatment. If you prefer heavier body copy, apply `font-medium` to the body or reading container. This also sets the requested weight for its Latin text. The theme's default body weight remains `400`.
 
-The bundled WenKai faces do not include `300`, `600`, or `700`. Those values do not produce additional real WenKai weights; the browser matches an available face and may synthesize bold. The original font's Light `300` is not bundled.
+The bundled WenKai faces do not include `300`, `600`, or `700`. Those values do not produce additional real WenKai weights. In Chrome, Chinese text at `600` or heavier is synthesized from the Medium face, so `font-semibold`, `font-bold`, and heavier weights look identical; use `font-medium` as the strongest Chinese emphasis. The original font's Light `300` is not bundled.
 
 ## Display
 

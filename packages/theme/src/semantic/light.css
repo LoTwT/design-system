@@ -15,7 +15,7 @@
 
   --border-subtle: rgb(25 23 19 / 0.1);
   --border-default: rgb(25 23 19 / 0.16);
-  --border-strong: rgb(25 23 19 / 0.28);
+  --border-strong: #85837f;
 
   --accent-primary: var(--color-lavender-500);
   --accent-primary-hover: var(--color-lavender-700);

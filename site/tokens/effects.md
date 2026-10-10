@@ -26,7 +26,13 @@ Importing `brutal.css` adds the `--shadow-hard-color`, `--shadow-hard-sm`, `--sh
 .button {
   border: var(--border-width-control) solid var(--border-default);
 }
+
+.input {
+  border: var(--border-width-control) solid var(--border-strong);
+}
 ```
+
+`--border-strong` keeps at least 3:1 against every surface in all four theme states, so use it when the border alone identifies a control such as a text input.
 
 ## Motion Duration
 

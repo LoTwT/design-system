@@ -70,13 +70,13 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. |
 | `--border-subtle` | Default divider weight. Alpha-on-cream in light, alpha-on-warm-white in dark. |
 | `--border-default` | Card outlines. |
-| `--border-strong` | Outline buttons, focus emphasis. |
+| `--border-strong` | Essential control boundaries such as text inputs (at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family), outline buttons, and hover emphasis. |
 | `--accent-primary` | Primary brand surfaces (CTA backgrounds, active toggle, brand decoration). |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |
 | `--accent-contrast` / `-hover` / `-active` | Text or icons on the matching `--accent-primary` / `-hover` / `-active` backgrounds. |
 | `--focus-ring-color` / `--focus-ring-shadow` | Focus indicator. |
-| `--status-success` / `-warning` / `-danger` / `-info` | State communication. Mirror decorative hues mint / amber / rose / sky. |
+| `--status-success` / `-warning` / `-danger` / `-info` | Legacy status accents, related to the mint / amber / rose / sky hues but not equal to their steps. Not contrast-checked against surfaces: use `-fg` on `-bg` for text, and `-border` for standalone icons or outlines. |
 
 Full list: see `references/tokens.md`.
 
@@ -209,7 +209,7 @@ Without that `fonts.css` import, all four family tokens keep their full fallback
 
 With `fonts.css`, original LXGW WenKai v1.522 supplies Chinese glyphs in all four roles. Its CSS `unicode-range` excludes Latin: body text keeps `system-ui`, display keeps Bricolage Grotesque, mono keeps Space Mono, and reading keeps Literata for Latin. Body/display retain system-ui / PingFang SC / Hiragino Sans GB / Microsoft YaHei fallbacks; reading and mono retain their role-specific system stacks.
 
-Long-form reading text uses `--font-reading` through `--reading-font-body`: Literata for Latin and WenKai for Chinese. WenKai ships real static Regular `400` and Medium `500`; use `font-medium` for slightly heavier Chinese text. The default body weight remains `400`. Do not promise additional real WenKai weights for `300`, `600`, or `700`; browser matching or synthetic bold may apply. Chinese glyph widths are not guaranteed to equal two Space Mono cells.
+Long-form reading text uses `--font-reading` through `--reading-font-body`: Literata for Latin and WenKai for Chinese. WenKai ships real static Regular `400` and Medium `500`; use `font-medium` for slightly heavier Chinese text. The default body weight remains `400`. Do not promise additional real WenKai weights for `300`, `600`, or `700`. In Chrome, Chinese text at `600` or heavier is synthesized from the Medium face, so semibold, bold, and heavier look identical; use `font-medium` as the strongest Chinese emphasis. Chinese glyph widths are not guaranteed to equal two Space Mono cells.
 
 WenKai's two WOFF2 files retain all upstream glyphs. CSS ranges prevent Latin-only text from requesting them and exclude emoji/text presentation selectors (`FE0E` / `FE0F`), but each requested weight downloads a full file. All bundled faces use `font-display: swap`; preserve the packaged font notices. See the showcase Fonts page for the 400/500 comparison.
 

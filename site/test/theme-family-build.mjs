@@ -14,11 +14,15 @@ const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...bruta
   .filter(name => !name.startsWith("brutal-")).sort()
 // Original color/structure baseline: 3c20675. Refreshed on 2026-09-12 for the
 // approved WenKai font stacks; removing only those family additions reproduces
-// all three original digests. Hash resolved public roles, not internal aliases.
+// all three original digests. Refreshed on 2026-10-10 for the six mode-aware
+// --color-syntax-* roles; removing only those roles reproduces the 2026-09-12
+// digests. Paper and Ink were refreshed again for the solid 3:1 --border-strong
+// control boundary; restoring its previous alpha values reproduces the earlier
+// 2026-10-10 digests. Hash resolved public roles, not internal aliases.
 const unchangedModeDigests = {
-  paper: "51c33eb5037f6b785bded27906fd5b14c0f397ef29610df6b7f7fb3a824fd32e",
-  ink: "0d918322fc1fe4f55fff7de1de2034df9682001c45f218cf3546aa5fdb474da4",
-  neoLight: "a23cdab04e7f427f5d438d51ca10879de9b4134b57fa016012621266d2e93b8a",
+  paper: "187aa950c1c5d7ea1c6e017d841cd1da1f50eeba4cc36b3f420821f2072a05d2",
+  ink: "abb99afd11c15bd223c33c298d7536a266b5b9b824f045892e5e580344ce8230",
+  neoLight: "15fd119c2afe2efd784c3f194b16e90cb867ce5da7a689be821a679f42f07437",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
 function expect(condition, message) {
@@ -155,7 +159,7 @@ async function focusByTab(page, locator, label, maximumTabs = 24) {
 }
 
 async function verifyUnchangedModes(page) {
-  expect(publicRoles.length === 69, "Unchanged-mode public role set drifted")
+  expect(publicRoles.length === 75, "Unchanged-mode public role set drifted")
   for (const [mode, classes] of [["paper", []], ["ink", ["dark"]], ["neoLight", ["brutal"]]]) {
     const values = await page.evaluate(({ classes, roles }) => {
       document.documentElement.classList.remove("brutal", "dark")
@@ -684,7 +688,7 @@ async function verifyBrowserBehavior() {
 
     await page.emulateMedia({ contrast: "no-preference" })
     await verifyNeoOverview(page, origin)
-    console.log(`Neo refinement browser checks passed: 3 unchanged modes × 69 roles; Light/Dark pressable states and media fallbacks; 1280/390/320px overview, border contrast and keyboard focus`)
+    console.log(`Neo refinement browser checks passed: 3 unchanged modes × ${publicRoles.length} roles; Light/Dark pressable states and media fallbacks; 1280/390/320px overview, border contrast and keyboard focus`)
     console.log(`site Theme Family browser contract passed with Chrome ${version}`)
   }
   catch (error) {

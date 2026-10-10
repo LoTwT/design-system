@@ -44,7 +44,9 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | --- | --- | --- |
 | `--border-subtle` | `rgb(25 23 19 / 0.10)` | `rgb(247 241 230 / 0.10)` |
 | `--border-default` | `rgb(25 23 19 / 0.16)` | `rgb(247 241 230 / 0.16)` |
-| `--border-strong` | `rgb(25 23 19 / 0.28)` | `rgb(247 241 230 / 0.28)` |
+| `--border-strong` | `#85837f` | `#7d797b` |
+
+`--border-strong` is a solid color so it can be contract-checked: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces. Use it wherever the border alone identifies a control.
 
 ### Accent (lavender brand)
 
@@ -130,7 +132,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 - **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
 - **Status families** (4 steps each): `success`, `warning`, `danger`, `info` at `50 / 500 / 700 / 950`.
-- **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`.
+- **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`. Mode-aware: `.dark`, `.brutal`, and `.brutal.dark` redeclare them, and every family meets 4.5:1 on the canvas and on `--reading-code-bg`.
 
 ## Type
 
@@ -138,7 +140,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 - Scale: `--text-2xs` `10px` → `--text-7xl` `72px`. 13 steps. Each pairs with `--text-{size}--line-height`.
 - Reading leading: `--leading-reading 1.7`.
 - Tracking: `--tracking-tighter` `-0.04em`, `--tracking-tight` `-0.02em`, `--tracking-normal` `0`, `--tracking-wide` `0.02em`, `--tracking-wider` `0.04em`, `--tracking-widest` `0.08em`.
-- Font weights: `--font-weight-light 300`, `--font-weight-regular 400`, `--font-weight-medium 500`, `--font-weight-semibold 600`, `--font-weight-bold 700`.
+- Font weights: `--font-weight-light 300`, `--font-weight-regular 400`, `--font-weight-medium 500`, `--font-weight-semibold 600`, `--font-weight-bold 700`. Chinese WenKai text has real `400` / `500` only; `600` and heavier render as identical synthetic bold.
 
 ## Spacing
 
@@ -158,7 +160,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Shadow
 
-- Levels: `--shadow-none / -xs / -sm / -md / -lg / -xl`. Two-layer warm shadows; base alpha-color is `--color-neutral-900`.
+- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Warm shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same warm tint.
 - Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow.
 - No inset shadows in V0.
 
@@ -169,7 +171,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 ## Motion
 
 - Durations: `--duration-instant 0`, `--duration-fast 120ms`, `--duration-normal 180ms`, `--duration-slow 260ms`, `--duration-slower 420ms`.
-- Easings: `--ease-standard cubic-bezier(.2,0,0,1)`, `--ease-emphasized`, `--ease-out-soft`, `--ease-in-soft`. No bounces, no springs.
+- Easings: `--ease-standard cubic-bezier(.2,0,0,1)`, `--ease-emphasized cubic-bezier(.05,.7,.1,1)`, `--ease-out-soft`, `--ease-in-soft`. No bounces, no springs.
 - Transitions (grouped): `--transition-interactive`, `--transition-surface`, `--transition-motion`.
 - Keyframes: `ayingott-fade-in`, `ayingott-pop-in`. Prefixed to avoid consumer collision.
 
@@ -177,7 +179,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 - `--z-*`: 9 steps from `--z-base 0` to `--z-toast 1000`. Header sits at `--z-header 200`.
 - `--breakpoint-*`: 6 steps (xs, sm, md, lg, xl, 2xl).
-- `--container-*`: includes `--container-reading 42rem` for prose width.
+- `--container-*`: the theme adds only `--container-reading 42rem`, `--container-content 64rem`, and `--container-wide 80rem`. Size steps (`max-w-md`, `@md`, …) keep Tailwind's default container scale.
 - `--touch-target-min: 44px` (used by the `touch-target` utility).
 - `--opacity-disabled 0.45`, `-muted 0.62`, `-subtle 0.72`, `-overlay 0.76`, `-emphasis 0.88`.
 
