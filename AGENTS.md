@@ -34,7 +34,8 @@ CHROME_PATH=<chrome-binary> pnpm site:browser
 
 `pnpm check` requires Python 3 for the stdlib-only font-vendoring failure tests.
 It covers those tests, source smoke, package dry-run, real-tarball consumer
-install/compile, site contrast checks, and living-doc token checks. The
+install/compile against both the Tailwind peer floor (`4.0.0`) and the workspace
+version, site contrast checks, and living-doc token checks. The
 `site:typecheck` and `site:build` commands validate the VitePress implementation. `site:browser` runs the
 Playwright browser contract (theme-family init plus live-Chrome behavior); it
 needs a Chrome binary via `CHROME_PATH` and also runs in the `site` CI job and

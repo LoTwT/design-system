@@ -42,7 +42,7 @@ const requiredSyntaxPairIds = ["light", "dark"].flatMap(mode =>
     ["keyword", "string", "function", "number", "comment", "operator"].map(token => `brutal-${mode}-syntax-${token}-${background}`)))
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "b1eb8fc5acc9c574b0ab70fb519d01542021fd19bb335369b7273d0dd9ab8cd3",
+  compiledSha256: "b0495f982f14e3c57fcf2d9f26361ba6654b43a1bc848fbf9d41ec98a9e8a5b1",
   paperInkContractSha256: "443ab9d5c5b0f42d54be5ce0341de0a73150dff9b3078267fbdeea00c8e7e727",
 }
 
