@@ -21,7 +21,7 @@
 
 ## §1 · Foundation Tokens（V0 已 ship）
 
-所有 foundation token 在 `packages/theme/src/foundation/*.css` 通过 `@theme static` 暴露，强制输出完整 token CSS variables，并自动生成 Tailwind utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` 等）。
+所有 foundation token 在 `packages/theme/src/foundation/*.css` 通过 `@theme static` 暴露，强制输出完整 token CSS variables。Tailwind 只为其 core utilities 读取的命名空间生成 utilities（如 `bg-surface-0` / `text-lavender-700` / `text-base` / `p-4` / `size-icon-md` / `border-surface` 等）。`--z-*` / `--duration-*` / `--transition-*` / `--grid-gap-*` / `--grid-columns-*` / `--border-style-*` 只输出变量：`z-modal` / `duration-fast` 这类 class 不生成任何规则，consumer 应写 `var(...)` 或 `z-(--z-modal)` 这类 arbitrary value。
 
 例外：Neo-Brutalism 的 `--shadow-hard-*` 物理族位于 opt-in `brutal.css` import chain，不进入默认 `index.css`。该入口同时声明匹配的 `shadow-hard-sm/md/lg` utilities；只有 consumer 明确 import 第五入口时才出现。
 

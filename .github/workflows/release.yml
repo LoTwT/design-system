@@ -283,7 +283,7 @@ jobs:
           while true; do
             if THEME_VERSION="$(npm view "@ayingott/theme@$VERSION" version 2>/dev/null)"; then
               echo "npm registry has @ayingott/theme@$THEME_VERSION"
-              if npm install "@ayingott/theme@$VERSION" tailwindcss@4.2.4 @tailwindcss/cli@4.2.4 >/dev/null 2>&1; then
+              if npm install "@ayingott/theme@$VERSION" tailwindcss@4.3.2 @tailwindcss/cli@4.3.2 >/dev/null 2>&1; then
                 echo "npm install succeeded on attempt $ATTEMPT"
                 break
               fi
@@ -307,7 +307,7 @@ jobs:
               echo "Final npm view diagnostics:" >&2
               npm view "@ayingott/theme@$VERSION" version || true
               echo "Final npm install diagnostics:" >&2
-              npm install "@ayingott/theme@$VERSION" tailwindcss@4.2.4 @tailwindcss/cli@4.2.4
+              npm install "@ayingott/theme@$VERSION" tailwindcss@4.3.2 @tailwindcss/cli@4.3.2
               exit 1
             fi
             echo "waiting ${DELAY}s before retry..."

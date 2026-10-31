@@ -16,6 +16,11 @@ const themeOnlyInput = join(rootDir, brutalContract.defaultBaseline.compiledInpu
 const themeOnlyOutput = join(rootDir, brutalContract.defaultBaseline.compiledOutput)
 const brutalInput = join(tmpDir, "smoke.brutal.css")
 const brutalOutput = join(tmpDir, "smoke.brutal.output.css")
+const namespaceInput = join(tmpDir, "smoke.namespaces.css")
+const namespaceOutput = join(tmpDir, "smoke.namespaces.output.css")
+// README contract: which token namespaces Tailwind turns into utilities.
+const generatedUtilities = ["size-icon-md", "border-surface", "border-thick", "opacity-disabled", "ease-standard", "aspect-portrait", "max-w-content", "animate-fade-in", "z-(--z-modal)"]
+const variableOnlyUtilities = ["z-modal", "duration-fast", "transition-interactive", "gap-page", "grid-cols-page", "border-style-dashed"]
 
 execFileSync("python3", ["-B", join(packageDir, "test/vendor-wenkai.py")], { stdio: "inherit" })
 
@@ -27,11 +32,17 @@ writeFileSync(brutalInput, `@import "tailwindcss";
 
 @source inline("pressable shadow-hard-sm shadow-hard-md shadow-hard-lg focus-ring touch-target");
 `)
+writeFileSync(namespaceInput, `@import "tailwindcss" source(none);
+@import "@ayingott/theme";
+
+@source inline("${[...generatedUtilities, ...variableOnlyUtilities].join(" ")}");
+`)
 
 for (const [fixtureInput, fixtureOutput] of [
   [input, output],
   [themeOnlyInput, themeOnlyOutput],
   [brutalInput, brutalOutput],
+  [namespaceInput, namespaceOutput],
 ]) {
   execFileSync("pnpm", ["exec", "tailwindcss", "-i", fixtureInput, "-o", fixtureOutput], {
     cwd: packageDir,
@@ -114,6 +125,17 @@ function compiledRuleText(selector) {
   if (rules.length !== 1)
     throw new Error(`Expected one compiled ${selector} rule`)
   return rules[0].toString().replace(/\s+/g, " ")
+}
+const namespaceSelectors = new Set()
+postcss.parse(readFileSync(namespaceOutput, "utf8")).walkRules(rule => namespaceSelectors.add(rule.selector))
+const utilitySelector = utility => `.${utility.replace(/[^\w-]/g, character => `\\${character}`)}`
+for (const utility of generatedUtilities) {
+  if (!namespaceSelectors.has(utilitySelector(utility)))
+    throw new Error(`Expected token namespace utility .${utility}`)
+}
+for (const utility of variableOnlyUtilities) {
+  if (namespaceSelectors.has(utilitySelector(utility)))
+    throw new Error(`.${utility} must stay variable-only, or update the README namespace contract`)
 }
 const darkUtility = compiledRuleText(".dark\\:bg-lavender-300")
 if (!darkUtility.includes("&:where(.dark, .dark *)") || darkUtility.includes("prefers-color-scheme"))
