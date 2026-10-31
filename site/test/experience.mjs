@@ -222,6 +222,7 @@ expectSourceIncludes("packages/theme/README.md", [
   "place both classes on that same root",
   "Arbitrary mixed nested theme islands are unsupported",
   "not a consumer direct-use API",
+  "are variable-only: classes such as `z-modal` or `duration-fast` generate nothing",
 ])
 expectSourceIncludes("skills/ayingott-design-system/SKILL.md", [
   "Place the family and scheme classes together on the same theme root",
@@ -244,6 +245,7 @@ expectSourceIncludes("docs/spec/design-system-v1.0.md", [
   "不是 consumer direct-use API",
   "默认映射 `--border-width-thin`",
   "structure role 集合完全一致",
+  "只输出变量：`z-modal` / `duration-fast` 这类 class 不生成任何规则",
 ])
 expectSourceIncludes("skills/ayingott-design-system/SKILL.md", [
   "foundation roles that resolve in every family",

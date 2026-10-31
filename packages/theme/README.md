@@ -100,7 +100,8 @@ Use the scoped interaction utility with the existing accessibility utilities:
 
 ## Contract
 
-- Foundation tokens use `@theme static` so all token CSS variables are emitted and Tailwind utilities are generated.
+- Foundation tokens use `@theme static` so all token CSS variables are emitted. Tailwind generates utilities only for namespaces its core utilities read: color, font, text, font-weight, leading, tracking, spacing, size, radius, shadow, border-width, opacity, ease, animate, aspect, breakpoint, and container (for example `bg-lavender-500`, `size-icon-md`, `border-surface`, `opacity-disabled`).
+- `--z-*`, `--duration-*`, `--transition-*`, `--grid-gap-*`, `--grid-columns-*`, and `--border-style-*` are variable-only: classes such as `z-modal` or `duration-fast` generate nothing. Use them as `var(...)` or arbitrary values like `z-(--z-modal)`.
 - Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables.
 - Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
 - `focus-ring` and `focus-ring-inset` use a 3px outline without shadow under `prefers-contrast: more`, and a system Highlight outline under forced colors; variants and `@apply` preserve these fallbacks.
