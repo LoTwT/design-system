@@ -161,7 +161,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 ## Shadow
 
 - Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Warm shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same warm tint.
-- Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow.
+- Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow. `--shadow-card` / `--shadow-panel` are mode-remapped runtime variables; the `shadow-card` / `shadow-panel` utilities read them, so they follow Ink and Neo.
 - No inset shadows in V0.
 
 ## Border weights
@@ -181,7 +181,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 - `--breakpoint-*`: 6 steps (xs, sm, md, lg, xl, 2xl).
 - `--container-*`: the theme adds only `--container-reading 42rem`, `--container-content 64rem`, and `--container-wide 80rem`. Size steps (`max-w-md`, `@md`, …) keep Tailwind's default container scale.
 - `--touch-target-min: 44px` (used by the `touch-target` utility).
-- `--opacity-disabled 0.45`, `-muted 0.62`, `-subtle 0.72`, `-overlay 0.76`, `-emphasis 0.88`.
+- `--opacity-disabled 45%`, `-muted 62%`, `-subtle 72%`, `-overlay 76%`, `-emphasis 88%`. Percentages work for both `opacity-disabled` and color modifiers such as `bg-black/disabled`.
 
 ## Utilities
 
