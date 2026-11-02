@@ -256,10 +256,7 @@ expect(stringValue(property(config, "lang"), "lang") === "en", "VitePress lang m
 expect(stringValue(property(config, "title"), "title") === "Ayingott Design System", "VitePress title must remain Ayingott Design System")
 
 const themeConfig = objectValue(property(config, "themeConfig"), "themeConfig")
-const logo = objectValue(property(themeConfig, "logo"), "themeConfig.logo")
-expect(stringValue(property(logo, "light"), "themeConfig.logo.light") === "/lo.svg", "Light logo must use /lo.svg")
-expect(stringValue(property(logo, "dark"), "themeConfig.logo.dark") === "/lo-white.svg", "Dark logo must use /lo-white.svg")
-expect(stringValue(property(logo, "alt"), "themeConfig.logo.alt") === "Lo", "Logo alt text must remain Lo")
+expect(optionalProperty(themeConfig, "logo") === undefined, "Nav title must stay text-only without themeConfig.logo")
 
 const head = arrayValue(property(config, "head"), "head")
 const iconLinks = head.elements.flatMap((entry) => {
@@ -391,10 +388,6 @@ expectDeclaration(chromeOrder, "order", "2")
 const navTitleFont = readDeclarations(findRule(css, [".VPNavBarTitle .title"], "nav title font size"))
 expectDeclaration(navTitleFont, "font-size", "15px")
 
-const navTitleLogo = readDeclarations(findRule(css, [".VPNavBarTitle img.logo"], "nav title logo size"))
-expectDeclaration(navTitleLogo, "width", "2.75rem", true)
-expectDeclaration(navTitleLogo, "min-width", "2.75rem", true)
-expectDeclaration(navTitleLogo, "flex", "0 0 2.75rem")
 
 const desktopNav = css.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(min-width: 960px)")
 expect(desktopNav.length === 1, "Expected exactly one min-width: 960px media query")

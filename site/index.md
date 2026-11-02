@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: Ayingott Design System
-  text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API.
-  tagline: A first-party showcase for the current main branch of @ayingott/theme.
+  text: One semantic API, four theme states.
+  tagline: Paper & Ink by default. Neo-Brutal by opt-in.
   actions:
     - theme: brand
       text: Compare theme families
@@ -15,11 +15,11 @@ hero:
 
 features:
   - title: Tailwind CSS v4
-    details: Foundation tokens are published through CSS-first `@theme static` blocks.
+    details: Foundation tokens are published through CSS-first <code>@theme static</code> blocks.
   - title: Two-axis themes
     details: "Scheme and family stay independent: Paper and Ink by default, Neo Light and Dark by opt-in."
   - title: Opt-in fonts
-    details: Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai are available through a separate fonts.css entry.
+    details: Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai are available through a separate <code>fonts.css</code> entry.
 ---
 
 ## Showcase scope

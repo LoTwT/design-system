@@ -11,7 +11,7 @@ if (version === "0.1.0" || version.includes("-"))
 
 const updates = {
   "site/index.md": [
-    ["text: Paper & Ink defaults with an upcoming opt-in Neo-Brutal family on one semantic API.", "text: Paper & Ink defaults with opt-in Neo-Brutal Light and Dark on one semantic API."],
+    ["text: Paper & Ink defaults with an upcoming opt-in Neo-Brutal family on one semantic API.", "text: One semantic API, four theme states."],
     ["> [!IMPORTANT]\n> This site follows the current `main` branch. Neo-Brutalism and the `brutal.css` entry are not included in npm `latest` (`0.1.0`) yet.\n\n", ""],
   ],
   "site/guide/getting-started.md": [

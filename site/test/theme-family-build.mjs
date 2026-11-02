@@ -560,7 +560,7 @@ async function verifyBrowserBehavior() {
     }
 
     // The nav title link must fit the fixed sidebar-width title box; the
-    // pinned font size, logo size, and slot padding are the mechanism,
+    // pinned font size and slot padding are the mechanism,
     // this layout invariant is what they protect.
     for (const width of [960, 1280]) {
       await page.setViewportSize({ height: 844, width })
