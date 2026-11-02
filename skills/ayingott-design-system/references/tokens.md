@@ -55,7 +55,7 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | `--accent-primary` | `--color-lavender-300` `#c7b6f5` | `--color-lavender-700` `#66569d` |
 | `--accent-primary-hover` | `--color-lavender-400` `#afa1e8` | `--color-lavender-800` `#51457c` |
 | `--accent-primary-active` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-900` `#3d345d` |
-| `--accent-soft` | `--color-lavender-100` `#eee8ff` | `rgb(156 143 217 / 0.18)` |
+| `--accent-soft` | `--color-lavender-100` `#eee8ff` | semantic literal `#2c2644` |
 | `--accent-contrast` | `--color-lavender-900` `#3d345d` | `#ffffff` |
 | `--accent-contrast-hover` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |
 | `--accent-contrast-active` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |

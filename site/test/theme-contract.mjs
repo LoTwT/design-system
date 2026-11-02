@@ -38,6 +38,7 @@ const requiredLegalPairIds = [
   "paper-muted-panel",
   "paper-muted-elevated",
   "paper-link-canvas",
+  "paper-muted-accent-soft",
   "paper-action-default",
   "paper-action-hover",
   "paper-action-active",
@@ -47,6 +48,7 @@ const requiredLegalPairIds = [
   "ink-muted-panel",
   "ink-muted-elevated",
   "ink-link-canvas",
+  "ink-muted-accent-soft",
   "ink-action-default",
   "ink-action-hover",
   "ink-action-active",
@@ -102,7 +104,7 @@ const requiredTargetPairIds = [
 ]
 const requiredContrastExemptionIds = ["disabled-action"]
 const requiredStateMappingsSha256 = "0e9b6ab9fa9bd7291b8fffaade046aecf74bffff8c2136ef055d5fbcfe75d5c8"
-const requiredLegalPairsSha256 = "f8b3e8ca452750f2c8bc4b57d68d5cad3bc480191f8c9817a5cd4af4fb348db8"
+const requiredLegalPairsSha256 = "e512c5f54eb679df068b96a3afc531ca17565742979c72153693a4259cad420c"
 const requiredContrastExemptionsSha256 = "20d9abd4f87114673b955184bcee2534d0bd2d1f39f66b2feb3188315c2324a7"
 
 const readSource = file => readSourceFromRoot(rootDir, file)

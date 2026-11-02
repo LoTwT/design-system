@@ -392,7 +392,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --accent-primary:        var(--color-lavender-700);
   --accent-primary-hover:  var(--color-lavender-800);
   --accent-primary-active: var(--color-lavender-900);
-  --accent-soft:           rgb(156 143 217 / 0.18);
+  --accent-soft:           #2c2644;  /* 不透明选中底：与 surface-muted 靠色相区分 */
   --accent-contrast:       #ffffff;
   --accent-contrast-hover: var(--accent-contrast);
   --accent-contrast-active: var(--accent-contrast);

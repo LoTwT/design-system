@@ -24,7 +24,7 @@ const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...bruta
 // roles, not internal aliases.
 const unchangedModeDigests = {
   paper: "4e7db16a268eeaa577828c41d420252c04099e17583e9f689e23590be30b797b",
-  ink: "17e76b8e130eec4149a8a814e1cb13fb980a6f92adadd3d57dd555e7d625d739",
+  ink: "7425e7885220700fb59b75da284d06b2f9fc2fb4895a99ab8dd7376134d72994",
   neoLight: "dcfde9f74db35196ec7a3db900ca4164c233c3a451d253a3ee928b6b1a2b13c6",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
