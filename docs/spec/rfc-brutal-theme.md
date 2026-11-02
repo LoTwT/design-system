@@ -99,8 +99,12 @@ The family uses flat sticker colors and direct literals held by its own contract
 | Green | `#3DDC84` | `#111111` |
 | Purple | `#C3A6FF` | `#111111` |
 | Orange | `#FF6B4A` | `#111111` |
+| Red | `#FF3B3B` | `#111111` |
+| Sky | `#5FA8FF` | `#111111` |
 
 Blue uses fixed pure white. Pure white on `#3D5AFE` is `5.132:1`; the light paper canvas on blue is only `4.654:1` and misses the internal target of `5:1`.
+
+Red and Sky are reserved for the danger and info statuses and keep the black sticker text (`5.34:1` and `7.67:1`). Danger no longer shares orange with the pressed primary action, and info no longer shares blue with `--text-accent` and the light focus ring. Status cards keep their icons, so red and orange are not distinguished by hue alone.
 
 Hard shadows are opt-in physical tokens:
 

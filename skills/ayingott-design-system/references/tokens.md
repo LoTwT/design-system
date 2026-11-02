@@ -177,7 +177,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Layer tokens
 
-- `--z-*`: 9 steps from `--z-base 0` to `--z-toast 1000`. Header sits at `--z-header 200`.
+- `--z-*`: 9 steps from `--z-base 0` to `--z-toast 1200`. Header sits at `--z-header 200`. Order: overlay 800 < modal 900 < popover 1000 < tooltip 1100 < toast 1200, so menus and tooltips opened from a dialog stay above it.
 - `--breakpoint-*`: 6 steps (xs, sm, md, lg, xl, 2xl).
 - `--container-*`: the theme adds only `--container-reading 42rem`, `--container-content 64rem`, and `--container-wide 80rem`. Size steps (`max-w-md`, `@md`, …) keep Tailwind's default container scale.
 - `--touch-target-min: 44px` (used by the `touch-target` utility).

@@ -1,7 +1,8 @@
 /* Original LXGW WenKai v1.522. Full font files; CSS limits use to CJK text. */
+/* A private family name keeps a locally installed LXGW WenKai from covering Latin text. */
 /* Exclude FE0E/FE0F so emoji presentation does not request unused CJK fonts. */
 @font-face {
-  font-family: "LXGW WenKai";
+  font-family: "Ayingott WenKai";
   font-style: normal;
   font-display: swap;
   font-weight: 400;
@@ -25,7 +26,7 @@
 }
 
 @font-face {
-  font-family: "LXGW WenKai";
+  font-family: "Ayingott WenKai";
   font-style: normal;
   font-display: swap;
   font-weight: 500;

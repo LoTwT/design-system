@@ -26,7 +26,7 @@ The same semantic names are overridden under `.dark`. Ink also flattens semantic
 
 ## Neo-Brutal Light and Dark
 
-Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue.
+Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue. Status stickers use black text: danger has its own `#FF3B3B` red, so it no longer matches the orange pressed primary action, and info uses `#5FA8FF` sky instead of the accent blue.
 
 The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and remaps the foundation `--border-width-surface` / `--border-width-control` structure roles to `--border-width-heavy`. It does not alter the default Paper/Ink entry.
 
@@ -39,6 +39,7 @@ Names such as `--surface-subtle`, `--surface-muted`, and `--accent-soft` express
 | Intent | Variables |
 | --- | --- |
 | Primary action foreground | `--accent-contrast`, `--accent-contrast-hover`, `--accent-contrast-active` |
+| Standalone indicator (checkbox, switch, progress, selected tab) | `--text-accent` (at least 3:1 on canvas, panel, elevated, and subtle surfaces; `--accent-primary` is about 2.7:1 in Paper) |
 | Neutral focus | `--focus-ring-color`, `--focus-ring-shadow` |
 | Accent focus | `--focus-ring-on-accent-color`, `--focus-ring-on-accent-shadow` |
 | Success | `--status-success-fg`, `--status-success-bg`, `--status-success-border` |
