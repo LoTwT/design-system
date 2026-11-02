@@ -30,15 +30,15 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.1 Color · Surface（6 阶，命名为 `--color-surface-0` ~ `-5`）
 
 ```css
---color-surface-0: #faf8f4;   /* Paper 主底（page bg）*/
---color-surface-1: #fffcf6;
---color-surface-2: #ffffff;   /* 卡片底色 */
---color-surface-3: #f1ede5;   /* code block / quote / 装饰二级背景 */
---color-surface-4: #e5e0d7;
---color-surface-5: #d8d1bf;   /* 弱化 / disabled 背景 */
+--color-surface-0: #f8f8f7;   /* Paper 主底（page bg）*/
+--color-surface-1: #f3f2f1;
+--color-surface-2: #fdfcfb;   /* 卡片底色 */
+--color-surface-3: #eeeeed;   /* code block / quote / 装饰二级背景 */
+--color-surface-4: #e2e1e0;
+--color-surface-5: #d2d1d0;   /* 弱化 / disabled 背景 */
 ```
 
-设计意图：暖米色调（不冷灰），与 slock.ai 暖白调性一致；6 阶让 surface 之间有细腻层级。
+设计意图：近中性纸白（极低彩度暖向，不发黄、不冷灰）；panel 略暗于 canvas，elevated 接近但不是纯白；6 阶让 surface 之间有细腻层级。
 
 ### 1.2 Color · Lavender（Primary Accent，11 阶）
 
@@ -56,23 +56,23 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 --color-lavender-950: #251f3a
 ```
 
-### 1.3 Color · Neutral（11 阶，暖棕灰）
+### 1.3 Color · Neutral（11 阶，近中性暖灰）
 
 ```css
---color-neutral-50:  #faf8f2
---color-neutral-100: #f2eee3
---color-neutral-200: #e2ddce
---color-neutral-300: #cbc2ad
---color-neutral-400: #a99d84
---color-neutral-500: #8b7f68
---color-neutral-600: #736a5c   /* public neutral ramp */
---color-neutral-700: #514a3e   /* text-secondary */
---color-neutral-800: #39342b
---color-neutral-900: #24211c
---color-neutral-950: #191713   /* ⭐ text-primary */
+--color-neutral-50:  #f9f8f6
+--color-neutral-100: #efeeec
+--color-neutral-200: #dedddb
+--color-neutral-300: #c4c2c0
+--color-neutral-400: #9f9e9c
+--color-neutral-500: #81807e
+--color-neutral-600: #6c6b69   /* public neutral ramp */
+--color-neutral-700: #4e4d4b   /* text-secondary */
+--color-neutral-800: #353433
+--color-neutral-900: #222120
+--color-neutral-950: #161615   /* ⭐ text-primary */
 ```
 
-设计意图：与暖米色 surface 协调的暖棕灰，比纯灰更"自然"；text-primary 用 `neutral-950` 在 surface-0 上对比度极强。
+设计意图：与近中性 surface 协调的极低彩度暖灰，去掉卡其黄，比纯灰更"自然"；text-primary 用 `neutral-950` 在 surface-0 上对比度极强。
 
 ### 1.4 Color · Decorative Hue Palettes（V0 ship 5 个 hue × 11 阶）
 
@@ -105,16 +105,16 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 --color-syntax-string:    #1d6f55  /* = mint-700 */
 --color-syntax-function:  #1d65bd  /* = sky-600 */
 --color-syntax-number:    #944b0f  /* = amber-700 */
---color-syntax-comment:   #6b6252  /* = Paper --text-muted */
---color-syntax-operator:  #514a3e  /* = neutral-700 */
+--color-syntax-comment:   #646361  /* = Paper --text-muted */
+--color-syntax-operator:  #4e4d4b  /* = neutral-700 */
 
 /* Ink（.dark）与 Neo Dark（.brutal.dark） */
 --color-syntax-keyword:   #c7b6f5  /* = lavender-300 */
 --color-syntax-string:    #84dfbd  /* = mint-300 */
 --color-syntax-function:  #8dc5ff  /* = sky-300 */
 --color-syntax-number:    #ffc94a  /* = amber-300 */
---color-syntax-comment:   #aa9e8b  /* = Ink --text-muted */
---color-syntax-operator:  #d7cdbc  /* = Ink --text-secondary */
+--color-syntax-comment:   #a4a3ac  /* = Ink --text-muted */
+--color-syntax-operator:  #cacad0  /* = Ink --text-secondary */
 ```
 
 Syntax token 随主题族与明暗模式切换；四种 root 状态下均在 canvas 与 `--reading-code-bg` 上达到 4.5:1，由两份 theme contract 的 legal pairs 校验。
@@ -321,13 +321,13 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   /* Text */
   --text-primary:      var(--color-neutral-950);
   --text-secondary:    var(--color-neutral-700);
-  --text-muted:        #6b6252;
+  --text-muted:        #646361;
   --text-inverse:      var(--color-surface-2);
   --text-accent:       var(--color-lavender-700);
 
   /* Border (rgb + alpha 派生 Paper text-primary) */
-  --border-subtle:     rgb(25 23 19 / 0.10);
-  --border-default:    rgb(25 23 19 / 0.16);
+  --border-subtle:     rgb(22 22 21 / 0.10);
+  --border-default:    rgb(22 22 21 / 0.16);
   --border-strong:     #85837f;  /* 控件边界：四种表面上 ≥3:1 */
 
   /* Accent */
@@ -373,20 +373,20 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 .dark {
   color-scheme: dark;
 
-  --surface-canvas:    #121019;
-  --surface-panel:     #191623;
-  --surface-elevated:  #211d2e;
-  --surface-subtle:    #2a2635;
-  --surface-muted:     #373142;
+  --surface-canvas:    #131318;
+  --surface-panel:     #1a191f;
+  --surface-elevated:  #222127;
+  --surface-subtle:    #2b2a30;
+  --surface-muted:     #36363d;
 
-  --text-primary:      #f7f1e6;
-  --text-secondary:    #d7cdbc;
-  --text-muted:        #aa9e8b;
+  --text-primary:      #e8e7ec;
+  --text-secondary:    #cacad0;
+  --text-muted:        #a4a3ac;
   --text-inverse:      var(--color-neutral-950);
   --text-accent:       var(--color-lavender-300);
 
-  --border-subtle:     rgb(247 241 230 / 0.10);
-  --border-default:    rgb(247 241 230 / 0.16);
+  --border-subtle:     rgb(232 231 236 / 0.10);
+  --border-default:    rgb(232 231 236 / 0.16);
   --border-strong:     #7d797b;  /* 控件边界：四种表面上 ≥3:1 */
 
   --accent-primary:        var(--color-lavender-300);
@@ -398,7 +398,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --accent-contrast-active: var(--accent-contrast);
 
   --focus-ring-color:  var(--color-lavender-300);
-  --focus-ring-shadow: 0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18);
+  --focus-ring-shadow: 0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18);
   --focus-ring-on-accent-color: var(--accent-contrast);
   --focus-ring-on-accent-shadow: 0 0 0 4px rgb(37 31 58 / 0.22);
 
@@ -427,7 +427,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 ### 3.4 Ink mode 实施细则
 
 1. **选择子**：`@custom-variant dark (&:where(.dark, .dark *))` 配 `.dark` class 触发（与 Tailwind v4 / shadcn 主流一致）
-2. **不简单反相**：dark surface 用偏深紫黑（`#121019` 系列）而非纯黑；text 用暖白 `#f7f1e6` 而非纯白；保持温度感
+2. **不简单反相**：dark surface 用低彩度紫黑（`#131318` 系列）而非纯黑；text 用与底同色相的冷白 `#e8e7ec`，亮度略低于纯白，避免冷暖对冲造成的荧光感
 3. **accent 提亮**：dark 模式用 `lavender-300` 而非 `lavender-500`（避免暗底刺眼，参考 §3.3 `--accent-primary` 映射）
 4. **focus ring 双层**：dark 下 outer ring 用更亮的 lavender + inner thin ring 用 text-primary alpha（参考 §3.3 `--focus-ring-shadow` 实测值）
 5. **status 使用成组角色**：foreground/background/border 组合均通过 contract contrast gate；状态文本不得只靠颜色表达
@@ -810,19 +810,19 @@ License：SIL OFL 1.1（详见 `packages/theme/THIRD_PARTY_NOTICES.md`）。
 
 ### 8.1 对比度（WCAG AA）
 
-实际值按当前 Paper 实施 hex 值计算（surface-0 `#faf8f4`，neutral-950 `#191713`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
+实际值按当前 Paper 实施 hex 值计算（surface-0 `#f8f8f7`，neutral-950 `#161615`，lavender 标准阶）。任何 hex 值修改后必须通过 `docs/spec/paper-ink-theme-contract.json` 的 fail-closed contrast gate，并用浏览器 a11y 检查复核。普通 active `--text-muted` 保留 WCAG `minimum: 4.5`，另设不四舍五入的内部发布 `target: 5.0`；两者不得合并。
 
 | 文本类型 | 最小比 | 实测比（V0 hex）| 适用范围 |
 |---|---|---|---|
-| `--text-primary` (#191713) on `--surface-canvas` (#faf8f4) | ≥ 4.5:1 | **16.87:1** ✅ | 所有正文 / heading / body |
-| `--text-secondary` (neutral-700 #514a3e) on canvas | ≥ 4.5:1 | **8.25:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
-| Paper `--text-muted` (#6b6252) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.67 / 5.87 / 6.01:1** ✅ | normal-size meta / caption / placeholder |
-| Ink `--text-muted` (#aa9e8b) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **7.16 / 6.75 / 6.23:1** ✅ | normal-size meta / caption / placeholder |
+| `--text-primary` (#161615) on `--surface-canvas` (#f8f8f7) | ≥ 4.5:1 | **17.04:1** ✅ | 所有正文 / heading / body |
+| `--text-secondary` (neutral-700 #4e4d4b) on canvas | ≥ 4.5:1 | **7.95:1** ✅ | 二级文本 / meta（达 AA 普通文本）|
+| Paper `--text-muted` (#646361) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **5.65 / 5.37 / 5.86:1** ✅ | normal-size meta / caption / placeholder |
+| Ink `--text-muted` (#a4a3ac) on canvas / panel / elevated | minimum ≥ 4.5:1；target ≥ 5:1 | **7.42 / 6.99 / 6.40:1** ✅ | normal-size meta / caption / placeholder |
 | `--text-accent` (lavender-700 #66569d) on canvas | ≥ 4.5:1 | **~5.8:1** ✅ | 内联链接 |
-| `--text-accent` on `--accent-soft` (lavender-100 #eee8ff) | ≥ 4.5:1 普通 / 3:1 大字 | **~5.0:1** ✅ | chip 上文字（接近 AA 阈值）|
+| `--text-accent` on `--accent-soft` (lavender-100 #eee8ff) | ≥ 4.5:1 普通 / 3:1 大字 | **~5.2:1** ✅ | chip 上文字（接近 AA 阈值）|
 
 应用约束：
-- **Chip / Tag 上文字优先 `--text-primary`**（在 accent-soft 上 ~14:1 ✅ 远超）；用 `--text-accent` 时确认对比度仍达 AA 普通文本
+- **Chip / Tag 上文字优先 `--text-primary`**（在 accent-soft 上 ~15:1 ✅ 远超）；用 `--text-accent` 时确认对比度仍达 AA 普通文本
 - **任何 hex 值变更后**重算并更新本表
 - `surface-subtle` 当前不是 active muted legal pair；新增真实用法前必须先扩 contract 并通过 minimum + target
 - `--text-muted` on `--surface-muted` 仅用于 native disabled mapping，继续保留 inactive-component exemption，不得冒充 active pair

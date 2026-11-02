@@ -23,8 +23,8 @@ const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...bruta
 // semantic/brutal.css reproduces the previous digests. Hash resolved public
 // roles, not internal aliases.
 const unchangedModeDigests = {
-  paper: "8881f2d852aa449f7d253647c94ca1e4331cb778aab90331af561b90b78ab904",
-  ink: "bd6b53df0a2e19697bc773c7d9ec53b5e73eb358d1d3543d352585eb0f748e2a",
+  paper: "f6f6e746fed58825798a20a2e0977eff17d98c5181233b266a4ad7512e38f43b",
+  ink: "b3452952404ec59f946719e27d9ba987af458512752a1f4cb0ef862c1332f2d9",
   neoLight: "dcfde9f74db35196ec7a3db900ca4164c233c3a451d253a3ee928b6b1a2b13c6",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
@@ -587,7 +587,7 @@ async function verifyBrowserBehavior() {
     })
     const paperSwatch = page.locator(".token-section").first().locator(".token-card > div").first()
     const paperSwatchColor = await paperSwatch.evaluate(element => getComputedStyle(element).backgroundColor)
-    expect(paperSwatchColor === "rgb(250, 248, 244)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
+    expect(paperSwatchColor === "rgb(248, 248, 247)", `Paper swatch must retain its source color under Dark Neo; received ${paperSwatchColor}`)
 
     await page.evaluate(() => {
       document.documentElement.classList.remove("dark")
@@ -596,8 +596,8 @@ async function verifyBrowserBehavior() {
       const style = getComputedStyle(element)
       return { background: style.backgroundColor, foreground: style.color }
     })
-    expect(inkPreviewColors.background === "rgb(18, 16, 25)", `Ink preview must retain its dark background under Light; received ${inkPreviewColors.background}`)
-    expect(inkPreviewColors.foreground === "rgb(247, 241, 230)", `Ink preview text must retain its light foreground under Light; received ${inkPreviewColors.foreground}`)
+    expect(inkPreviewColors.background === "rgb(19, 19, 24)", `Ink preview must retain its dark background under Light; received ${inkPreviewColors.background}`)
+    expect(inkPreviewColors.foreground === "rgb(232, 231, 236)", `Ink preview text must retain its light foreground under Light; received ${inkPreviewColors.foreground}`)
 
     await page.goto(`${origin}/tokens/effects`)
     await verifyUnchangedModes(page)

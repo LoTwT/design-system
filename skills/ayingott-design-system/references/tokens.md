@@ -22,28 +22,28 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 
 | Variable | Light source | Dark value |
 | --- | --- | --- |
-| `--surface-canvas` | `var(--color-surface-0)` `#faf8f4` | `#121019` |
-| `--surface-panel` | `var(--color-surface-1)` `#fffcf6` | `#191623` |
-| `--surface-elevated` | `var(--color-surface-2)` `#ffffff` | `#211d2e` |
-| `--surface-subtle` | `var(--color-surface-3)` `#f1ede5` | `#2a2635` |
-| `--surface-muted` | `var(--color-surface-4)` `#e5e0d7` | `#373142` |
+| `--surface-canvas` | `var(--color-surface-0)` `#f8f8f7` | `#131318` |
+| `--surface-panel` | `var(--color-surface-1)` `#f3f2f1` | `#1a191f` |
+| `--surface-elevated` | `var(--color-surface-2)` `#fdfcfb` | `#222127` |
+| `--surface-subtle` | `var(--color-surface-3)` `#eeeeed` | `#2b2a30` |
+| `--surface-muted` | `var(--color-surface-4)` `#e2e1e0` | `#36363d` |
 
 ### Text
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--text-primary` | `--color-neutral-950` `#191713` | `#f7f1e6` |
-| `--text-secondary` | `--color-neutral-700` `#514a3e` | `#d7cdbc` |
-| `--text-muted` | semantic literal `#6b6252` | `#aa9e8b` |
-| `--text-inverse` | `--color-surface-2` `#ffffff` | `--color-neutral-950` `#191713` |
+| `--text-primary` | `--color-neutral-950` `#161615` | `#e8e7ec` |
+| `--text-secondary` | `--color-neutral-700` `#4e4d4b` | `#cacad0` |
+| `--text-muted` | semantic literal `#646361` | `#a4a3ac` |
+| `--text-inverse` | `--color-surface-2` `#fdfcfb` | `--color-neutral-950` `#161615` |
 | `--text-accent` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 
 ### Borders
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--border-subtle` | `rgb(25 23 19 / 0.10)` | `rgb(247 241 230 / 0.10)` |
-| `--border-default` | `rgb(25 23 19 / 0.16)` | `rgb(247 241 230 / 0.16)` |
+| `--border-subtle` | `rgb(22 22 21 / 0.10)` | `rgb(232 231 236 / 0.10)` |
+| `--border-default` | `rgb(22 22 21 / 0.16)` | `rgb(232 231 236 / 0.16)` |
 | `--border-strong` | `#85837f` | `#7d797b` |
 
 `--border-strong` is a solid color so it can be contract-checked: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces. Use it wherever the border alone identifies a control.
@@ -65,7 +65,7 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | Variable | Light | Dark |
 | --- | --- | --- |
 | `--focus-ring-color` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
-| `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18)` |
+| `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18)` |
 | `--focus-ring-on-accent-color` | `--accent-contrast` `#251f3a` | `--accent-contrast` `#251f3a` |
 | `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(37 31 58 / 0.22)` |
 
@@ -127,7 +127,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Foundation palettes (use only when semantic vars do not fit)
 
-- **Surface** (warm paper ramp): `--color-surface-0` `#faf8f4` → `--color-surface-5` `#d8d1bf`. 6 steps.
+- **Surface** (near-neutral paper ramp): `--color-surface-0` `#f8f8f7` → `--color-surface-5` `#d2d1d0`. 6 steps.
 - **Lavender** (brand): `--color-lavender-50` → `--color-lavender-950`. 11 steps.
 - **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
