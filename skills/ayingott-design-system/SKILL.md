@@ -60,7 +60,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | --- | --- |
 | `--surface-canvas` | The page background. Near-neutral paper white in light, softly purple-tinged near-black in dark. |
 | `--surface-panel` | Sidebars, secondary panels. |
-| `--surface-elevated` | Cards. The only place pure white appears in V0 (light mode only). |
+| `--surface-elevated` | Cards. The lightest surface (near white, not pure white, in light mode). |
 | `--surface-subtle` | Inset chips, hover backgrounds, code block panels. The exact alpha and visual weight are family-relative. |
 | `--surface-muted` | Borders or backgrounds that need slightly more contrast than `subtle`. |
 | `--text-primary` | All body and heading text. |

@@ -67,7 +67,7 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | `--focus-ring-color` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 | `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18)` |
 | `--focus-ring-on-accent-color` | `--accent-contrast` `#3d345d` | `--accent-contrast` `#ffffff` |
-| `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(37 31 58 / 0.22)` |
+| `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22)` |
 
 ### Status
 
@@ -129,7 +129,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 - **Surface** (near-neutral paper ramp): `--color-surface-0` `#f8f8f7` → `--color-surface-5` `#d2d1d0`. 6 steps.
 - **Lavender** (brand): `--color-lavender-50` → `--color-lavender-950`. 11 steps.
-- **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
+- **Neutral** (near-neutral warm grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
 - **Status families** (4 steps each): `success`, `warning`, `danger`, `info` at `50 / 500 / 700 / 950`.
 - **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`. Mode-aware: `.dark`, `.brutal`, and `.brutal.dark` redeclare them, and every family meets 4.5:1 on the canvas and on `--reading-code-bg`.
@@ -160,7 +160,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Shadow
 
-- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Warm shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same warm tint.
+- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Near-neutral shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same tint.
 - Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow. `--shadow-card` / `--shadow-panel` are mode-remapped runtime variables; the `shadow-card` / `shadow-panel` utilities read them, so they follow Ink and Neo.
 - No inset shadows in V0.
 

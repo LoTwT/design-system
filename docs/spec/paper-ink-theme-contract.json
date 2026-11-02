@@ -101,7 +101,7 @@
       "focus-ring-color": "var(--color-lavender-300)",
       "focus-ring-shadow": "0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18)",
       "focus-ring-on-accent-color": "var(--accent-contrast)",
-      "focus-ring-on-accent-shadow": "0 0 0 4px rgb(37 31 58 / 0.22)",
+      "focus-ring-on-accent-shadow": "0 0 0 4px rgb(199 182 245 / 0.22)",
       "status-success": "#84dfbd",
       "status-success-fg": "#84dfbd",
       "status-success-bg": "var(--color-success-950)",

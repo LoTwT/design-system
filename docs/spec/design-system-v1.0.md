@@ -100,7 +100,7 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 ### 1.6 Color · Syntax Highlight（V0 ship 6 个 token）
 
 ```css
-/* Paper（:root）与 Neo Light（.brutal） */
+/* Paper（:root）与 Neo Light（.brutal）；Neo Light 的 comment / operator 仍为 #6b6252 / #514a3e（brutal.css） */
 --color-syntax-keyword:   #66569d  /* = lavender-700 */
 --color-syntax-string:    #1d6f55  /* = mint-700 */
 --color-syntax-function:  #1d65bd  /* = sky-600 */
@@ -108,7 +108,7 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 --color-syntax-comment:   #646361  /* = Paper --text-muted */
 --color-syntax-operator:  #4e4d4b  /* = neutral-700 */
 
-/* Ink（.dark）与 Neo Dark（.brutal.dark） */
+/* Ink（.dark）与 Neo Dark（.brutal.dark）；Neo Dark 的 comment / operator 仍为 #aa9e8b / #d7cdbc（brutal.css） */
 --color-syntax-keyword:   #c7b6f5  /* = lavender-300 */
 --color-syntax-string:    #84dfbd  /* = mint-300 */
 --color-syntax-function:  #8dc5ff  /* = sky-300 */
@@ -400,7 +400,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --focus-ring-color:  var(--color-lavender-300);
   --focus-ring-shadow: 0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18);
   --focus-ring-on-accent-color: var(--accent-contrast);
-  --focus-ring-on-accent-shadow: 0 0 0 4px rgb(37 31 58 / 0.22);
+  --focus-ring-on-accent-shadow: 0 0 0 4px rgb(199 182 245 / 0.22);
 
   --status-success:    #84dfbd;
   --status-success-fg: #84dfbd;
@@ -902,7 +902,7 @@ Consumer-side recipe（**必需**，consumer 自实施）：
 --text-primary, --text-secondary, --text-muted, --text-accent
 
 # Critical accent
---color-lavender-500, --color-lavender-700, --accent-primary, --accent-soft
+--color-lavender-300, --color-lavender-700, --accent-primary, --accent-soft
 
 # Critical interactive
 --shadow-md, focus-ring outline + box-shadow, touch-target output
@@ -934,7 +934,7 @@ pnpm add @ayingott/theme
 
 想要 Tailwind utility：consumer-side recipe（§6）。
 
-想要不同 accent：在 consumer app 覆盖 `--color-lavender-500` 或 `--accent-primary`。
+想要不同 accent：在 consumer app 覆盖 `--accent-primary` / `--accent-primary-hover` / `--accent-primary-active` 及对应 `--accent-contrast*`，以及 `--text-accent`（Paper 主操作派生自 lavender-300/400/500，Ink 派生自 lavender-700/800/900，只覆盖某一个 `--color-lavender-*` 阶不会完整替换 accent）。
 
 ### 10.2 分叉 / 派生设计系统
 

@@ -42,8 +42,8 @@ const requiredSyntaxPairIds = ["light", "dark"].flatMap(mode =>
     ["keyword", "string", "function", "number", "comment", "operator"].map(token => `brutal-${mode}-syntax-${token}-${background}`)))
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "4f5541befc18f6d13a67c5c639967c594b5735a6200d8b3cb0394f21608c590e",
-  paperInkContractSha256: "59cd8142e5096a0aa7d583629f885dd4dff5e4aae3cdc3f1fd16f6454ff2ca99",
+  compiledSha256: "fe5e3f60601119c8da040eb9a5dc71336c43c0cfcdb451a57dcdddfeebd2f44e",
+  paperInkContractSha256: "7fc010485ef0f529100a527f2d7932385dc79d660d82e64c88cd7f3fdd032551",
 }
 
 function fileSha256(file) {
