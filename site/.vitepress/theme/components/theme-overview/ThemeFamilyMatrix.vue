@@ -3,9 +3,9 @@ import ThemeIcon from "./ThemeIcon.vue"
 </script>
 
 <template>
-  <section class="theme-section theme-family" data-index="§ 1.5" aria-labelledby="theme-family-matrix">
+  <section class="theme-section theme-family" data-index="§ 2.0" aria-labelledby="theme-family-matrix">
     <div class="theme-section__heading">
-      <h2 id="theme-family-matrix">Theme matrix</h2>
+      <h2 id="theme-family-matrix">Theme Matrix</h2>
     </div>
 
     <dl class="theme-mode-matrix" aria-label="Effective theme selectors">
@@ -51,7 +51,7 @@ import ThemeIcon from "./ThemeIcon.vue"
             <ThemeIcon name="info" />
             <div class="theme-status__copy">
               <strong>Info sticker</strong>
-              <p>Pure white stays bound to blue.</p>
+              <p>Black ink stays on sky blue.</p>
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ import ThemeIcon from "./ThemeIcon.vue"
         </header>
         <div class="theme-brutal-specimen__panel">
           <p class="theme-brutal-specimen__eyebrow">Same roles, dark scheme</p>
-          <h3>Paper ink flips. Stickers do not.</h3>
+          <h3>Canvas flips. Stickers do not.</h3>
           <p class="theme-brutal-reading">The scheme axis changes canvas, reading, border, and focus roles without changing the component structure.</p>
           <div class="theme-brutal-specimen__actions">
             <button class="theme-action theme-action--primary pressable focus-ring touch-target" type="button">Pressable</button>

@@ -1,6 +1,6 @@
 # Touch Target
 
-V0 ships two touch utilities with different minimum-size rules:
+The theme ships two touch utilities with different minimum-size rules:
 
 - `touch-target` sets both the minimum width and minimum height.
 - `touch-target-inline` sets the minimum height and adds horizontal padding for text links; it does not independently guarantee a 44px minimum width.
@@ -25,7 +25,7 @@ touch-target-inline
 
 `--touch-target-min` defaults to `2.75rem` (44px).
 
-## Neo-Brutal pressable
+## Neo-Brutal Pressable
 
 `pressable` ships only through `@ayingott/theme/brutal.css` and only moves inside `.brutal`. Compose it with the default accessibility utilities:
 
@@ -33,7 +33,7 @@ touch-target-inline
 <button class="pressable focus-ring touch-target">Action</button>
 ```
 
-Hover lifts by `-2px` on both axes; active presses by `6px`; disabled controls do not move. The utility owns local reduced-motion and forced-colors fallbacks. It does not replace focus or target-size behavior.
+Hover lifts the control `2px` up and left; active presses it `6px` down and right; disabled controls do not move. The utility owns local reduced-motion and forced-colors fallbacks. It does not replace focus or target-size behavior.
 
 <div class="brutal grid gap-5 p-5" style="overflow: visible; background: var(--surface-canvas); color: var(--text-primary);">
   <button class="theme-action theme-action--primary pressable focus-ring touch-target">Pressable</button>

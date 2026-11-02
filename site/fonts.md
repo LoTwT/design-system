@@ -69,7 +69,7 @@ Emoji/text presentation selectors (`FE0E` / `FE0F`) are excluded, so English tex
 
 The bundled WenKai faces use the private CSS family name `"Ayingott WenKai"`. Without `fonts.css`, that name matches nothing, so a locally installed LXGW WenKai cannot take over Latin body or code text.
 
-On macOS and Windows, loaded webfonts take priority over system fallbacks. If they are unavailable, the browser follows each role's fallback stack. Chinese body/display text can fall back through `system-ui`, PingFang SC, Hiragino Sans GB, Microsoft YaHei, and `sans-serif`; reading and mono keep their role-specific fallbacks. Rendering can still vary slightly with the operating system.
+Loaded webfonts take priority over system fallbacks. If they are unavailable, the browser follows each role's fallback stack. Chinese body/display text can fall back through `system-ui`, PingFang SC, Hiragino Sans GB, Microsoft YaHei, and `sans-serif`; reading and mono keep their role-specific fallbacks. Rendering can still vary slightly with the operating system.
 
 ## Bundled Files
 

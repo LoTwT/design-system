@@ -1,6 +1,6 @@
 # Semantic Variables
 
-Semantic variables are runtime CSS variables. They do not generate Tailwind utilities in V0.
+Semantic variables are runtime CSS variables. They do not generate Tailwind utilities.
 
 ## Paper
 
@@ -26,15 +26,15 @@ The same semantic names are overridden under `.dark`. Ink also flattens semantic
 
 ## Neo-Brutal Light and Dark
 
-Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue. Status stickers use black text: danger has its own `#FF3B3B` red, so it no longer matches the orange pressed primary action, and info uses `#5FA8FF` sky instead of the accent blue.
+Neo-Brutalism uses the same semantic and reading names through the opt-in `brutal.css` entry. `.brutal` activates Neo Light; `.brutal.dark` activates Neo Dark. Sticker colors remain fixed across schemes, including pure white text on `#3D5AFE` blue. Status stickers use black text: danger uses its own `#FF3B3B` red, distinct from the orange pressed primary action, and info uses `#5FA8FF` sky, distinct from the accent blue.
 
 The family also remaps `--radius-card`, `--radius-control`, `--shadow-card`, and `--shadow-panel`, and remaps the foundation `--border-width-surface` / `--border-width-control` structure roles to `--border-width-heavy`. It does not alter the default Paper/Ink entry.
 
-Use `--text-muted` for active muted UI copy such as helper text and metadata. A physical color utility such as `text-neutral-600` can still serve decorative or explicitly fixed-color work, but it is not the default for semantic copy.
+Use `--text-muted` for active muted UI copy such as helper text and metadata; disabled controls are a separate case. A physical color utility such as `text-neutral-600` can still serve decorative or explicitly fixed-color work, but it is not the default for semantic copy.
 
 Names such as `--surface-subtle`, `--surface-muted`, and `--accent-soft` express family-relative intent. They do not promise the same alpha, literal color, or visual weight across Paper, Ink, Neo Light, and Neo Dark.
 
-## Interaction and status roles
+## Interaction and Status Roles
 
 | Intent | Variables |
 | --- | --- |

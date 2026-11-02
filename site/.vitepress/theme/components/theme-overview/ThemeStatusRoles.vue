@@ -29,7 +29,7 @@ import ThemeIcon from "./ThemeIcon.vue"
       <ThemeIcon name="info" />
       <div class="theme-status__copy">
         <strong>Info</strong>
-        <p>For your information.</p>
+        <p>A new version is available.</p>
       </div>
     </article>
   </div>

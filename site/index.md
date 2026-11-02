@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: Tailwind CSS v4
-    details: Foundation tokens are published through CSS-first @theme static files.
+    details: Foundation tokens are published through CSS-first `@theme static` blocks.
   - title: Two-axis themes
     details: "Scheme and family stay independent: Paper and Ink by default, Neo Light and Dark by opt-in."
   - title: Opt-in Fonts
