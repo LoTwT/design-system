@@ -1,4 +1,4 @@
-# Focus Ring
+# Focus ring
 
 V0 ships two focus utilities:
 

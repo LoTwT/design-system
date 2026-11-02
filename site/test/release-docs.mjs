@@ -103,7 +103,7 @@ try {
   for (const source of [homepage, gettingStarted, packageContract])
     expect(!source.includes("not included in npm `latest`"), "Stable release docs must remove the main-only Neo notice")
 
-  expect(homepage.includes("Paper & Ink defaults with opt-in Neo-Brutal Light and Dark"), "Stable release docs must promote the Neo homepage copy")
+  expect(homepage.includes("text: One semantic API, four theme states."), "Stable release docs must promote the Neo homepage copy")
   expect(packageContract.includes("`@ayingott/theme` exposes five public entries:"), "Stable release docs must promote the public package contract")
 
   const stableBeforePrerelease = sources(stableFixture)

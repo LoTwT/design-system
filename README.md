@@ -32,7 +32,7 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs font-vendoring failure tests, source smoke, package dry-run, real-tarball consumer install/compile, and site contrast gates. Python 3 is required for the vendoring tests; they use only the standard library and run offline.
+`pnpm check` runs font-vendoring failure tests, source smoke, package dry-run, real-tarball consumer install/compile against both the Tailwind peer floor (`4.0.0`) and the workspace version, site contrast gates, and living-doc token checks. Python 3 is required for the vendoring tests; they use only the standard library and run offline.
 
 ## Release
 
@@ -40,7 +40,7 @@ Release versions are shared by every repository `package.json`.
 
 ```bash
 pnpm release:bump        # patch bump
-pnpm release:bump 0.0.1  # explicit version
+pnpm release:bump X.Y.Z  # explicit version
 ```
 
 Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the release workflow, which validates release metadata, publishes `@ayingott/theme` through npm Trusted Publishing / OIDC, creates a GitHub Release from git-cliff notes, and runs registry install smoke. The release tag ruleset is the pre-publish control; the `npm-publish` environment is an OIDC binding and is not a protected approval gate. See [DS-D-09](docs/release/DS-D-09-release.md) for workflow mechanics, [DS-D-14](docs/release/DS-D-14-exact-release-push.md) for the atomic commit-and-tag push, and [DS-D-15](docs/release/DS-D-15-v0.3-release-controls.md) for current V0.3.x controls and accepted residuals. [DS-D-12](docs/release/DS-D-12-v0.2-release-controls.md) records the preceding V0.2.x decision.

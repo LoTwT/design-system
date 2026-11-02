@@ -4,7 +4,7 @@ import ThemeStatusRoles from "./ThemeStatusRoles.vue"
 </script>
 
 <template>
-  <section class="theme-section" data-index="§ 3.0" aria-labelledby="interaction-states">
+  <section class="theme-section" data-index="§ 4.0" aria-labelledby="interaction-states">
     <div class="theme-section__heading">
       <h2 id="interaction-states">Interaction states</h2>
     </div>

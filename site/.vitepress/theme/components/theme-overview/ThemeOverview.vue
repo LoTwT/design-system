@@ -11,8 +11,8 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
         <h2 id="about-semantic-tokens">About semantic tokens</h2>
       </div>
       <div class="theme-prose">
-        <p>Semantic tokens are named values that describe intent, not appearance. They map to CSS custom properties that can be consumed directly in any project, without JavaScript or a runtime.</p>
-        <p>This paired theme provides a calm, high-contrast reading surface with disciplined spacing and type scale. It is optimized for long-form reading, documentation, and code, designed to stay out of your way.</p>
+        <p>Semantic tokens are named values that describe intent, not appearance. They map to CSS custom properties that can be consumed directly in any project, without JavaScript or a framework adapter.</p>
+        <p>Paper and Ink give long-form reading, documentation, and code a calm, high-contrast surface. Neo Light and Dark keep the same roles and spacing, and swap in hard borders, flat stickers, and press feedback.</p>
       </div>
     </section>
 
@@ -20,7 +20,7 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
     <ThemeReadingSpecimen class="theme-section--reading" />
     <ThemeInteractionStates />
 
-    <section class="theme-section theme-section--source" data-index="§ 4.0" aria-labelledby="token-source">
+    <section class="theme-section theme-section--source" data-index="§ 5.0" aria-labelledby="token-source">
       <div class="theme-section__heading">
         <h2 id="token-source">Token source</h2>
       </div>

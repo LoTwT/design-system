@@ -1,4 +1,4 @@
-# Getting Started
+# Getting started
 
 Install the theme package in a Tailwind CSS v4 project:
 
@@ -13,7 +13,7 @@ Import the theme CSS:
 @import "@ayingott/theme";
 ```
 
-Opt in to bundled fonts when the project should use Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai for Chinese text:
+Opt in to bundled fonts when the project should use Bricolage Grotesque, Space Mono, and Literata, plus LXGW WenKai for Chinese text:
 
 ```css
 @import "tailwindcss";

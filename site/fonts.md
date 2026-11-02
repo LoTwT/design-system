@@ -59,7 +59,7 @@ Space Mono remains the Latin monospace face. WenKai supplies Chinese glyphs; its
   </p>
 </div>
 
-## Loading and Fallbacks
+## Loading and fallbacks
 
 Import `@ayingott/theme/fonts.css` once, before `@ayingott/theme`. This site already does so. Font files are self-hosted and use `font-display: swap`.
 
@@ -69,9 +69,9 @@ Emoji/text presentation selectors (`FE0E` / `FE0F`) are excluded, so English tex
 
 The bundled WenKai faces use the private CSS family name `"Ayingott WenKai"`. Without `fonts.css`, that name matches nothing, so a locally installed LXGW WenKai cannot take over Latin body or code text.
 
-On macOS and Windows, loaded webfonts take priority over system fallbacks. If they are unavailable, the browser follows each role's fallback stack. Chinese body/display text can fall back through `system-ui`, PingFang SC, Hiragino Sans GB, Microsoft YaHei, and `sans-serif`; reading and mono keep their role-specific fallbacks. Rendering can still vary slightly with the operating system.
+Loaded webfonts take priority over system fallbacks. If they are unavailable, the browser follows each role's fallback stack. Chinese body/display text can fall back through `system-ui`, PingFang SC, Hiragino Sans GB, Microsoft YaHei, and `sans-serif`; reading and mono keep their role-specific fallbacks. Rendering can still vary slightly with the operating system.
 
-## Bundled Files
+## Bundled files
 
 - `bricolage-grotesque-latin-opsz-wght-normal.woff2`
 - `bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`

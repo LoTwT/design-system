@@ -1,4 +1,4 @@
-# Touch Target
+# Touch target
 
 V0 ships two touch utilities with different minimum-size rules:
 
@@ -33,7 +33,7 @@ touch-target-inline
 <button class="pressable focus-ring touch-target">Action</button>
 ```
 
-Hover lifts by `-2px` on both axes; active presses by `6px`; disabled controls do not move. The utility owns local reduced-motion and forced-colors fallbacks. It does not replace focus or target-size behavior.
+Hover lifts the control `2px` up and left; active presses it `6px` down and right; disabled controls do not move. The utility owns local reduced-motion and forced-colors fallbacks. It does not replace focus or target-size behavior.
 
 <div class="brutal grid gap-5 p-5" style="overflow: visible; background: var(--surface-canvas); color: var(--text-primary);">
   <button class="theme-action theme-action--primary pressable focus-ring touch-target">Pressable</button>
