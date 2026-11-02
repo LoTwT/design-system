@@ -71,7 +71,7 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--border-subtle` | Default divider weight. Alpha of the text color in both modes. |
 | `--border-default` | Card outlines. |
 | `--border-strong` | Essential control boundaries such as text inputs (at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family), outline buttons, and hover emphasis. |
-| `--accent-primary` | Primary brand surfaces (CTA backgrounds, brand decoration). Not a standalone indicator: Paper's value is about 2.7:1 on the canvas. Pair it with `--accent-contrast` content or use `--text-accent` for indicators. |
+| `--accent-primary` | Primary brand surfaces (CTA backgrounds, brand decoration). Not a standalone indicator: Paper's light lavender fill is about 1.7:1 on the canvas. Pair it with `--accent-contrast` content or use `--text-accent` for indicators. |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |
 | `--accent-contrast` / `-hover` / `-active` | Text or icons on the matching `--accent-primary` / `-hover` / `-active` backgrounds. |

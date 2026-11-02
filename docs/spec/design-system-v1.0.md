@@ -46,9 +46,9 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 --color-lavender-50:  #f7f4ff
 --color-lavender-100: #eee8ff
 --color-lavender-200: #ded4ff
---color-lavender-300: #c7b6f5
+--color-lavender-300: #c7b6f5   /* ⭐ Paper primary action fill */
 --color-lavender-400: #afa1e8
---color-lavender-500: #9c8fd9   /* ⭐ primary accent */
+--color-lavender-500: #9c8fd9
 --color-lavender-600: #7f70bf
 --color-lavender-700: #66569d   /* 链接 / 强调 */
 --color-lavender-800: #51457c
@@ -331,13 +331,13 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --border-strong:     #85837f;  /* 控件边界：四种表面上 ≥3:1 */
 
   /* Accent */
-  --accent-primary:        var(--color-lavender-500);
-  --accent-primary-hover:  var(--color-lavender-700);
-  --accent-primary-active: var(--color-lavender-800);
+  --accent-primary:        var(--color-lavender-300);
+  --accent-primary-hover:  var(--color-lavender-400);
+  --accent-primary-active: var(--color-lavender-500);
   --accent-soft:           var(--color-lavender-100);
-  --accent-contrast:       var(--color-lavender-950);
-  --accent-contrast-hover: var(--text-inverse);
-  --accent-contrast-active: var(--text-inverse);
+  --accent-contrast:       var(--color-lavender-900);
+  --accent-contrast-hover: var(--color-lavender-950);
+  --accent-contrast-active: var(--color-lavender-950);
 
   /* Focus ring */
   --focus-ring-color:  var(--color-lavender-700);
@@ -389,11 +389,11 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
   --border-default:    rgb(232 231 236 / 0.16);
   --border-strong:     #7d797b;  /* 控件边界：四种表面上 ≥3:1 */
 
-  --accent-primary:        var(--color-lavender-300);
-  --accent-primary-hover:  var(--color-lavender-200);
-  --accent-primary-active: var(--color-lavender-100);
+  --accent-primary:        var(--color-lavender-700);
+  --accent-primary-hover:  var(--color-lavender-800);
+  --accent-primary-active: var(--color-lavender-900);
   --accent-soft:           rgb(156 143 217 / 0.18);
-  --accent-contrast:       var(--color-lavender-950);
+  --accent-contrast:       #ffffff;
   --accent-contrast-hover: var(--accent-contrast);
   --accent-contrast-active: var(--accent-contrast);
 
@@ -428,7 +428,7 @@ V0 semantic vars **不**承诺生成 `bg-surface-canvas` / `text-primary` 等 Ta
 
 1. **选择子**：`@custom-variant dark (&:where(.dark, .dark *))` 配 `.dark` class 触发（与 Tailwind v4 / shadcn 主流一致）
 2. **不简单反相**：dark surface 用低彩度紫黑（`#131318` 系列）而非纯黑；text 用与底同色相的冷白 `#e8e7ec`，亮度略低于纯白，避免冷暖对冲造成的荧光感
-3. **accent 提亮**：dark 模式用 `lavender-300` 而非 `lavender-500`（避免暗底刺眼，参考 §3.3 `--accent-primary` 映射）
+3. **主操作填充收敛**：Paper 用浅填充 `lavender-300` + 深紫字，Ink 用实心 `lavender-700` + 白字，两种模式的按钮分量接近，且都不使用近黑文字（参考 §3.3 `--accent-primary` 映射）；链接等文字强调仍用 `--text-accent`（Ink 为 `lavender-300`）
 4. **focus ring 双层**：dark 下 outer ring 用更亮的 lavender + inner thin ring 用 text-primary alpha（参考 §3.3 `--focus-ring-shadow` 实测值）
 5. **status 使用成组角色**：foreground/background/border 组合均通过 contract contrast gate；状态文本不得只靠颜色表达
 6. **depth 收平**：Ink 将 `--shadow-card` / `--shadow-panel` 映射为 `--shadow-none`，保持 Paper/Ink anatomy 一致但降低暗色深度噪音
@@ -453,7 +453,7 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
   --reading-bg: var(--surface-canvas);
   --reading-fg-muted: var(--text-secondary);
   --reading-link: var(--text-accent);
-  --reading-link-hover: var(--accent-primary-active);
+  --reading-link-hover: var(--color-lavender-800);
   --reading-accent: var(--accent-primary);
   --reading-code-fg: var(--text-primary);
   --reading-code-bg: var(--surface-subtle);
@@ -471,7 +471,7 @@ V0.1 新增 long-form reading 语义层，供 miru 文档阅读、ayingott.me bl
 }
 ```
 
-`--reading-link` 必须使用 `--text-accent`。不要绑定 `--accent-primary`；light 模式下当前 `--accent-primary` 在 `--surface-canvas` 上只有 2.75:1，不满足正文链接 AA。V0.1 smoke gate 会验证 reading fg / muted / link / code foreground 在 light 和 dark 下均达到 4.5:1。
+`--reading-link` 必须使用 `--text-accent`。不要绑定 `--accent-primary`；light 模式下当前 `--accent-primary` 在 `--surface-canvas` 上只有约 1.7:1，不满足正文链接 AA。V0.1 smoke gate 会验证 reading fg / muted / link / code foreground 在 light 和 dark 下均达到 4.5:1。
 
 ### 3.6 Neo-Brutalism opt-in family
 
@@ -694,10 +694,10 @@ V0 theme 不 ship `float-gentle` keyframes（参考 §1.15 [FUTURE]）。consume
 
 暗色模式不只是颜色反转，还包括：
 
-1. **accent 提亮**：light 用 `--accent-primary` (lavender-500)，dark 自动变成 lavender-300（V0 已映射，consumer 写 `var(--accent-primary)` 即可）
+1. **主操作填充**：light 用 `--accent-primary` (lavender-300)，dark 自动变成 lavender-700（V0 已映射，consumer 写 `var(--accent-primary)` 即可）
 2. **阴影注意**：V0 shadow token 在 dark 视觉效果会自动变弱（rgb 阴影 + 暗底）；consumer 如需 dark 加强，可在自己 .dark 段覆盖 `--shadow-md` 等
 3. **focus ring 双层**：V0 dark `--focus-ring-shadow` 已含 outer + inner 双层（参考 §3.3）
-4. **装饰元素降低饱和**：dark mode 装饰用 `var(--color-lavender-300)` 而非 500（与 accent 一致）
+4. **装饰元素降低饱和**：dark mode 若需要较亮的装饰线条可用 `var(--color-lavender-300)`（与 `--text-accent` 一致）；`--accent-primary` 在 dark 为实心 700 填充
 5. **Code highlight 暗色**：V0 `--color-syntax-*` 在 light 已偏深，dark mode 显示对比足够；如需进一步提亮，consumer 在 `.dark` 段覆盖
 
 ---

@@ -50,6 +50,10 @@
   --vp-sidebar-bg-color: color-mix(in oklab, var(--surface-canvas) 60%, var(--surface-subtle));
 }
 
+.VPSidebarItem.is-active > .item .text {
+  font-weight: var(--font-weight-semibold);
+}
+
 .VPNavBarTitle .title,
 .VPHomeHero .name,
 .VPDoc h1,
@@ -95,8 +99,13 @@
   outline: revert-layer;
 }
 
+/* VitePress centers button text with a 38px line-height; the 44px touch
+   target would otherwise add all extra height below the text. */
 .VPButton.brand,
 .VPButton.alt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: var(--touch-target-min);
   min-height: var(--touch-target-min);
 }
@@ -628,7 +637,7 @@
 }
 
 .theme-inline-link:hover {
-  color: var(--accent-primary-active);
+  color: var(--reading-link-hover);
 }
 
 .theme-form-row {
@@ -767,6 +776,14 @@
 
 .theme-choice input {
   accent-color: var(--accent-primary-active);
+}
+
+:root:not(.brutal) .theme-choice:has(input:checked) {
+  border-color: var(--text-accent);
+}
+
+:root:not(.brutal) .theme-choice input {
+  accent-color: var(--text-accent);
 }
 
 .theme-status-grid {

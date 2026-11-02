@@ -19,11 +19,11 @@
   --border-default: rgb(232 231 236 / 0.16);
   --border-strong: #7d797b;
 
-  --accent-primary: var(--color-lavender-300);
-  --accent-primary-hover: var(--color-lavender-200);
-  --accent-primary-active: var(--color-lavender-100);
+  --accent-primary: var(--color-lavender-700);
+  --accent-primary-hover: var(--color-lavender-800);
+  --accent-primary-active: var(--color-lavender-900);
   --accent-soft: rgb(156 143 217 / 0.18);
-  --accent-contrast: var(--color-lavender-950);
+  --accent-contrast: #ffffff;
   --accent-contrast-hover: var(--accent-contrast);
   --accent-contrast-active: var(--accent-contrast);
 

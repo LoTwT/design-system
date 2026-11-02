@@ -39,7 +39,7 @@ Names such as `--surface-subtle`, `--surface-muted`, and `--accent-soft` express
 | Intent | Variables |
 | --- | --- |
 | Primary action foreground | `--accent-contrast`, `--accent-contrast-hover`, `--accent-contrast-active` |
-| Standalone indicator (checkbox, switch, progress, selected tab) | `--text-accent` (at least 3:1 on canvas, panel, elevated, and subtle surfaces; `--accent-primary` is about 2.7:1 in Paper) |
+| Standalone indicator (checkbox, switch, progress, selected tab) | `--text-accent` (at least 3:1 on canvas, panel, elevated, and subtle surfaces; `--accent-primary` is about 1.7:1 in Paper) |
 | Neutral focus | `--focus-ring-color`, `--focus-ring-shadow` |
 | Accent focus | `--focus-ring-on-accent-color`, `--focus-ring-on-accent-shadow` |
 | Success | `--status-success-fg`, `--status-success-bg`, `--status-success-border` |

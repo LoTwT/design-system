@@ -52,13 +52,13 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--accent-primary` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-300` `#c7b6f5` |
-| `--accent-primary-hover` | `--color-lavender-700` `#66569d` | `--color-lavender-200` `#ded4ff` |
-| `--accent-primary-active` | `--color-lavender-800` `#51457c` | `--color-lavender-100` `#eee8ff` |
+| `--accent-primary` | `--color-lavender-300` `#c7b6f5` | `--color-lavender-700` `#66569d` |
+| `--accent-primary-hover` | `--color-lavender-400` `#afa1e8` | `--color-lavender-800` `#51457c` |
+| `--accent-primary-active` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-900` `#3d345d` |
 | `--accent-soft` | `--color-lavender-100` `#eee8ff` | `rgb(156 143 217 / 0.18)` |
-| `--accent-contrast` | `--color-lavender-950` `#251f3a` | `--color-lavender-950` `#251f3a` |
-| `--accent-contrast-hover` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
-| `--accent-contrast-active` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
+| `--accent-contrast` | `--color-lavender-900` `#3d345d` | `#ffffff` |
+| `--accent-contrast-hover` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |
+| `--accent-contrast-active` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |
 
 ### Focus
 
@@ -66,7 +66,7 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 | --- | --- | --- |
 | `--focus-ring-color` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 | `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18)` |
-| `--focus-ring-on-accent-color` | `--accent-contrast` `#251f3a` | `--accent-contrast` `#251f3a` |
+| `--focus-ring-on-accent-color` | `--accent-contrast` `#3d345d` | `--accent-contrast` `#ffffff` |
 | `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(37 31 58 / 0.22)` |
 
 ### Status
@@ -96,7 +96,7 @@ Each status also exposes `-fg`, `-bg`, and `-border` roles. Paper uses the `700`
 | `--reading-bg` | `var(--surface-canvas)` |
 | `--reading-fg-muted` | `var(--text-secondary)` |
 | `--reading-link` | `var(--text-accent)` |
-| `--reading-link-hover` | Light: `var(--accent-primary-active)`; dark: `var(--color-lavender-200)` |
+| `--reading-link-hover` | Light: `var(--color-lavender-800)`; dark: `var(--color-lavender-200)` |
 | `--reading-accent` | `var(--accent-primary)` |
 | `--reading-code-fg` | `var(--text-primary)` |
 | `--reading-code-bg` | `var(--surface-subtle)` |
