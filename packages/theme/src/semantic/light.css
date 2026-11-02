@@ -9,21 +9,21 @@
 
   --text-primary: var(--color-neutral-950);
   --text-secondary: var(--color-neutral-700);
-  --text-muted: #6b6252;
+  --text-muted: #646361;
   --text-inverse: var(--color-surface-2);
   --text-accent: var(--color-lavender-700);
 
-  --border-subtle: rgb(25 23 19 / 0.1);
-  --border-default: rgb(25 23 19 / 0.16);
+  --border-subtle: rgb(22 22 21 / 0.1);
+  --border-default: rgb(22 22 21 / 0.16);
   --border-strong: #85837f;
 
-  --accent-primary: var(--color-lavender-500);
-  --accent-primary-hover: var(--color-lavender-700);
-  --accent-primary-active: var(--color-lavender-800);
+  --accent-primary: var(--color-lavender-300);
+  --accent-primary-hover: var(--color-lavender-400);
+  --accent-primary-active: var(--color-lavender-500);
   --accent-soft: var(--color-lavender-100);
-  --accent-contrast: var(--color-lavender-950);
-  --accent-contrast-hover: var(--text-inverse);
-  --accent-contrast-active: var(--text-inverse);
+  --accent-contrast: var(--color-lavender-900);
+  --accent-contrast-hover: var(--color-lavender-950);
+  --accent-contrast-active: var(--color-lavender-950);
 
   --focus-ring-color: var(--color-lavender-700);
   --focus-ring-shadow: 0 0 0 4px rgb(102 86 157 / 0.18);

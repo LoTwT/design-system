@@ -22,28 +22,28 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 
 | Variable | Light source | Dark value |
 | --- | --- | --- |
-| `--surface-canvas` | `var(--color-surface-0)` `#faf8f4` | `#121019` |
-| `--surface-panel` | `var(--color-surface-1)` `#fffcf6` | `#191623` |
-| `--surface-elevated` | `var(--color-surface-2)` `#ffffff` | `#211d2e` |
-| `--surface-subtle` | `var(--color-surface-3)` `#f1ede5` | `#2a2635` |
-| `--surface-muted` | `var(--color-surface-4)` `#e5e0d7` | `#373142` |
+| `--surface-canvas` | `var(--color-surface-0)` `#f8f8f7` | `#131318` |
+| `--surface-panel` | `var(--color-surface-1)` `#f3f2f1` | `#1a191f` |
+| `--surface-elevated` | `var(--color-surface-2)` `#fdfcfb` | `#222127` |
+| `--surface-subtle` | `var(--color-surface-3)` `#eeeeed` | `#2b2a30` |
+| `--surface-muted` | `var(--color-surface-4)` `#e2e1e0` | `#36363d` |
 
 ### Text
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--text-primary` | `--color-neutral-950` `#191713` | `#f7f1e6` |
-| `--text-secondary` | `--color-neutral-700` `#514a3e` | `#d7cdbc` |
-| `--text-muted` | semantic literal `#6b6252` | `#aa9e8b` |
-| `--text-inverse` | `--color-surface-2` `#ffffff` | `--color-neutral-950` `#191713` |
+| `--text-primary` | `--color-neutral-950` `#161615` | `#e8e7ec` |
+| `--text-secondary` | `--color-neutral-700` `#4e4d4b` | `#cacad0` |
+| `--text-muted` | semantic literal `#646361` | `#a4a3ac` |
+| `--text-inverse` | `--color-surface-2` `#fdfcfb` | `--color-neutral-950` `#161615` |
 | `--text-accent` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
 
 ### Borders
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--border-subtle` | `rgb(25 23 19 / 0.10)` | `rgb(247 241 230 / 0.10)` |
-| `--border-default` | `rgb(25 23 19 / 0.16)` | `rgb(247 241 230 / 0.16)` |
+| `--border-subtle` | `rgb(22 22 21 / 0.10)` | `rgb(232 231 236 / 0.10)` |
+| `--border-default` | `rgb(22 22 21 / 0.16)` | `rgb(232 231 236 / 0.16)` |
 | `--border-strong` | `#85837f` | `#7d797b` |
 
 `--border-strong` is a solid color so it can be contract-checked: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces. Use it wherever the border alone identifies a control.
@@ -52,22 +52,22 @@ Paper is the default `:root` mapping. Ink overrides the same names under `.dark`
 
 | Variable | Light | Dark |
 | --- | --- | --- |
-| `--accent-primary` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-300` `#c7b6f5` |
-| `--accent-primary-hover` | `--color-lavender-700` `#66569d` | `--color-lavender-200` `#ded4ff` |
-| `--accent-primary-active` | `--color-lavender-800` `#51457c` | `--color-lavender-100` `#eee8ff` |
-| `--accent-soft` | `--color-lavender-100` `#eee8ff` | `rgb(156 143 217 / 0.18)` |
-| `--accent-contrast` | `--color-lavender-950` `#251f3a` | `--color-lavender-950` `#251f3a` |
-| `--accent-contrast-hover` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
-| `--accent-contrast-active` | `--text-inverse` `#ffffff` | `--accent-contrast` `#251f3a` |
+| `--accent-primary` | `--color-lavender-300` `#c7b6f5` | `--color-lavender-700` `#66569d` |
+| `--accent-primary-hover` | `--color-lavender-400` `#afa1e8` | `--color-lavender-800` `#51457c` |
+| `--accent-primary-active` | `--color-lavender-500` `#9c8fd9` | `--color-lavender-900` `#3d345d` |
+| `--accent-soft` | `--color-lavender-100` `#eee8ff` | semantic literal `#2c2644` |
+| `--accent-contrast` | `--color-lavender-900` `#3d345d` | `#ffffff` |
+| `--accent-contrast-hover` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |
+| `--accent-contrast-active` | `--color-lavender-950` `#251f3a` | `--accent-contrast` `#ffffff` |
 
 ### Focus
 
 | Variable | Light | Dark |
 | --- | --- | --- |
 | `--focus-ring-color` | `--color-lavender-700` `#66569d` | `--color-lavender-300` `#c7b6f5` |
-| `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(247 241 230 / 0.18)` |
-| `--focus-ring-on-accent-color` | `--accent-contrast` `#251f3a` | `--accent-contrast` `#251f3a` |
-| `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(37 31 58 / 0.22)` |
+| `--focus-ring-shadow` | `0 0 0 4px rgb(102 86 157 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22), 0 0 0 1px rgb(232 231 236 / 0.18)` |
+| `--focus-ring-on-accent-color` | `--accent-contrast` `#3d345d` | `--accent-contrast` `#ffffff` |
+| `--focus-ring-on-accent-shadow` | `0 0 0 4px rgb(37 31 58 / 0.18)` | `0 0 0 4px rgb(199 182 245 / 0.22)` |
 
 ### Status
 
@@ -96,7 +96,7 @@ Each status also exposes `-fg`, `-bg`, and `-border` roles. Paper uses the `700`
 | `--reading-bg` | `var(--surface-canvas)` |
 | `--reading-fg-muted` | `var(--text-secondary)` |
 | `--reading-link` | `var(--text-accent)` |
-| `--reading-link-hover` | Light: `var(--accent-primary-active)`; dark: `var(--color-lavender-200)` |
+| `--reading-link-hover` | Light: `var(--color-lavender-800)`; dark: `var(--color-lavender-200)` |
 | `--reading-accent` | `var(--accent-primary)` |
 | `--reading-code-fg` | `var(--text-primary)` |
 | `--reading-code-bg` | `var(--surface-subtle)` |
@@ -127,9 +127,9 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Foundation palettes (use only when semantic vars do not fit)
 
-- **Surface** (warm paper ramp): `--color-surface-0` `#faf8f4` → `--color-surface-5` `#d8d1bf`. 6 steps.
+- **Surface** (near-neutral paper ramp): `--color-surface-0` `#f8f8f7` → `--color-surface-5` `#d2d1d0`. 6 steps.
 - **Lavender** (brand): `--color-lavender-50` → `--color-lavender-950`. 11 steps.
-- **Neutral** (warm brown-grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
+- **Neutral** (near-neutral warm grey): `--color-neutral-50` → `--color-neutral-950`. 11 steps.
 - **Decorative hues**, 5 families × 11 steps: `mint`, `sky`, `amber`, `rose`, `ink`.
 - **Status families** (4 steps each): `success`, `warning`, `danger`, `info` at `50 / 500 / 700 / 950`.
 - **Syntax** (code highlighting): 6 tokens — `--color-syntax-keyword`, `--color-syntax-string`, `--color-syntax-number`, `--color-syntax-function`, `--color-syntax-comment`, `--color-syntax-operator`. Mode-aware: `.dark`, `.brutal`, and `.brutal.dark` redeclare them, and every family meets 4.5:1 on the canvas and on `--reading-code-bg`.
@@ -160,7 +160,7 @@ Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--bo
 
 ## Shadow
 
-- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Warm shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same warm tint.
+- Levels: `--shadow-none / -2xs / -xs / -sm / -md / -lg / -xl / -2xl`. Near-neutral shadows; base alpha-color is `--color-neutral-900`. `-2xs` and `-2xl` replace Tailwind's black defaults with the same tint.
 - Aliases: `--shadow-card` = `--shadow-sm`; `--shadow-panel` = `--shadow-md`; `--shadow-focus` = lavender alpha glow. `--shadow-card` / `--shadow-panel` are mode-remapped runtime variables; the `shadow-card` / `shadow-panel` utilities read them, so they follow Ink and Neo.
 - No inset shadows in V0.
 

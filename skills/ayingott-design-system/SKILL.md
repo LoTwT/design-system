@@ -58,9 +58,9 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 
 | Variable | Use for |
 | --- | --- |
-| `--surface-canvas` | The page background. Warm cream in light, purple-tinged near-black in dark. |
+| `--surface-canvas` | The page background. Near-neutral paper white in light, softly purple-tinged near-black in dark. |
 | `--surface-panel` | Sidebars, secondary panels. |
-| `--surface-elevated` | Cards. The only place pure white appears in V0 (light mode only). |
+| `--surface-elevated` | Cards. The lightest surface (near white, not pure white, in light mode). |
 | `--surface-subtle` | Inset chips, hover backgrounds, code block panels. The exact alpha and visual weight are family-relative. |
 | `--surface-muted` | Borders or backgrounds that need slightly more contrast than `subtle`. |
 | `--text-primary` | All body and heading text. |
@@ -68,10 +68,10 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--text-muted` | De-emphasized labels, helper text. |
 | `--text-inverse` | Inverse text on a contrasting surface; check the foreground/background pair. |
 | `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. Also the standalone indicator color for checked checkboxes/radios, switch tracks, progress fills, and selected-tab underlines: at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family. |
-| `--border-subtle` | Default divider weight. Alpha-on-cream in light, alpha-on-warm-white in dark. |
+| `--border-subtle` | Default divider weight. Alpha of the text color in both modes. |
 | `--border-default` | Card outlines. |
 | `--border-strong` | Essential control boundaries such as text inputs (at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family), outline buttons, and hover emphasis. |
-| `--accent-primary` | Primary brand surfaces (CTA backgrounds, brand decoration). Not a standalone indicator: Paper's value is about 2.7:1 on the canvas. Pair it with `--accent-contrast` content or use `--text-accent` for indicators. |
+| `--accent-primary` | Primary brand surfaces (CTA backgrounds, brand decoration). Not a standalone indicator: Paper's light lavender fill is about 1.7:1 on the canvas. Pair it with `--accent-contrast` content or use `--text-accent` for indicators. |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |
 | `--accent-contrast` / `-hover` / `-active` | Text or icons on the matching `--accent-primary` / `-hover` / `-active` backgrounds. |
@@ -115,8 +115,8 @@ Always reach for semantic vars first. Drop down to foundation tokens only when t
 /* Wrong: hardcoded hex bypasses the dark-mode flip */
 .card {
   background: #ffffff;
-  color: #191713;
-  border: 1px solid rgb(25 23 19 / 0.1);
+  color: #161615;
+  border: 1px solid rgb(22 22 21 / 0.1);
 }
 ```
 
@@ -233,7 +233,7 @@ If output reads like product marketing copy, rewrite it.
 
 When producing visual artifacts (mockups, slides, prototype HTML), follow these defaults. They mirror what the V0 deployment at https://design.ayingott.me demonstrates.
 
-- **Page background is warm cream**, not grey, not pure white. Use `var(--surface-canvas)`.
+- **Page background is near-neutral paper white**, not yellow cream, not pure white. Use `var(--surface-canvas)`.
 - **Cards** sit on `var(--surface-elevated)` with `border: var(--border-width-surface) solid var(--border-subtle)`, `border-radius: var(--radius-card)`, and `box-shadow: var(--shadow-card)`. Paper/Ink resolve to the existing soft anatomy; Neo resolves to a 3px border, zero radius, and hard depth.
 - **Primary buttons** use `background: var(--accent-primary)` + `color: var(--accent-contrast)`, `border-radius: var(--radius-control)` (`0.375rem` in Paper/Ink, `0` in Neo), font family `var(--font-display)` weight 500, min-height `var(--touch-target-min)` (44px), `transition: var(--transition-interactive)`. Pair hover and active backgrounds with `--accent-contrast-hover` and `--accent-contrast-active` respectively.
 - **Paper/Ink hover** may lift by `translateY(-1px)` with `var(--shadow-md)` when the consumer owns that interaction.
@@ -243,7 +243,7 @@ When producing visual artifacts (mockups, slides, prototype HTML), follow these 
 - **Type scale** is 13 steps from `--text-2xs` to `--text-7xl`; every step ships a paired `--text-{size}--line-height`. Use the paired line-height value, not a freehand number.
 - **Long-form reading** uses the `--reading-*` semantic layer. Constrain body copy with `max-inline-size: min(100%, var(--reading-measure))`; use `--container-reading` / `--layout-prose-width` for the outer shell.
 - **Display headlines** (Bricolage Grotesque) lean tight: `letter-spacing` `tight` to `tighter`. **Mono labels** (Space Mono) lean wide: `letter-spacing` `wide` to `widest`.
-- **Backgrounds** are flat warm cream surfaces. No gradients, no images, no patterns, no textures.
+- **Backgrounds** are flat near-neutral surfaces. No gradients, no images, no patterns, no textures.
 - **Decorative motif**: dots, lines, outlined circles, rotated squares — geometric primitives in `var(--accent-primary)`. Use sparingly at corners or section breaks; never as pattern fills or full bleed.
 
 ## Out of scope — do not invent these
@@ -295,7 +295,7 @@ body { padding: var(--layout-page-gutter); }
   <main class="hero">
     <h1>Ayingott design system</h1>
     <p style="color: var(--text-secondary); max-width: var(--container-reading);">
-      A calm, geometric, warm-cream-and-lavender design language.
+      A calm, geometric, paper-white-and-lavender design language.
     </p>
   </main>
   <script>

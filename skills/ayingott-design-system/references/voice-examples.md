@@ -19,7 +19,7 @@ Headings are nouns in sentence case. No emoji, no exclamation points, no superla
 > We've crafted a delightful and powerful design system that brings warmth and personality to your projects. With our beautiful warm-cream palette and seamless dark mode, you'll be shipping amazing interfaces in no time!
 
 **Right**
-> The design system ships warm-cream surfaces, a lavender accent, and a `.dark` class that flips semantic variables. Components are out of scope for V0.
+> The design system ships near-neutral paper surfaces, a lavender accent, and a `.dark` class that flips semantic variables. Components are out of scope for V0.
 
 The right version states facts and stops. No "we", no "you", no superlatives, no exclamation point, no hedging.
 

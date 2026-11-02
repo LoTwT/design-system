@@ -11,7 +11,7 @@
   --reading-bg: var(--surface-canvas);
   --reading-fg-muted: var(--text-secondary);
   --reading-link: var(--text-accent);
-  --reading-link-hover: var(--accent-primary-active);
+  --reading-link-hover: var(--color-lavender-800);
   --reading-accent: var(--accent-primary);
   --reading-code-fg: var(--text-primary);
   --reading-code-bg: var(--surface-subtle);

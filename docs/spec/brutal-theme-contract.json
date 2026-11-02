@@ -23,8 +23,8 @@
     "sourceSha256": "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
     "compiledInput": "packages/theme/test/smoke.theme-only.css",
     "compiledOutput": "packages/theme/test/.tmp/smoke.theme-only.css",
-    "compiledSha256": "d173a09ef6a5ebf1b920f4498aa055f5b69fac904427c8f15dbc17f54e467aca",
-    "paperInkContractSha256": "9ee8d38a7caface605e691958e5b436a707144d7ddd1b2fa4a3d3cf2f925be86"
+    "compiledSha256": "fe5e3f60601119c8da040eb9a5dc71336c43c0cfcdb451a57dcdddfeebd2f44e",
+    "paperInkContractSha256": "7fc010485ef0f529100a527f2d7932385dc79d660d82e64c88cd7f3fdd032551"
   },
   "foundationDeclarations": {
     "shadow-hard-color": "currentcolor",
