@@ -1,6 +1,6 @@
-# Touch Target
+# Touch target
 
-The theme ships two touch utilities with different minimum-size rules:
+V0 ships two touch utilities with different minimum-size rules:
 
 - `touch-target` sets both the minimum width and minimum height.
 - `touch-target-inline` sets the minimum height and adds horizontal padding for text links; it does not independently guarantee a 44px minimum width.
@@ -25,7 +25,7 @@ touch-target-inline
 
 `--touch-target-min` defaults to `2.75rem` (44px).
 
-## Neo-Brutal Pressable
+## Neo-Brutal pressable
 
 `pressable` ships only through `@ayingott/theme/brutal.css` and only moves inside `.brutal`. Compose it with the default accessibility utilities:
 

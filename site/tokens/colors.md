@@ -6,7 +6,7 @@ Color tokens come from `packages/theme/src/foundation/colors.css`.
 
 <ColorSwatchGrid title="Surface" prefix="color-surface-" />
 
-## Primary Accent
+## Primary accent
 
 <ColorSwatchGrid title="Lavender" prefix="color-lavender-" />
 
@@ -14,7 +14,7 @@ Color tokens come from `packages/theme/src/foundation/colors.css`.
 
 <ColorSwatchGrid title="Neutral" prefix="color-neutral-" />
 
-## Decorative Hues
+## Decorative hues
 
 <ColorSwatchGrid title="Mint" prefix="color-mint-" />
 

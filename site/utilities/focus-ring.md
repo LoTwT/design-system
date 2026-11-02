@@ -1,6 +1,6 @@
-# Focus Ring
+# Focus ring
 
-The theme ships two focus utilities:
+V0 ships two focus utilities:
 
 ```txt
 focus-ring
@@ -21,7 +21,7 @@ focus-ring-inset
 The page forces the ring shape for inspection. In products, the utilities apply
 only on `:focus-visible` so mouse interaction does not leave a persistent ring.
 
-## Keyboard Behavior
+## Keyboard behavior
 
 <div class="grid gap-4 sm:grid-cols-2">
   <button class="theme-action focus-ring">

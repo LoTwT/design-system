@@ -1,7 +1,7 @@
 <template>
   <section class="theme-section" data-index="§ 3.0" aria-labelledby="reading-specimen">
     <div class="theme-section__heading">
-      <h2 id="reading-specimen">Reading Specimen</h2>
+      <h2 id="reading-specimen">Reading specimen</h2>
     </div>
 
     <article class="theme-reading">

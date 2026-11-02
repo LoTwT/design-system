@@ -10,7 +10,7 @@ hero:
       text: Compare theme families
       link: /guide/theme-overview
     - theme: alt
-      text: Package Contract
+      text: Package contract
       link: /guide/package-contract
 
 features:
@@ -18,11 +18,11 @@ features:
     details: Foundation tokens are published through CSS-first `@theme static` blocks.
   - title: Two-axis themes
     details: "Scheme and family stay independent: Paper and Ink by default, Neo Light and Dark by opt-in."
-  - title: Opt-in Fonts
+  - title: Opt-in fonts
     details: Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai are available through a separate fonts.css entry.
 ---
 
-## Showcase Scope
+## Showcase scope
 
 This site only displays the design system. It is not a playground, component library, or consumer integration test.
 

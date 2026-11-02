@@ -1,6 +1,6 @@
-# Semantic Variables
+# Semantic variables
 
-Semantic variables are runtime CSS variables. They do not generate Tailwind utilities.
+Semantic variables are runtime CSS variables. They do not generate Tailwind utilities in V0.
 
 ## Paper
 
@@ -34,7 +34,7 @@ Use `--text-muted` for active muted UI copy such as helper text and metadata; di
 
 Names such as `--surface-subtle`, `--surface-muted`, and `--accent-soft` express family-relative intent. They do not promise the same alpha, literal color, or visual weight across Paper, Ink, Neo Light, and Neo Dark.
 
-## Interaction and Status Roles
+## Interaction and status roles
 
 | Intent | Variables |
 | --- | --- |

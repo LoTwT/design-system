@@ -8,7 +8,7 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
   <div class="theme-showcase">
     <section class="theme-section theme-section--about" aria-labelledby="about-semantic-tokens">
       <div class="theme-section__heading">
-        <h2 id="about-semantic-tokens">About Semantic Tokens</h2>
+        <h2 id="about-semantic-tokens">About semantic tokens</h2>
       </div>
       <div class="theme-prose">
         <p>Semantic tokens are named values that describe intent, not appearance. They map to CSS custom properties that can be consumed directly in any project, without JavaScript or a framework adapter.</p>
@@ -22,7 +22,7 @@ import ThemeReadingSpecimen from "./ThemeReadingSpecimen.vue"
 
     <section class="theme-section theme-section--source" data-index="§ 5.0" aria-labelledby="token-source">
       <div class="theme-section__heading">
-        <h2 id="token-source">Token Source</h2>
+        <h2 id="token-source">Token source</h2>
       </div>
       <div class="theme-token-source" translate="no">
         <code>@import "tailwindcss";</code>

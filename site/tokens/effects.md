@@ -12,7 +12,7 @@ Effects include radius, shadow, border, and motion tokens.
 
 Importing `brutal.css` adds the `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, and `--shadow-hard-lg` physical tokens at `:root`, together with utilities for the three size tokens. They use positive offsets with zero blur, do not appear in the default entry, and remain available even when the current theme root does not carry `.brutal`.
 
-## Border Width
+## Border width
 
 <TokenPreview source="border" prefix="border-width-" preview="border" />
 
@@ -34,10 +34,10 @@ Importing `brutal.css` adds the `--shadow-hard-color`, `--shadow-hard-sm`, `--sh
 
 `--border-strong` keeps at least 3:1 against every surface in all four theme states, so use it when the border alone identifies a control such as a text input.
 
-## Motion Duration
+## Motion duration
 
 <TokenPreview source="motion" prefix="duration-" preview="motion" />
 
-## Transition Groups
+## Transition groups
 
 <TokenPreview source="transitions" prefix="transition-" preview="plain" />

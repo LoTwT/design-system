@@ -6,7 +6,7 @@ import ThemeStatusRoles from "./ThemeStatusRoles.vue"
 <template>
   <section class="theme-section" data-index="§ 4.0" aria-labelledby="interaction-states">
     <div class="theme-section__heading">
-      <h2 id="interaction-states">Interaction States</h2>
+      <h2 id="interaction-states">Interaction states</h2>
     </div>
 
     <div class="theme-state-grid">
@@ -40,7 +40,7 @@ import ThemeStatusRoles from "./ThemeStatusRoles.vue"
     </div>
 
     <div class="theme-status-block">
-      <h3>Status Roles</h3>
+      <h3>Status roles</h3>
       <ThemeStatusRoles />
     </div>
   </section>

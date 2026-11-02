@@ -2,7 +2,7 @@
 
 Typography tokens come from `packages/theme/src/foundation/typography.css`.
 
-## Font Families
+## Font families
 
 | Token | Use |
 | --- | --- |
@@ -15,12 +15,12 @@ With `@ayingott/theme/fonts.css`, all four roles use original LXGW WenKai for Ch
 
 WenKai ships real `400` (Regular) and `500` (Medium) faces. Use `font-medium` for slightly heavier Chinese text; the theme's `600` / `700` tokens do not add real WenKai weights. See [Fonts](/fonts) for a weight comparison and loading details.
 
-## Reading Leading
+## Reading leading
 
 | Token | Value | Use |
 | --- | --- | --- |
 | `--leading-reading` | `1.7` | Long-form paragraph rhythm |
 
-## Type Scale
+## Type scale
 
 <TypeScale />

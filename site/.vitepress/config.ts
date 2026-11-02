@@ -32,9 +32,9 @@ export default defineConfig({
       {
         text: "Guide",
         items: [
-          { text: "Getting Started", link: "/guide/getting-started" },
-          { text: "Theme Overview", link: "/guide/theme-overview" },
-          { text: "Package Contract", link: "/guide/package-contract" },
+          { text: "Getting started", link: "/guide/getting-started" },
+          { text: "Theme overview", link: "/guide/theme-overview" },
+          { text: "Package contract", link: "/guide/package-contract" },
         ],
       },
       {
@@ -50,8 +50,8 @@ export default defineConfig({
       {
         text: "Utilities",
         items: [
-          { text: "Focus Ring", link: "/utilities/focus-ring" },
-          { text: "Touch Target", link: "/utilities/touch-target" },
+          { text: "Focus ring", link: "/utilities/focus-ring" },
+          { text: "Touch target", link: "/utilities/touch-target" },
         ],
       },
       {

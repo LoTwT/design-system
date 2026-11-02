@@ -59,7 +59,7 @@ Space Mono remains the Latin monospace face. WenKai supplies Chinese glyphs; its
   </p>
 </div>
 
-## Loading and Fallbacks
+## Loading and fallbacks
 
 Import `@ayingott/theme/fonts.css` once, before `@ayingott/theme`. This site already does so. Font files are self-hosted and use `font-display: swap`.
 
@@ -71,7 +71,7 @@ The bundled WenKai faces use the private CSS family name `"Ayingott WenKai"`. Wi
 
 Loaded webfonts take priority over system fallbacks. If they are unavailable, the browser follows each role's fallback stack. Chinese body/display text can fall back through `system-ui`, PingFang SC, Hiragino Sans GB, Microsoft YaHei, and `sans-serif`; reading and mono keep their role-specific fallbacks. Rendering can still vary slightly with the operating system.
 
-## Bundled Files
+## Bundled files
 
 - `bricolage-grotesque-latin-opsz-wght-normal.woff2`
 - `bricolage-grotesque-latin-ext-opsz-wght-normal.woff2`

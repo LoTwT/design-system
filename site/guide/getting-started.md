@@ -1,4 +1,4 @@
-# Getting Started
+# Getting started
 
 Install the theme package in a Tailwind CSS v4 project:
 
@@ -33,7 +33,7 @@ Paper is active by default. Apply `.dark` to activate Ink:
 
 The same semantic variables update through CSS cascade. Typography, spacing, layout, component anatomy, radius, icons, copy, and interaction structure remain unchanged. Consumers do not need a framework adapter.
 
-## Choose a Family and Scheme
+## Choose a family and scheme
 
 Paper and Ink remain the defaults. Import the opt-in family entry after the default theme to add Neo-Brutal Light and Dark:
 
@@ -58,11 +58,11 @@ Place the family and scheme classes together on the same theme root:
 </html>
 ```
 
-Only these co-located root states are supported. Arbitrary mixed nested theme islands are unsupported because splitting the two axes across nested scopes can produce hybrid semantic mappings. See [Theme overview](./theme-overview) for the four-state specimens.
+V0 supports these co-located root states. Arbitrary mixed nested theme islands are unsupported because splitting the two axes across nested scopes can produce hybrid semantic mappings. See [Theme overview](./theme-overview) for the four-state specimens.
 
 Keep consumer CSS on semantic and structure roles. The `--brutal-*` palette variables are contract-owned implementation details, not a consumer direct-use API. See [Effects](../tokens/effects) for hard-shadow and border-width scope, and [Semantic variables](../tokens/semantic) for family-relative intent guidance.
 
-## Status Roles
+## Status roles
 
 The legacy `--status-success`, `--status-warning`, `--status-danger`, and `--status-info` variables are compatibility accent aliases. They do not carry a standalone contrast guarantee. Status text and components should use the verified foreground, background, and border roles together:
 
@@ -74,7 +74,7 @@ The legacy `--status-success`, `--status-warning`, `--status-danger`, and `--sta
 }
 ```
 
-## Reduced Motion
+## Reduced motion
 
 The package intentionally does not add a global `prefers-reduced-motion` override. Consumers own reduced-motion behavior for the animations they apply. Scope the override to the consumer's animated elements:
 

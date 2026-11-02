@@ -48,9 +48,9 @@ The self-hosted WOFF2 files preserve all upstream glyphs. CSS `unicode-range`
 limits WenKai to Han characters, CJK punctuation, and related Chinese ranges,
 excluding emoji/text presentation selectors (`FE0E` / `FE0F`),
 so Latin-only text does not request it. Each requested weight downloads a full
-file (Regular 7.65 MiB; Medium 8.54 MiB); these are not subsets. All faces use `font-display: swap`. macOS and
-Windows use the same loaded font files, followed by each role's system fallback
-stack when needed. See `THIRD_PARTY_NOTICES.md` for source, sizes, checksums,
+file (Regular 7.65 MiB; Medium 8.54 MiB); these are not subsets. All faces use `font-display: swap`. When a
+loaded face is unavailable, the browser follows each role's system fallback
+stack. See `THIRD_PARTY_NOTICES.md` for source, sizes, checksums,
 and the included font license.
 
 ## Paper & Ink

@@ -5,7 +5,7 @@ import ThemeIcon from "./ThemeIcon.vue"
 <template>
   <section class="theme-section theme-family" data-index="§ 2.0" aria-labelledby="theme-family-matrix">
     <div class="theme-section__heading">
-      <h2 id="theme-family-matrix">Theme Matrix</h2>
+      <h2 id="theme-family-matrix">Theme matrix</h2>
     </div>
 
     <dl class="theme-mode-matrix" aria-label="Effective theme selectors">
