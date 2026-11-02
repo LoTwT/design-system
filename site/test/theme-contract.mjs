@@ -87,6 +87,8 @@ const requiredLegalPairIds = [
   ...["paper", "ink"].flatMap(mode =>
     ["canvas", "panel", "elevated", "subtle"].map(background => `${mode}-control-border-${background}`)),
   ...["paper", "ink"].flatMap(mode =>
+    ["canvas", "panel", "elevated", "subtle"].map(background => `${mode}-indicator-${background}`)),
+  ...["paper", "ink"].flatMap(mode =>
     ["code", "canvas"].flatMap(background =>
       ["keyword", "string", "function", "number", "comment", "operator"].map(token => `${mode}-syntax-${token}-${background}`))),
 ]
@@ -100,7 +102,7 @@ const requiredTargetPairIds = [
 ]
 const requiredContrastExemptionIds = ["disabled-action"]
 const requiredStateMappingsSha256 = "0e9b6ab9fa9bd7291b8fffaade046aecf74bffff8c2136ef055d5fbcfe75d5c8"
-const requiredLegalPairsSha256 = "1fa8f142a8690f0a6901bada06e110d5ece8cf934c1fd0a83a30160562f1686a"
+const requiredLegalPairsSha256 = "f8b3e8ca452750f2c8bc4b57d68d5cad3bc480191f8c9817a5cd4af4fb348db8"
 const requiredContrastExemptionsSha256 = "20d9abd4f87114673b955184bcee2534d0bd2d1f39f66b2feb3188315c2324a7"
 
 const readSource = file => readSourceFromRoot(rootDir, file)

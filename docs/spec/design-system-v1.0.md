@@ -124,10 +124,10 @@ Syntax token 随主题族与明暗模式切换；四种 root 状态下均在 can
 ### 1.7 Typography · Family（V0.1 已 ship 4 family）
 
 ```css
---font-display: "Bricolage Grotesque", "LXGW WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
---font-sans:    "LXGW WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
---font-mono:    "Space Mono", "LXGW WenKai", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
---font-reading: "Literata", "LXGW WenKai", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
+--font-display: "Bricolage Grotesque", "Ayingott WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-sans:    "Ayingott WenKai", system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+--font-mono:    "Space Mono", "Ayingott WenKai", ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+--font-reading: "Literata", "Ayingott WenKai", Georgia, "Songti SC", "Noto Serif CJK SC", serif;
 ```
 
 `--font-reading` 是 V0.1 additive long-form token。Literata 与霞鹜文楷原版通过 `fonts.css` opt-in 加载，分别用于拉丁文与中文；不 import `fonts.css` 时浏览器按 fallback chain 使用本地 / 系统字体。
@@ -284,8 +284,10 @@ V0 用语义命名而非数值阶 — consumer 用语义而非"50% / 60%"思考�
 
 ### 2.9 Z-index（9 阶 stacking）
 ```css
---z-base / -raised / -sticky / -header / -popover / -tooltip / -overlay / -modal / -toast
+--z-base 0 / -raised 10 / -sticky 100 / -header 200 / -overlay 800 / -modal 900 / -popover 1000 / -tooltip 1100 / -toast 1200
 ```
+
+popover 与 tooltip 位于 modal 之上：对话框内打开、渲染到 body 下的下拉菜单与提示不会被对话框遮住。
 
 > [FUTURE]：UX baseline 曾提议 13 阶（含 dropdown / fixed / menu / debug）；V0 收窄到 9 阶。consumer 需要更多层级时单独扩。
 

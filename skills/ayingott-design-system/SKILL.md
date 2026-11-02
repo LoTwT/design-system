@@ -67,11 +67,11 @@ Defined in `packages/theme/src/semantic/`. These are the variables you should re
 | `--text-secondary` | Captions, supporting prose. |
 | `--text-muted` | De-emphasized labels, helper text. |
 | `--text-inverse` | Inverse text on a contrasting surface; check the foreground/background pair. |
-| `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. |
+| `--text-accent` | Hyperlinks and inline emphasis. Lavender-700 in light, lavender-300 in dark. Also the standalone indicator color for checked checkboxes/radios, switch tracks, progress fills, and selected-tab underlines: at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family. |
 | `--border-subtle` | Default divider weight. Alpha-on-cream in light, alpha-on-warm-white in dark. |
 | `--border-default` | Card outlines. |
 | `--border-strong` | Essential control boundaries such as text inputs (at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family), outline buttons, and hover emphasis. |
-| `--accent-primary` | Primary brand surfaces (CTA backgrounds, active toggle, brand decoration). |
+| `--accent-primary` | Primary brand surfaces (CTA backgrounds, brand decoration). Not a standalone indicator: Paper's value is about 2.7:1 on the canvas. Pair it with `--accent-contrast` content or use `--text-accent` for indicators. |
 | `--accent-primary-hover` / `-active` | Primary surface state changes. |
 | `--accent-soft` | Tinted-lavender backgrounds (selection highlight, soft callouts). |
 | `--accent-contrast` / `-hover` / `-active` | Text or icons on the matching `--accent-primary` / `-hover` / `-active` backgrounds. |

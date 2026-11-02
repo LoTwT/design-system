@@ -23,8 +23,8 @@
     "sourceSha256": "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
     "compiledInput": "packages/theme/test/smoke.theme-only.css",
     "compiledOutput": "packages/theme/test/.tmp/smoke.theme-only.css",
-    "compiledSha256": "b12b96ec48b2fe3a463a7c47b7e14295d2eac806fd317b19e65ae69880764d86",
-    "paperInkContractSha256": "443ab9d5c5b0f42d54be5ce0341de0a73150dff9b3078267fbdeea00c8e7e727"
+    "compiledSha256": "d173a09ef6a5ebf1b920f4498aa055f5b69fac904427c8f15dbc17f54e467aca",
+    "paperInkContractSha256": "9ee8d38a7caface605e691958e5b436a707144d7ddd1b2fa4a3d3cf2f925be86"
   },
   "foundationDeclarations": {
     "shadow-hard-color": "currentcolor",
@@ -41,6 +41,8 @@
     "brutal-green": "#3ddc84",
     "brutal-purple": "#c3a6ff",
     "brutal-orange": "#ff6b4a",
+    "brutal-red": "#ff3b3b",
+    "brutal-sky": "#5fa8ff",
     "surface-canvas": "var(--brutal-canvas)",
     "text-primary": "var(--brutal-ink)",
     "accent-primary": "var(--brutal-yellow)",
@@ -59,13 +61,13 @@
     "status-warning-fg": "var(--brutal-sticker-ink)",
     "status-warning-bg": "var(--brutal-yellow)",
     "status-warning-border": "var(--brutal-sticker-ink)",
-    "status-danger": "var(--brutal-orange)",
+    "status-danger": "var(--brutal-red)",
     "status-danger-fg": "var(--brutal-sticker-ink)",
-    "status-danger-bg": "var(--brutal-orange)",
+    "status-danger-bg": "var(--brutal-red)",
     "status-danger-border": "var(--brutal-sticker-ink)",
-    "status-info": "var(--brutal-blue)",
-    "status-info-fg": "var(--brutal-sticker-paper)",
-    "status-info-bg": "var(--brutal-blue)",
+    "status-info": "var(--brutal-sky)",
+    "status-info-fg": "var(--brutal-sticker-ink)",
+    "status-info-bg": "var(--brutal-sky)",
     "status-info-border": "var(--brutal-sticker-ink)",
     "shadow-card": "6px 6px 0 var(--brutal-shadow)",
     "shadow-panel": "8px 8px 0 var(--brutal-shadow)",
@@ -281,6 +283,8 @@
     { "id": "brutal-sticker-green", "mode": "light", "foreground": "brutal-sticker-ink", "background": "brutal-green", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-sticker-purple", "mode": "light", "foreground": "brutal-sticker-ink", "background": "brutal-purple", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-sticker-orange", "mode": "light", "foreground": "brutal-sticker-ink", "background": "brutal-orange", "minimum": 4.5, "target": 5, "kind": "text" },
+    { "id": "brutal-sticker-red", "mode": "light", "foreground": "brutal-sticker-ink", "background": "brutal-red", "minimum": 4.5, "target": 5, "kind": "text" },
+    { "id": "brutal-sticker-sky", "mode": "light", "foreground": "brutal-sticker-ink", "background": "brutal-sky", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-light-success-text", "mode": "light", "foreground": "status-success-fg", "background": "status-success-bg", "minimum": 4.5, "kind": "text" },
     { "id": "brutal-light-warning-text", "mode": "light", "foreground": "status-warning-fg", "background": "status-warning-bg", "minimum": 4.5, "kind": "text" },
     { "id": "brutal-light-danger-text", "mode": "light", "foreground": "status-danger-fg", "background": "status-danger-bg", "minimum": 4.5, "kind": "text" },
@@ -309,6 +313,14 @@
     { "id": "brutal-dark-border-strong-subtle", "mode": "dark", "foreground": "border-strong", "background": "surface-subtle", "minimum": 3, "target": 3.2, "kind": "non-text" },
     { "id": "brutal-dark-border-strong-muted", "mode": "dark", "foreground": "border-strong", "background": "surface-muted", "minimum": 3, "target": 3.2, "kind": "non-text" },
     { "id": "brutal-dark-border-strong-selected", "mode": "dark", "foreground": "border-strong", "background": "accent-soft", "minimum": 3, "target": 3.2, "kind": "non-text" },
+    { "id": "brutal-light-indicator-canvas", "mode": "light", "foreground": "text-accent", "background": "surface-canvas", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-light-indicator-panel", "mode": "light", "foreground": "text-accent", "background": "surface-panel", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-light-indicator-elevated", "mode": "light", "foreground": "text-accent", "background": "surface-elevated", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-light-indicator-subtle", "mode": "light", "foreground": "text-accent", "background": "surface-subtle", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-dark-indicator-canvas", "mode": "dark", "foreground": "text-accent", "background": "surface-canvas", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-dark-indicator-panel", "mode": "dark", "foreground": "text-accent", "background": "surface-panel", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-dark-indicator-elevated", "mode": "dark", "foreground": "text-accent", "background": "surface-elevated", "minimum": 3, "kind": "non-text" },
+    { "id": "brutal-dark-indicator-subtle", "mode": "dark", "foreground": "text-accent", "background": "surface-subtle", "minimum": 3, "kind": "non-text" },
     { "id": "brutal-dark-primary-panel", "mode": "dark", "foreground": "text-primary", "background": "surface-panel", "minimum": 4.5, "target": 7, "kind": "text" },
     { "id": "brutal-dark-primary-elevated", "mode": "dark", "foreground": "text-primary", "background": "surface-elevated", "minimum": 4.5, "target": 7, "kind": "text" },
     { "id": "brutal-dark-primary-subtle", "mode": "dark", "foreground": "text-primary", "background": "surface-subtle", "minimum": 4.5, "target": 7, "kind": "text" },
@@ -349,10 +361,10 @@
     { "id": "brutal-dark-syntax-operator-canvas", "mode": "dark", "foreground": "color-syntax-operator", "background": "surface-canvas", "minimum": 4.5, "kind": "text" }
   ],
   "digests": {
-    "declarations": "eedebfdc5c8b695b3a51042d4ce2bb3bc0dad3faa54b01bed4239c3633552c44",
+    "declarations": "8ab978878ffcf5c4edcb2db71d9dd6bd826800323f2c153d20f33e0c542f986e",
     "invariants": "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
     "interaction": "6278f6ff3b8d69c059fce88684f1e49236cb469573f0f05d729b1e9301ad51e8",
     "stateMappings": "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
-    "legalPairs": "74301ba26e88d00d7da7bd47b70ba1290097d5f068e3cdbe87cbee443d017016"
+    "legalPairs": "e01db8a7dca9de9dc899a20c71b4628e2c647a14cb855b9ae98b0e3535e2c567"
   }
 }

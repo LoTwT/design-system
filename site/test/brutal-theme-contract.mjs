@@ -24,11 +24,11 @@ const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 const paperInkContract = JSON.parse(readFileSync(join(rootDir, paperInkContractFile), "utf8"))
 
 const requiredDigests = {
-  declarations: "eedebfdc5c8b695b3a51042d4ce2bb3bc0dad3faa54b01bed4239c3633552c44",
+  declarations: "8ab978878ffcf5c4edcb2db71d9dd6bd826800323f2c153d20f33e0c542f986e",
   invariants: "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
   interaction: "6278f6ff3b8d69c059fce88684f1e49236cb469573f0f05d729b1e9301ad51e8",
   stateMappings: "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
-  legalPairs: "74301ba26e88d00d7da7bd47b70ba1290097d5f068e3cdbe87cbee443d017016",
+  legalPairs: "e01db8a7dca9de9dc899a20c71b4628e2c647a14cb855b9ae98b0e3535e2c567",
 }
 const requiredDarkPairIds = [
   ...["border-default", "border-strong"].flatMap(role =>
@@ -42,8 +42,8 @@ const requiredSyntaxPairIds = ["light", "dark"].flatMap(mode =>
     ["keyword", "string", "function", "number", "comment", "operator"].map(token => `brutal-${mode}-syntax-${token}-${background}`)))
 const requiredDefaultBaseline = {
   sourceSha256: "a4ed8f572c670e7521bd0ec8d0c4a5b3cd349a5d60f61a6c78404759d79fed56",
-  compiledSha256: "b12b96ec48b2fe3a463a7c47b7e14295d2eac806fd317b19e65ae69880764d86",
-  paperInkContractSha256: "443ab9d5c5b0f42d54be5ce0341de0a73150dff9b3078267fbdeea00c8e7e727",
+  compiledSha256: "d173a09ef6a5ebf1b920f4498aa055f5b69fac904427c8f15dbc17f54e467aca",
+  paperInkContractSha256: "9ee8d38a7caface605e691958e5b436a707144d7ddd1b2fa4a3d3cf2f925be86",
 }
 
 function fileSha256(file) {

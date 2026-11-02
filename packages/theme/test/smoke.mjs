@@ -68,7 +68,7 @@ fontSource.walkAtRules("font-face", rule => {
   if (bytes.toString("ascii", 0, 4) !== "wOF2" || !fontNotices.includes(hash))
     throw new Error(`Invalid WOFF2 or missing checksum in notices: ${asset}`)
 })
-const wenkaiFaces = fontFaces.filter(face => face["font-family"] === '"LXGW WenKai"')
+const wenkaiFaces = fontFaces.filter(face => face["font-family"] === '"Ayingott WenKai"')
 if (wenkaiFaces.length !== 2)
   throw new Error("WenKai must expose exactly Regular and Medium")
 for (const weight of ["400", "500"]) {
@@ -84,6 +84,13 @@ for (const weight of ["400", "500"]) {
     throw new Error(`WenKai ${weight} ranges must cover Chinese without replacing Latin`)
   if (["\uFE0E", "\uFE0F"].some(includes))
     throw new Error(`WenKai ${weight} must exclude emoji/text presentation selectors`)
+}
+// A public family name would match a locally installed full WenKai when fonts.css is not loaded.
+const typographySource = readFileSync(join(packageDir, "src/foundation/typography.css"), "utf8")
+for (const role of ["display", "sans", "reading", "mono"]) {
+  const stack = typographySource.match(new RegExp(`--font-${role}:([^;]+);`))?.[1] ?? ""
+  if (!stack.includes('"Ayingott WenKai"') || stack.includes("LXGW"))
+    throw new Error(`--font-${role} must reference the private WenKai family only`)
 }
 function verifyWenKaiLicense(notices) {
   const text = notices.match(/```text\r?\n([\s\S]*?)\r?\n```/)?.[1] ?? ""
@@ -303,7 +310,7 @@ for (const [name, value] of Object.entries(readCssVarMap("src/foundation/spacing
   if (value !== expected && !(expected === "0rem" && value === "0"))
     throw new Error(`--${name} must follow the 0.25rem step scale: expected ${expected}, received ${value}`)
 }
-const zLayers = ["base", "raised", "sticky", "header", "popover", "tooltip", "overlay", "modal", "toast"]
+const zLayers = ["base", "raised", "sticky", "header", "overlay", "modal", "popover", "tooltip", "toast"]
 const zIndex = readCssVarMap("src/layers/z-index.css")
 const zValues = zLayers.map(layer => Number(zIndex[`z-${layer}`]))
 if (Object.keys(zIndex).join() !== zLayers.map(layer => `z-${layer}`).join()

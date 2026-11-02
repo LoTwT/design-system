@@ -31,6 +31,9 @@ Opt in to bundled fonts:
 LXGW WenKai (霞鹜文楷) v1.522. WenKai supplies Chinese glyphs in all four font
 roles, while Latin text keeps Bricolage Grotesque for display, system UI for
 body, Literata for reading, and Space Mono for code. Loading remains opt-in.
+The bundled faces use the private CSS family name `"Ayingott WenKai"`, so a
+locally installed LXGW WenKai does not replace Latin body or code text when
+`fonts.css` is not loaded.
 
 WenKai includes real Regular `400` and Medium `500` faces. Use `font-regular`
 for normal text or `font-medium` for a slightly heavier treatment, including
@@ -108,6 +111,7 @@ Use the scoped interaction utility with the existing accessibility utilities:
 - Action states use `--accent-contrast`, `--accent-contrast-hover`, and `--accent-contrast-active` with their matching accent backgrounds.
 - `focus-ring` and `focus-ring-inset` use a 3px outline without shadow under `prefers-contrast: more`, and a system Highlight outline under forced colors; variants and `@apply` preserve these fallbacks.
 - Neutral and accent surfaces have separate focus roles. Status treatments expose foreground, background, and border roles while preserving the legacy status aliases. The legacy aliases (`--status-success`, `--status-warning`, …) are not contrast-checked against surfaces; use `-fg` for text and `-border` for standalone icons or outlines.
+- `--text-accent` is the standalone indicator role for checked checkboxes/radios, switch tracks, progress fills, and selected-tab underlines: it keeps at least 3:1 on canvas, panel, elevated, and subtle surfaces in every family. `--accent-primary` is a surface fill (about 2.7:1 on the Paper canvas) and should carry `--accent-contrast` content.
 - `--border-strong` is the control-boundary role: it keeps at least 3:1 against canvas, panel, elevated, and subtle surfaces in every family. Use it for text inputs and other controls identified by their border.
 - `--color-syntax-*` code-highlighting colors respond to Paper, Ink, Neo Light, and Neo Dark, and meet 4.5:1 on the canvas and on `--reading-code-bg`.
 - Long-form reading variables such as `--reading-measure`, `--reading-line-height`, and `--reading-link` live in the semantic layer and inherit light/dark runtime variables.
