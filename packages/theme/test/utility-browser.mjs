@@ -47,10 +47,11 @@ export async function verifyUtilityComposition(context) {
       const output = join(temporary, "output.css")
       const pressables = ["pressable", "md:pressable", "brutal:pressable", "applied-pressable"]
       const focuses = ["focus-ring", "focus-ring-inset", "md:focus-ring", "applied-focus"]
+      const roleUtilities = ["shadow-card", "shadow-panel", "bg-black/disabled"]
       writeFileSync(input, `@import "${join(packageDir, "node_modules/tailwindcss/index.css")}" source(none);
 @import "${join(packageDir, "src/index.css")}";
 ${neo ? `@import "${join(packageDir, "src/brutal.css")}";` : ""}
-@source inline("${[...focuses, ...(neo ? pressables : [])].join(" ")}");
+@source inline("${[...focuses, ...roleUtilities, ...(neo ? pressables : [])].join(" ")}");
 .applied-focus { @apply focus-ring-inset; }
 ${neo ? ".applied-pressable { @apply pressable; }" : ""}
 `)
@@ -62,6 +63,19 @@ ${neo ? ".applied-pressable { @apply pressable; }" : ""}
         await page.evaluate(({ neo, dark }) => {
           document.documentElement.className = [neo && "brutal", dark && "dark"].filter(Boolean).join(" ")
         }, { neo, dark })
+        // Mode-remapped roles must reach utilities instead of build-time inlined values.
+        await page.emulateMedia({ contrast: "no-preference", reducedMotion: "no-preference", forcedColors: "none" })
+        await check(`${mode} role utilities`, async () => {
+          const actual = await page.locator("main").evaluate((element) => {
+            element.innerHTML = ["shadow-card", "shadow-panel", "bg-black/disabled"].map(utility => `<div class="${utility}"></div>`).join("")
+              + `<div style="box-shadow: var(--shadow-card)"></div><div style="box-shadow: var(--shadow-panel)"></div>`
+            const styles = [...element.children].map(child => getComputedStyle(child))
+            return { card: styles[0].boxShadow, panel: styles[1].boxShadow, disabled: styles[2].backgroundColor, cardRole: styles[3].boxShadow, panelRole: styles[4].boxShadow }
+          })
+          assert.equal(actual.card, actual.cardRole)
+          assert.equal(actual.panel, actual.panelRole)
+          assert.equal(actual.disabled, "oklab(0 0 0 / 0.45)")
+        })
         for (const utility of focuses) {
           await page.locator("main").evaluate((element, utility) => {
             element.innerHTML = `<button class="${utility}">Focus</button>`

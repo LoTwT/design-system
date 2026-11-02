@@ -1,7 +1,7 @@
 @theme static {
-  --opacity-disabled: 0.45;
-  --opacity-muted: 0.62;
-  --opacity-subtle: 0.72;
-  --opacity-overlay: 0.76;
-  --opacity-emphasis: 0.88;
+  --opacity-disabled: 45%;
+  --opacity-muted: 62%;
+  --opacity-subtle: 72%;
+  --opacity-overlay: 76%;
+  --opacity-emphasis: 88%;
 }

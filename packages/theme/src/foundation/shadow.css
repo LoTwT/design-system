@@ -8,7 +8,19 @@
   --shadow-xl: 0 26px 70px rgb(36 33 28 / 0.16), 0 10px 24px rgb(36 33 28 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(36 33 28 / 0.25);
 
+  --shadow-focus: 0 0 0 4px rgb(156 143 217 / 0.24);
+}
+
+/* Tailwind inlines @theme shadow values into utilities, so mode-remapped roles stay runtime variables. */
+:root {
   --shadow-card: var(--shadow-sm);
   --shadow-panel: var(--shadow-md);
-  --shadow-focus: 0 0 0 4px rgb(156 143 217 / 0.24);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@utility shadow-panel {
+  box-shadow: var(--shadow-panel);
 }

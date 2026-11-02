@@ -191,7 +191,7 @@ V0 token：`--spacing-px / -0 / -0-5 / -1 / -1-5 / -2 / -2-5 / -3 / -3-5 / -4 / 
 --shadow-focus: 0 0 0 4px rgb(156 143 217 / 0.24)   /* lavender-500 + alpha */
 ```
 
-设计意图：multi-layer 阴影（每个含 2 层）提质感；语义阴影 (`--shadow-card`, `--shadow-panel`) 让 consumer 不直接绑 size。
+设计意图：multi-layer 阴影（每个含 2 层）提质感；语义阴影 (`--shadow-card`, `--shadow-panel`) 让 consumer 不直接绑 size。两者是 `:root` runtime 变量而非 `@theme` token：Tailwind 会把 `@theme` 中的 shadow 值内联进 utility，导致 `.dark` / `.brutal` 的重映射失效；`shadow-card` / `shadow-panel` utility 由显式 `@utility` 提供，输出 `box-shadow: var(--shadow-card)` / `var(--shadow-panel)`。
 
 Opt-in `brutal.css` 在 `:root` 追加 `--shadow-hard-color` 与 `--shadow-hard-sm/md/lg`（4/6/8px 正向 offset、zero blur），因此 import 后这些 physical tokens 为 entry-global；它另在 `.brutal` 下重映射 semantic shadow aliases。默认 soft-shadow scale 与编译输出不变。
 
@@ -260,14 +260,14 @@ V0 keyframes 命名带 `ayingott-` 前缀避免与 consumer 自有 keyframes 冲
 
 ### 2.6 Opacity（5 语义阶）
 ```css
---opacity-disabled: 0.45
---opacity-muted:    0.62
---opacity-subtle:   0.72
---opacity-overlay:  0.76
---opacity-emphasis: 0.88
+--opacity-disabled: 45%
+--opacity-muted:    62%
+--opacity-subtle:   72%
+--opacity-overlay:  76%
+--opacity-emphasis: 88%
 ```
 
-V0 用语义命名而非数值阶 — consumer 用语义而非"50% / 60%"思考。
+V0 用语义命名而非数值阶 — consumer 用语义而非"50% / 60%"思考。值使用百分比，`opacity-disabled` 与颜色修饰符 `bg-black/disabled` 都可用（`color-mix()` 只接受百分比）。
 
 ### 2.7 Transition（3 个语义 transition group）
 ```css
