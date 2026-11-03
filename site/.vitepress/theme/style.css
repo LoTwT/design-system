@@ -65,6 +65,14 @@
   --vp-sidebar-bg-color: var(--vp-c-bg-alt);
 }
 
+/* Neo Dark's accent is the family purple, not Ink's lavender-300. Remap the
+   VitePress brand color so active nav and sidebar items, doc links, and
+   brand borders match --text-accent. Neo Light keeps the lavender brand:
+   its blue --text-accent is only 4.41:1 on the Neo Light sidebar. */
+.brutal.dark {
+  --vp-c-brand-1: var(--text-accent);
+}
+
 .VPSidebarItem.is-active > .item .text {
   font-weight: var(--font-weight-semibold);
 }
