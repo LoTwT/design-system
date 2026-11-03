@@ -16,7 +16,7 @@
 - `@ayingott/vue` 或任何 Vue 组件包
 - Reka UI / Nuxt UI / shadcn-vue 集成层
 - adapter 包 / playground app / fixtures 目录
-- VitePress 文档站
+- VitePress 文档站（后由 DS-D-05 加入仓库级 `site/` 展示站，不属于包契约）
 - ayingott.me 站点迁移
 
 **可逆性**：中（V1.x 视真实消费方需求扩展，但范围扩展属于新决策）
