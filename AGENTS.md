@@ -1,72 +1,19 @@
-# Agent Guide
+# Agent 工作指南
 
-This repository is the source for the Ayingott design system.
+本仓库是 Ayingott design system 的源码。新增或修改文档时沿用项目已有文档的主要语言；术语、命令和标识符保留原文。
 
-## Start Here
+- **查阅文档**：开始涉及项目行为、结构或约定的任务前，先查看 `docs/index.md`，按阅读场景只打开相关文档或章节；已知目标时可直接查阅。
+- **及时更新文档**：变更使已有文档不准确或不完整时，在同一变更中更新相关文档；任务中确认且后续任务需要复用的约定、命令或约束，写入对应文档。无法确定或超出当前范围的更新，在报告中列为待办。
+- **文档归属**：新增、移动或调整文档时遵循 `docs/index.md` 的目录约定并维护导航。本文件只保留每项任务都适用的规则，专题内容写入 `docs/`。
+- **语义明确**：命名、类型、接口和结构应清晰表达意图，准确性优先于简短；注释说明代码无法直接表达的原因、约束和取舍，不复述代码行为；同一项事实只在一处定义，其他位置引用。
+- **最小充分变更**：依据相关实现与既有约定，实施能够完整满足要求的最小连贯变更，避免无关的重构、清理或格式化。
+- **自主推进**：在用户给定的目标和授权范围内完成必要工作，常规实现选择自行判断；遇到无法自行消解的关键歧义或需要超出现有授权时再提问，并继续推进不依赖该答复的工作。
+- **验证**：根据变更影响选择必要的验证，优先使用项目已有的检查方式（如 `docs/development.md` 中记录的方法），如实报告失败与未验证的事项。
 
-- V0 scope is `@ayingott/theme` only.
-- Use Tailwind CSS v4 CSS-first features.
-- Keep the package framework-agnostic.
-- Do not add component primitives, Vue packages, adapters, playgrounds, or fixtures unless a later decision explicitly expands scope.
-- The VitePress showcase lives only under `site/`; keep `docs/` as source RFC/spec/decision markdown.
-- AI tools that need to consume this design system for UI output should start with `skills/ayingott-design-system/SKILL.md`. The skill is repository documentation only and is not part of the `@ayingott/theme` npm package.
+## 项目约束
 
-## Package Contract
-
-- Public CSS exports are limited to `.`, `./index.css`, `./brutal.css`, `./fonts.css`, and `./fonts/*`.
-- Tailwind CSS `^4.0.0` is a required peer dependency; the published package must not expose repository-only test scripts.
-- `@ayingott/theme` must not import `fonts.css`; Bricolage Grotesque, Space Mono, Literata, and LXGW WenKai loading is consumer opt-in.
-- `@ayingott/theme` must not import `brutal.css`; Neo-Brutalism is consumer opt-in after the default entry.
-- Semantic variables such as `--surface-canvas` and `--text-primary` are runtime CSS variables, not guaranteed Tailwind utilities.
-- The default entry injects no global reduced-motion policy. The opt-in `pressable` utility owns only its scoped `.brutal` reduced-motion fallback.
-- If font files ship in the npm package, `THIRD_PARTY_NOTICES.md` must ship with them.
-
-## Verification
-
-Run:
-
-```bash
-pnpm check
-pnpm site:typecheck
-pnpm site:build
-CHROME_PATH=<chrome-binary> pnpm site:browser
-```
-
-`pnpm check` requires Python 3 for the stdlib-only font-vendoring failure tests.
-It covers those tests, source smoke, package dry-run, real-tarball consumer
-install/compile against both the Tailwind peer floor (`4.0.0`) and the workspace
-version, site contrast checks, and living-doc token checks. The
-`site:typecheck` and `site:build` commands validate the VitePress implementation. `site:browser` runs the
-Playwright browser contract (theme-family init plus live-Chrome behavior); it
-needs a Chrome binary via `CHROME_PATH` and also runs in the `site` CI job and
-the release workflow, so run it before pushing browser-visible changes. Pull
-requests still run the `check` and `site` CI jobs, but no `main` ruleset
-currently enforces them.
-
-## Release
-
-- Release versions are shared by every repository `package.json`.
-- Use `pnpm release:bump` for a patch bump, or `pnpm release:bump X.Y.Z` for an explicit version.
-- Run release bumps only from `main` after the release PR has merged.
-- The release script uses bumpp's built-in commit/tag format: `chore: release vX.Y.Z` and `vX.Y.Z`.
-- `pnpm release:bump` requires a clean `main` matching live `origin/main`; it atomically pushes only the new release commit and its exact tag. `--no-push` prepares them locally. Use this wrapper for releases; `bump.config.ts` disables bumpp's all-tags push.
-- The `vX.Y.Z` tag triggers `.github/workflows/release.yml`; an unprivileged validation job produces a checksummed tarball and release notes, the publish job receives only artifact-read and OIDC permissions, a separate job creates the GitHub Release, and a final job runs registry install smoke.
-- Pass repository-relative tarballs to `npm publish` with an explicit `./` prefix (or an absolute path); npm 11 can otherwise parse a slash-containing relative path as a Git package spec.
-- Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
-- The GitHub environment binding for publish is `npm-publish`. It currently has no required reviewers or deployment branch/tag restrictions, and repository administrators retain bypass. Do not describe it as a protected environment; the `v*.*.*` release tag ruleset is the current pre-publish control.
-- A new minor or major version line does not need a separate decision document. Mark breaking changes with `!` in commit subjects so the generated CHANGELOG flags them.
-
-The display-only VitePress showcase remains separate from the package contract.
-
-## Documentation Lifecycle
-
-- Living docs (`site/`, `skills/`, `packages/theme/README.md`, and the `docs/spec/` contract baselines) are guarded by contract tests for required phrases; README, `skills/`, and `site/` CSS variable names and the README export list are also checked. Token values restated in prose are not checked. Change them only together with the implementation they describe.
-- Everything else under `docs/` holds RFCs, the `docs/decisions/index.md` foundation decisions, and release mechanics. Do not add per-PR decision records or QA snapshots: put change rationale and validation in the PR description, and let the generated CHANGELOG record user-visible changes.
-
-## More Context
-
-- RFC: `docs/rfc/0001-theme-v0.md`
-- Release workflow: `docs/release/DS-D-09-release.md`
-- Release gates: `docs/release/README.md`
-- Package: `packages/theme/README.md`
-- Notices: `packages/theme/THIRD_PARTY_NOTICES.md`
+- V0 范围仅限 `@ayingott/theme`：框架无关、Tailwind CSS v4 CSS-first 的主题包。除非后续决策明确扩大范围，不新增 component primitives、Vue 包、adapter、playground 或 fixtures。详见 `docs/architecture.md`。
+- `@ayingott/theme` 不得 import `fonts.css` 或 `brutal.css`；字体与 Neo-Brutalism 保持由使用方 opt-in。
+- `site/`、`skills/`、`packages/theme/README.md` 与 `docs/spec/` 是受合约测试保护的 living docs，只与其描述的实现一起修改。
+- 发布只通过 `pnpm release:bump`，在 release PR 合并后从干净的 `main` 运行。详见 `docs/release.md`。
+- 需要使用本设计系统生成 UI 的 AI 工具，从 `skills/ayingott-design-system/SKILL.md` 开始阅读。该 skill 仅是仓库文档，不属于 npm 包。

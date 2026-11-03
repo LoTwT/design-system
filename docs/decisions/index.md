@@ -157,7 +157,7 @@
 
 **决策**：`bumpp@11.1.0` 控制共享版本，`pnpm release:bump` 创建 `chore: release vX.Y.Z` commit 与 `vX.Y.Z` tag；tag push 触发 `.github/workflows/release.yml`，经 unprivileged validation、OIDC Trusted Publishing、GitHub Release 与 registry install smoke 发布 `@ayingott/theme`。已发布版本不依赖 unpublish，走 deprecate + 下一个 patch。
 
-命令级机制见 [`docs/release/DS-D-09-release.md`](../release/DS-D-09-release.md)，当前 release gates 与 accepted residual 见 [`docs/release/README.md`](../release/README.md)。
+当前发布步骤、workflow 机制与已接受的风险见 [`docs/release.md`](../release.md)。
 
 **来源**：lo-user 2026-05-07 / 2026-05-08 在 #design-system 要求用 bumpp 控制版本并调研 CI/OIDC 发布；2026-05-12 锁定 LoTwT/ai canonical runbook。
 
@@ -179,7 +179,7 @@
 
 - `foundation/typography.css` 增加 `--font-reading` 和 `--leading-reading`
 - 新增 `semantic/reading.css`，提供 `--reading-*` runtime variables
-- `fonts.css` opt-in 增加 Newsreader Latin / Latin Extended `opsz` variable normal woff2
+- `fonts.css` opt-in 增加 Newsreader Latin / Latin Extended `opsz` variable normal woff2（后由 #46 替换为 Literata）
 - `THIRD_PARTY_NOTICES.md`、smoke、pack-dry、contrast gate 同步更新
 
 **边界**：
@@ -202,17 +202,18 @@
 
 ## 字体配置（实施细节，记录但不单独编号）
 
-V0 实际打包：
+当前打包（2026-07 #46 将 Space Grotesk / Newsreader 替换为 Bricolage Grotesque / Literata；2026-09 #56 新增 LXGW WenKai）：
 
-- **Space Grotesk Variable**（SIL OFL 1.1）— `--font-display`，weight 300-700
+- **Bricolage Grotesque Variable**（SIL OFL 1.1）— `--font-display`，latin / latin-ext，optical size + weight 200-800
 - **Space Mono Regular + Bold**（SIL OFL 1.1）— `--font-mono`
-- **Newsreader Variable**（SIL OFL 1.1）— `--font-reading`，latin / latin-ext，optical size + weight variable
+- **Literata Variable**（SIL OFL 1.1）— `--font-reading`，latin / latin-ext，optical size + weight 200-900
+- **LXGW WenKai Regular + Medium**（SIL OFL 1.1）— 以私有字体名 `Ayingott WenKai` 注册，作为所有字体栈的中文回退
 
 Fallback chain（CSS 引用，不打包）：
 
-- macOS: PingFang SC / Hiragino Sans GB
+- macOS: PingFang SC / Hiragino Sans GB / Songti SC
 - Windows: Microsoft YaHei
-- 通用: system-ui / -apple-system / sans-serif / monospace
+- 通用: system-ui / -apple-system / sans-serif / serif / monospace
 
 License notice：`packages/theme/THIRD_PARTY_NOTICES.md`（含 source / version / sha256 / weight 范围）。
 
