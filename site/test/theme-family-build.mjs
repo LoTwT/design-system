@@ -20,12 +20,13 @@ const publicRoles = Object.keys({ ...brutalContract.commonDeclarations, ...bruta
 // control boundary; restoring its previous alpha values reproduces the earlier
 // 2026-10-10 digests. Refreshed on 2026-11-02 for the private "Ayingott WenKai"
 // family and the Neo danger/info stickers; restoring only typography.css, fonts.css, and
-// semantic/brutal.css reproduces the previous digests. Hash resolved public
-// roles, not internal aliases.
+// semantic/brutal.css reproduces the previous digests. Neo Light was refreshed
+// on 2026-11-03 for --text-muted #4a4235; restoring #5a5141 reproduces the
+// 2026-11-02 digest. Hash resolved public roles, not internal aliases.
 const unchangedModeDigests = {
   paper: "4e7db16a268eeaa577828c41d420252c04099e17583e9f689e23590be30b797b",
   ink: "3f6be270d8c834f9f2d4485545bdcc7c0fa2eaeda94d4f735e1cbc3f5d042e56",
-  neoLight: "dcfde9f74db35196ec7a3db900ca4164c233c3a451d253a3ee928b6b1a2b13c6",
+  neoLight: "d790e7fa9cd66a97a6fd59306d9416f0200c669f181634ede24c793cf854ea9a",
 }
 const deadlineMs = Number(process.env.THEME_BROWSER_DEADLINE_MS ?? 10000)
 function expect(condition, message) {

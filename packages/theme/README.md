@@ -91,7 +91,7 @@ Keep consumer styles on semantic roles and the two structure roles. `--border-wi
 
 Physical hard shadows default to `currentColor` in all four root states. Neo card/panel shadows and `pressable` feedback use a separate family depth color, so overriding `--shadow-hard-color` does not recolor them.
 
-Neo Dark uses warm charcoal surfaces, ivory text, separate default/strong borders, and dark hard shadows. Use `--border-default` or `--border-strong` for essential control boundaries; `--border-subtle` is decorative. `--accent-soft` is the deep-purple selected surface, distinct from the muted/disabled surface. The independent depth color preserves Neo Light's existing shadows; consumers continue to use `--shadow-card`, `--shadow-panel`, and `pressable`.
+Neo Dark uses warm charcoal surfaces, ivory text, separate default/strong borders, and dark hard shadows. Use `--border-default` or `--border-strong` for essential control boundaries; `--border-subtle` is decorative. `--accent-soft` is the deep-purple selected surface, distinct from the muted/disabled surface. In Neo Light, keep text on `--accent-soft` to `--text-primary`, `--text-secondary`, or `--text-muted`; `--text-accent` is about 2.5:1 there, so show links inside selected items with `--text-primary` and an underline. The independent depth color preserves Neo Light's existing shadows; consumers continue to use `--shadow-card`, `--shadow-panel`, and `pressable`.
 
 Use the scoped interaction utility with the existing accessibility utilities:
 

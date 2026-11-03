@@ -24,11 +24,11 @@ const contract = JSON.parse(readFileSync(join(rootDir, contractFile), "utf8"))
 const paperInkContract = JSON.parse(readFileSync(join(rootDir, paperInkContractFile), "utf8"))
 
 const requiredDigests = {
-  declarations: "8ab978878ffcf5c4edcb2db71d9dd6bd826800323f2c153d20f33e0c542f986e",
+  declarations: "00c0fdf94f33680471aa1e6d9df90b4673d9674f1125f3c15c681ae26de90405",
   invariants: "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
   interaction: "6278f6ff3b8d69c059fce88684f1e49236cb469573f0f05d729b1e9301ad51e8",
   stateMappings: "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
-  legalPairs: "e01db8a7dca9de9dc899a20c71b4628e2c647a14cb855b9ae98b0e3535e2c567",
+  legalPairs: "02224955a7599ccbd34c55a65c697570946fa6b8e2c21720ed8f2cd54d04a00c",
 }
 const requiredDarkPairIds = [
   ...["border-default", "border-strong"].flatMap(role =>
@@ -37,6 +37,7 @@ const requiredDarkPairIds = [
     ["panel", "elevated", "subtle", "muted", "selected"].map(background => `${role}-${background}`)),
   "muted-subtle", "muted-selected", "link-selected", "focus-selected",
 ].map(pair => `brutal-dark-${pair}`)
+const requiredLightSelectedPairIds = ["primary", "secondary", "muted"].map(role => `brutal-light-${role}-selected`)
 const requiredSyntaxPairIds = ["light", "dark"].flatMap(mode =>
   ["code", "canvas"].flatMap(background =>
     ["keyword", "string", "function", "number", "comment", "operator"].map(token => `brutal-${mode}-syntax-${token}-${background}`)))
@@ -88,6 +89,8 @@ function validateContractShape(value) {
   expect(new Set(pairIds).size === pairIds.length, "Duplicate Brutal legal pair id")
   for (const pair of requiredDarkPairIds)
     expect(pairIds.includes(pair), `Missing required Brutal dark pair: ${pair}`)
+  for (const pair of requiredLightSelectedPairIds)
+    expect(pairIds.includes(pair), `Missing required Brutal light selected pair: ${pair}`)
   for (const pair of requiredSyntaxPairIds)
     expect(pairIds.includes(pair), `Missing required Brutal syntax pair: ${pair}`)
   for (const pair of value.legalPairs) {
@@ -516,6 +519,7 @@ for (const [query, label] of [["(prefers-reduced-motion: reduce)", "reduced-moti
 }
 for (const [ids, message] of [
   [requiredDarkPairIds, "Missing required Brutal dark pair"],
+  [requiredLightSelectedPairIds, "Missing required Brutal light selected pair"],
   [requiredSyntaxPairIds, "Missing required Brutal syntax pair"],
 ]) {
   for (const id of ids) {
@@ -628,6 +632,14 @@ expectFailure(
   "blue contrast bound to paper white",
   () => verifyPair(bluePair, [{ ...expectedMode("light"), "brutal-sticker-paper": "#fcf6ea" }]),
   "below target 5:1",
+)
+
+const lightMutedSelectedPair = contract.legalPairs.find(pair => pair.id === "brutal-light-muted-selected")
+expect(lightMutedSelectedPair !== undefined, "Missing brutal-light-muted-selected pair")
+expectFailure(
+  "light muted text restored to the pre-selected-pair value",
+  () => verifyPair(lightMutedSelectedPair, [{ ...expectedMode("light"), "text-muted": "#5a5141" }]),
+  "below 4.5:1",
 )
 
 const modeMaps = {
