@@ -123,7 +123,7 @@ Import `@ayingott/theme/brutal.css` after the default entry. Keep the family and
 
 Use `--text-muted` for active muted UI copy. Physical color utilities remain valid for decorative or fixed-color work. `subtle`, `muted`, and `soft` are family-relative intents, not promises of equal alpha, literal color, or visual weight.
 
-Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--border-strong` roles identify essential boundaries; `--border-subtle` is decorative. `--accent-soft` supplies a deep-purple selected surface distinct from `--surface-muted`. Semantic shadows and every `pressable` state use the internal `--brutal-shadow` depth color (`#111111` in Neo Light, `#080808` in Neo Dark); consumers must not reference that internal value directly.
+Neo Dark uses charcoal surfaces and ivory text. Its `--border-default` and `--border-strong` roles identify essential boundaries; `--border-subtle` is decorative. `--accent-soft` supplies a deep-purple selected surface distinct from `--surface-muted`. In Neo Light, keep text on `--accent-soft` to `--text-primary`, `--text-secondary`, or `--text-muted`; `--text-accent` is about 2.5:1 there, so show links inside selected items with `--text-primary` and an underline. Semantic shadows and every `pressable` state use the internal `--brutal-shadow` depth color (`#111111` in Neo Light, `#080808` in Neo Dark); consumers must not reference that internal value directly.
 
 ## Foundation palettes (use only when semantic vars do not fit)
 

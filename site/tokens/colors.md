@@ -38,7 +38,7 @@ Color tokens come from `packages/theme/src/foundation/colors.css`.
 
 ## Syntax
 
-`.dark`, `.brutal`, and `.brutal.dark` redeclare these tokens so code highlighting meets 4.5:1 on the canvas and on `--reading-code-bg` in every family. Neo Light uses the Paper values and Neo Dark uses the Ink values.
+`.dark`, `.brutal`, and `.brutal.dark` redeclare these tokens so code highlighting meets 4.5:1 on the canvas and on `--reading-code-bg` in every family. Neo Light and Neo Dark reuse the Paper and Ink keyword, string, function, and number values. Their comment and operator colors stay in each Neo family's warm neutral tones; in Neo Dark they match `--text-muted` and `--text-secondary`.
 
 <ColorSwatchGrid title="Syntax · Paper" prefix="color-syntax-" />
 

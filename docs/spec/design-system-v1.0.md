@@ -108,7 +108,7 @@ Foundation / public utility 的准入遵循 [Paper & Ink dependency policy](./pa
 --color-syntax-comment:   #646361  /* = Paper --text-muted */
 --color-syntax-operator:  #4e4d4b  /* = neutral-700 */
 
-/* Ink（.dark）与 Neo Dark（.brutal.dark）；Neo Dark 的 comment / operator 仍为 #aa9e8b / #d7cdbc（brutal.css） */
+/* Ink（.dark）与 Neo Dark（.brutal.dark）；Neo Dark 的 comment / operator 为 #aaa89e / #c3c1b8（= Neo Dark --text-muted / --text-secondary，brutal.css） */
 --color-syntax-keyword:   #c7b6f5  /* = lavender-300 */
 --color-syntax-string:    #84dfbd  /* = mint-300 */
 --color-syntax-function:  #8dc5ff  /* = sky-300 */

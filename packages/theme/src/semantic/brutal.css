@@ -25,7 +25,7 @@
 
   --text-primary: var(--brutal-ink);
   --text-secondary: #3a3429;
-  --text-muted: #5a5141;
+  --text-muted: #4a4235;
   --text-inverse: var(--brutal-sticker-paper);
   --text-accent: var(--brutal-blue);
 
@@ -176,8 +176,8 @@
   --color-syntax-string: #84dfbd;
   --color-syntax-function: #8dc5ff;
   --color-syntax-number: #ffc94a;
-  --color-syntax-comment: #aa9e8b;
-  --color-syntax-operator: #d7cdbc;
+  --color-syntax-comment: #aaa89e;
+  --color-syntax-operator: #c3c1b8;
 
   --reading-font-body: var(--font-reading);
   --reading-font-heading: var(--font-reading);

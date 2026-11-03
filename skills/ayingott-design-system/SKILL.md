@@ -185,7 +185,7 @@ Importing `brutal.css` defines `--shadow-hard-color` and the `--shadow-hard-sm` 
 
 Do not consume the family-local `--brutal-*` palette variables directly. They are contract-owned implementation details used to map the public semantic roles.
 
-Neo Dark separates ivory text, default/strong borders, and dark hard shadows on warm charcoal surfaces. Use `--border-default` or `--border-strong` for essential control boundaries; reserve `--border-subtle` for decoration. Use `--accent-soft` for selected surfaces, keeping them distinct from `--surface-muted`. The internal `--brutal-shadow` depth color is not a consumer API; keep using the semantic shadow roles and `pressable` in every state.
+Neo Dark separates ivory text, default/strong borders, and dark hard shadows on warm charcoal surfaces. Use `--border-default` or `--border-strong` for essential control boundaries; reserve `--border-subtle` for decoration. Use `--accent-soft` for selected surfaces, keeping them distinct from `--surface-muted`. In Neo Light, keep text on `--accent-soft` to `--text-primary`, `--text-secondary`, or `--text-muted`; `--text-accent` is about 2.5:1 there, so show links inside selected items with `--text-primary` and an underline. The internal `--brutal-shadow` depth color is not a consumer API; keep using the semantic shadow roles and `pressable` in every state.
 
 Use `pressable` only with the opt-in entry and compose accessibility utilities:
 

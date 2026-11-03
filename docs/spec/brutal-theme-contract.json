@@ -107,7 +107,7 @@
       "surface-subtle": "#ffe9a8",
       "surface-muted": "#e8d9b7",
       "text-secondary": "#3a3429",
-      "text-muted": "#5a5141",
+      "text-muted": "#4a4235",
       "text-inverse": "var(--brutal-sticker-paper)",
       "text-accent": "var(--brutal-blue)",
       "border-subtle": "rgb(17 17 17 / 0.62)",
@@ -148,8 +148,8 @@
       "color-syntax-string": "#84dfbd",
       "color-syntax-function": "#8dc5ff",
       "color-syntax-number": "#ffc94a",
-      "color-syntax-comment": "#aa9e8b",
-      "color-syntax-operator": "#d7cdbc"
+      "color-syntax-comment": "#aaa89e",
+      "color-syntax-operator": "#c3c1b8"
     }
   },
   "modeProperties": {
@@ -246,6 +246,9 @@
     { "id": "brutal-light-muted-canvas", "mode": "light", "foreground": "text-muted", "background": "surface-canvas", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-light-muted-panel", "mode": "light", "foreground": "text-muted", "background": "surface-panel", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-light-muted-elevated", "mode": "light", "foreground": "text-muted", "background": "surface-elevated", "minimum": 4.5, "target": 5, "kind": "text" },
+    { "id": "brutal-light-primary-selected", "mode": "light", "foreground": "text-primary", "background": "accent-soft", "minimum": 4.5, "target": 7, "kind": "text" },
+    { "id": "brutal-light-secondary-selected", "mode": "light", "foreground": "text-secondary", "background": "accent-soft", "minimum": 4.5, "kind": "text" },
+    { "id": "brutal-light-muted-selected", "mode": "light", "foreground": "text-muted", "background": "accent-soft", "minimum": 4.5, "kind": "text" },
     { "id": "brutal-light-link-canvas", "mode": "light", "foreground": "text-accent", "background": "surface-canvas", "minimum": 4.5, "kind": "text" },
     { "id": "brutal-light-action-default", "mode": "light", "foreground": "accent-contrast", "background": "accent-primary", "minimum": 4.5, "target": 5, "kind": "text" },
     { "id": "brutal-light-action-hover", "mode": "light", "foreground": "accent-contrast-hover", "background": "accent-primary-hover", "minimum": 4.5, "target": 5, "kind": "text" },
@@ -361,10 +364,10 @@
     { "id": "brutal-dark-syntax-operator-canvas", "mode": "dark", "foreground": "color-syntax-operator", "background": "surface-canvas", "minimum": 4.5, "kind": "text" }
   ],
   "digests": {
-    "declarations": "8ab978878ffcf5c4edcb2db71d9dd6bd826800323f2c153d20f33e0c542f986e",
+    "declarations": "00c0fdf94f33680471aa1e6d9df90b4673d9674f1125f3c15c681ae26de90405",
     "invariants": "a25e8795dae7d967742a8b4c5c55dd4599107331b4695eb9dee726bc1b81c17c",
     "interaction": "6278f6ff3b8d69c059fce88684f1e49236cb469573f0f05d729b1e9301ad51e8",
     "stateMappings": "c2b34956283e5fb459bed6ac83e0c29b38971f43c4c446904314a3793c684a46",
-    "legalPairs": "e01db8a7dca9de9dc899a20c71b4628e2c647a14cb855b9ae98b0e3535e2c567"
+    "legalPairs": "02224955a7599ccbd34c55a65c697570946fa6b8e2c21720ed8f2cd54d04a00c"
   }
 }

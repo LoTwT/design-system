@@ -377,6 +377,11 @@ expect(!themeFamilyControlSource.includes("theme-family-control__label-header"),
 const brutalChrome = readDeclarations(findRule(css, [".brutal"], "Neo chrome surfaces"))
 expectDeclaration(brutalChrome, "--vp-c-bg-alt", "var(--surface-elevated)")
 expectDeclaration(brutalChrome, "--vp-sidebar-bg-color", "color-mix(in oklab, var(--surface-canvas) 60%, var(--surface-subtle))")
+const neoLightChrome = readDeclarations(findRule(css, [".brutal:not(.dark)"], "Neo Light chrome surfaces"))
+expectDeclaration(neoLightChrome, "--vp-c-bg-alt", "color-mix(in oklab, var(--surface-canvas) 70%, var(--surface-muted))")
+expectDeclaration(neoLightChrome, "--vp-sidebar-bg-color", "var(--vp-c-bg-alt)")
+const neoDarkBrand = readDeclarations(findRule(css, [".brutal.dark"], "Neo Dark brand color"))
+expectDeclaration(neoDarkBrand, "--vp-c-brand-1", "var(--text-accent)")
 
 const tabletNav = css.nodes.filter(node => node.type === "atrule" && node.name === "media" && node.params === "(min-width: 768px)")
 expect(tabletNav.length === 1, "Expected exactly one min-width: 768px media query")
