@@ -16,7 +16,7 @@
 - `@ayingott/vue` 或任何 Vue 组件包
 - Reka UI / Nuxt UI / shadcn-vue 集成层
 - adapter 包 / playground app / fixtures 目录
-- VitePress 文档站
+- VitePress 文档站（后由 DS-D-05 加入仓库级 `site/` 展示站，不属于包契约）
 - ayingott.me 站点迁移
 
 **可逆性**：中（V1.x 视真实消费方需求扩展，但范围扩展属于新决策）
@@ -155,78 +155,19 @@
 
 ## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
 
-**当前状态 / supersession**：release/package contract 仍有效；environment gate 口径由 DS-D-10 部分取代。当前控制与 accepted residual 的 canonical 记录见 [`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)。
+**决策**：`bumpp@11.1.0` 控制共享版本，`pnpm release:bump` 创建 `chore: release vX.Y.Z` commit 与 `vX.Y.Z` tag；tag push 触发 `.github/workflows/release.yml`，经 unprivileged validation、OIDC Trusted Publishing、GitHub Release 与 registry install smoke 发布 `@ayingott/theme`。已发布版本不依赖 unpublish，走 deprecate + 下一个 patch。
 
-**决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 version files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
+当前发布步骤、workflow 机制与已接受的风险见 [`docs/release.md`](../release.md)。
 
-**发布目标**：当前唯一 npm publish 目标是 `@ayingott/theme`。design-system 保持单包发布路径：release workflow 的 unprivileged validation job 构建带 checksum 的 theme tarball，privileged publish job 消费同一 artifact 并执行 `npm publish <tarball> --ignore-scripts`。未来新增 public 子包时，需在同 PR 中重新设计 package selection、package-specific gates 和 registry smoke。
-
-**commit / tag 格式**：沿用 bumpp 内置格式：
-
-- commit：`chore: release vX.Y.Z`
-- tag：`vX.Y.Z`
-
-**CI release gate**：`.github/workflows/release.yml` 仅响应 `vX.Y.Z` tag push。unprivileged validation job 校验 tag/version/commit message/main/npm CLI，随后运行 frozen install、`pnpm check`、`pnpm site:typecheck`、`pnpm site:build`，并生成 release notes、checksummed immutable tarball 和 workflow artifact。privileged publish job 验证 artifact checksum 与 npm CLI，在 publish 前检查目标 version absence，再通过 OIDC 发布该 tarball。命令级机制以 [`docs/release/DS-D-09-release.md`](../release/DS-D-09-release.md) 为准。
-
-**npm publish**：GitHub Actions 在 environment `npm-publish` 中用 npm Trusted Publishing / OIDC 发布 validation job 产出的 checksummed tarball；publish job 不 checkout repository，也不执行 repository build scripts。
-
-Trusted Publishing automatically generates provenance attestations server-side, so the workflow must not pass the client-side `--provenance` flag.
-
-发布后 CI 必须从 npm registry 安装 `@ayingott/theme@X.Y.Z`，并通过 package-specific smoke。当前 `packages/theme` 的 smoke 是安装 package 后通过 Tailwind v4 CSS 构建。
-
-**release notes**：`git-cliff` 生成 `CHANGELOG.md` 和 GitHub Release body。CI 使用 `git-cliff --latest` 生成单版本 release notes，并通过 pinned `softprops/action-gh-release` 创建/更新 GitHub Release。
-
-`CHANGELOG.md` 不放入 bumpp `files`，避免 bumpp 对文本文件做 version-string replacement。`bump.config.ts` 的 `execute` 函数运行 `pnpm changelog` 后显式把 `CHANGELOG.md` 加入 bumpp commit 文件集。
-
-**retry safety**：tarball `npm publish` 不依赖 npm `gitHead` metadata，workflow 不再使用 `gitHead` 作为 rerun skip guard。privileged publish job 在 publish 前检查 npm version absence；如该版本已存在，CI fail fast，已 publish 的错误版本走 deprecate + next patch 的 fix-forward 路径。
-
-**首发 fallback**：如果 npm 要求 package 已存在后才能配置 Trusted Publisher，`0.0.1` 首发可使用一次性细粒度 token 放在 `npm-publish` environment 内完成；首发后迁移到 Trusted Publishing 并撤销 token。
-
-**rollback**：tag / GitHub Release 发错但未 publish 时删除 tag/Release 后重发；已 publish 的版本不依赖 unpublish，走 deprecate bad version + 发布 patch。
-
-**可逆性**：中（release 自动化可调整，但 npm 已发布版本不可覆盖）
-
-**来源**：
-
-- lo-user 2026-05-07 / 2026-05-08 在 #design-system 要求用 bumpp 控制版本并调研 CI/OIDC 发布
-- QA release-readiness 建议：publish 走 npm CLI + OIDC，release workflow 不使用 package-manager cache，post-publish registry smoke 必做
-- TL bumpp 调研：`bumpp@11.1.0` 内置 commit/tag 格式、programmatic API、`noGitCheck: false` 语义
-- lo-user 2026-05-12 在 #ai / #design-system 锁定 v3 runbook 迁移：design-system 先迁移验证，release workflow 改为 pnpm-first publish，删除本仓 worked-example runbook copy，改用 LoTwT/ai canonical runbook
+**来源**：lo-user 2026-05-07 / 2026-05-08 在 #design-system 要求用 bumpp 控制版本并调研 CI/OIDC 发布；2026-05-12 锁定 LoTwT/ai canonical runbook。
 
 ---
 
-## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
+## DS-D-10 Tag-protection 替代 environment reviewer
 
-**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。该控制模型始于 V0.0.x；2026-07-12，repository owner 在 root/theme version 为 0.1.0 的现状下选择 Phase 1B 方案 2，明确接受当前 environment exception，随后以 `go` 授权 Phase 5 rehearsal 开始。2026-07-13，owner 在完整边界被重新说明后，明确确认该 exception 适用于当前 V0.1.x patch line 与本次 Phase 5；未来 minor / major release line 需要新 decision。
+**决策**：`npm-publish` environment 不设 required reviewer；fail-safe 上移到 `Protect release tags` ruleset（`v*.*.*` 仅 repository admin 可创建 / 更新 / 删除）。registry install smoke 带 retry-with-backoff，发布全程无需人工干预。新的 minor / major 版本线不再需要单独 decision。
 
-**决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
-
-**改动汇总**（lo-user 2026-05-10 02:16 现场操作）：
-
-- **Settings → Environments → `npm-publish`**：从 Required reviewers 列表中移除 `@LoTwT`。effect：tag push 触发的 release CI 不再需要 30s 人工 approve（包括 first-attempt + rerun）。
-- **Settings → Rules → Rulesets**：新建 `Protect release tags` ruleset，target tags `Include by pattern: v*.*.*`，bypass list = Repository admin。Rules 勾选 `Restrict creations / Restrict updates / Restrict deletions`。effect：只有 repo admin 可创建 / 修改 / 删除 `v*.*.*` 形式的 tag；其他 token 或 collaborator 都被拦。
-
-**fail-safe 模型**：
-
-- **真正担心的不可逆动作 = 错误的 tag 进入 release pipeline**。`pnpm release:bump` + tag push 是显式人为操作（不会无意 `git push --tags`），且 tag-protection 使误推被 ruleset 拦下。
-- **CI 之后无需 re-approve**：tag 已通过 admin gate → bumpp 已打了正确 version → release pipeline 跑 OIDC publish + smoke + Release，不再需要人工干预。
-- **registry 万一发错版本**：走 `npm deprecate` + 新 patch（DS-D-09 rollback policy 已覆盖），不依赖 unpublish。
-
-**适用范围**：V0.0.x patch 阶段。如果后续到 V0.1+ / V1+ 形态决定需要更严格的人工 confirm gate（如向 stable 用户 broadcast），可单独决策恢复 reviewer 或拆 environment（V0.0.x auto-publish env / V0.1+ gated env）。
-
-**配套：DD-012 retry safety**：与 DS-D-10 同时落地的 release.yml CI patch（PR #13，commit `1f9bf89e`）把 registry install smoke 包进 retry-with-backoff（6 × 10s `until` loop ≈ 60s 预算），消除 npm CDN propagation race 导致的 first-attempt smoke fail（auto-publish 后无人工 rerun 的依赖）。两改一起把 V0.0.x release CI 的人工干预降到 0。
-
-**可逆性**：高（GitHub Settings UI / Ruleset 可一键回滚；workflow 配置改动也可回退）
-
-**来源**：
-
-- lo-user 2026-05-10 02:01 `ae11d396` 反馈"registry smoke 需要等待 npm cdn 同步完成"暴露 first-attempt race
-- lo-user 2026-05-10 02:10 `cb1408d9` 提出删 reviewer 的方向
-- TL 技术倾向 (A) + tag-protection 组合（msg `78b611b9` / `e7cc79ae`）
-- lo-user 2026-05-10 02:16 `6e2155bf` 完成 (a) reviewer 删除 + (b) tag ruleset 配置
-- lo-user 2026-07-12 在 `#design-system:56e830f5` 的 `88e58ea1` 选择 Phase 1B 方案 2，接受 current environment exception
-- lo-user 2026-07-12 在 `#design-system:0425f476` 的 `94ec8ed1` 以 `go` 授权 Phase 5 rehearsal 开始
-- lo-user 2026-07-13 在 `#design-system:0425f476` 的 `698a12a9` 确认 exception 适用于 current V0.1.x patch line 与本次 Phase 5，future minor / major 另行决策
+**来源**：lo-user 2026-05-10 完成 reviewer 删除与 tag ruleset 配置；2026-07-12 / 2026-07-13 确认该 exception 适用于 V0.1.x；2026-11-03 起不再按版本线另立 decision。
 
 ---
 
@@ -238,7 +179,7 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 - `foundation/typography.css` 增加 `--font-reading` 和 `--leading-reading`
 - 新增 `semantic/reading.css`，提供 `--reading-*` runtime variables
-- `fonts.css` opt-in 增加 Newsreader Latin / Latin Extended `opsz` variable normal woff2
+- `fonts.css` opt-in 增加 Newsreader Latin / Latin Extended `opsz` variable normal woff2（后由 #46 替换为 Literata）
 - `THIRD_PARTY_NOTICES.md`、smoke、pack-dry、contrast gate 同步更新
 
 **边界**：
@@ -261,17 +202,18 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ## 字体配置（实施细节，记录但不单独编号）
 
-V0 实际打包：
+当前打包（2026-07 #46 将 Space Grotesk / Newsreader 替换为 Bricolage Grotesque / Literata；2026-09 #56 新增 LXGW WenKai）：
 
-- **Space Grotesk Variable**（SIL OFL 1.1）— `--font-display`，weight 300-700
+- **Bricolage Grotesque Variable**（SIL OFL 1.1）— `--font-display`，latin / latin-ext，optical size + weight 200-800
 - **Space Mono Regular + Bold**（SIL OFL 1.1）— `--font-mono`
-- **Newsreader Variable**（SIL OFL 1.1）— `--font-reading`，latin / latin-ext，optical size + weight variable
+- **Literata Variable**（SIL OFL 1.1）— `--font-reading`，latin / latin-ext，optical size + weight 200-900
+- **LXGW WenKai Regular + Medium**（SIL OFL 1.1）— 以私有字体名 `Ayingott WenKai` 注册，作为所有字体栈的中文回退
 
 Fallback chain（CSS 引用，不打包）：
 
-- macOS: PingFang SC / Hiragino Sans GB
+- macOS: PingFang SC / Hiragino Sans GB / Songti SC
 - Windows: Microsoft YaHei
-- 通用: system-ui / -apple-system / sans-serif / monospace
+- 通用: system-ui / -apple-system / sans-serif / serif / monospace
 
 License notice：`packages/theme/THIRD_PARTY_NOTICES.md`（含 source / version / sha256 / weight 范围）。
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented. The additive token contract remains current.
+Implemented. The additive `--reading-*` token contract remains current, but #46 replaced the Newsreader reading font with Literata; references to Newsreader below are historical.
 
 ## Context
 

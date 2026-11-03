@@ -118,7 +118,7 @@ Import `@ayingott/theme/brutal.css` after the default entry. Keep the family and
 | --- | --- | --- |
 | Semantic roles such as `--surface-canvas` and `--text-muted` | Remapped inside `.brutal` / `.brutal.dark` | Primary consumer API |
 | `--border-width-surface`, `--border-width-control` | Foundation roles defaulting to `--border-width-thin`; remapped to `--border-width-heavy` inside `.brutal` / `.brutal.dark` | Reference directly across families |
-| `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, `--shadow-hard-lg` | Defined at `:root` | Entry-global physical tokens default to `currentColor` in every family; size utilities exist for `sm` / `md` / `lg`; Neo semantic shadows independently use an independent family depth color |
+| `--shadow-hard-color`, `--shadow-hard-sm`, `--shadow-hard-md`, `--shadow-hard-lg` | Defined at `:root` | Entry-global physical tokens default to `currentColor` in every family; size utilities exist for `sm` / `md` / `lg`; Neo semantic shadows use a separate family depth color |
 | `--brutal-*` palette variables | Family-local implementation values | Contract-owned; do not use directly in consumer CSS |
 
 Use `--text-muted` for active muted UI copy. Physical color utilities remain valid for decorative or fixed-color work. `subtle`, `muted`, and `soft` are family-relative intents, not promises of equal alpha, literal color, or visual weight.

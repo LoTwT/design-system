@@ -38,7 +38,7 @@ Public CSS exports:
 
 Anything not in this list is **not** part of the contract. Do not assume `@ayingott/theme/components`, `@ayingott/theme/icons`, or any other path exists.
 
-Package contract details live in `packages/theme/README.md` and `AGENTS.md`. Read those if a task requires touching the package itself.
+Package contract details live in `packages/theme/README.md` and `docs/architecture.md`. Read those if a task requires touching the package itself.
 
 ## Token layers
 
@@ -315,16 +315,17 @@ body { padding: var(--layout-page-gutter); }
 
 These live in the design-system repository. Read them when the skill is not enough.
 
+- `docs/index.md` — the documentation index; start here to find the right document.
+- `docs/architecture.md` — repository scope and the package contract.
 - `docs/spec/design-system-v1.0.md` — the V0 contract, including the §8 contrast table and §13 alignment notes.
-- `docs/rfc/0001-theme-v0.md` — the implementation RFC.
+- `docs/rfc/0001-theme-v0.md` — the implementation RFC (its font list is historical).
 - `docs/rfc/0002-reading-token-layer-v0.1.md` — the reading token layer RFC.
 - `docs/spec/rfc-brutal-theme.md` — the accepted Neo-Brutalism family RFC.
-- `docs/decisions/2026-09-09-brutal-dark-refinement.md` — the implemented Neo Dark refinement; supersedes the RFC's text-ink shadow mapping.
 - `docs/spec/brutal-theme-contract.json` — the executable family declarations, invariants, and legal pairs.
 - `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.
 - `packages/theme/THIRD_PARTY_NOTICES.md` — font licensing.
-- `AGENTS.md` — repository-level agent guidance (`CLAUDE.md` imports it).
+- `AGENTS.md` — repository-level agent rules (`CLAUDE.md` imports it).
 - Live showcase: https://design.ayingott.me
 
 When the spec and this skill ever disagree, the spec wins. File a change to this skill.

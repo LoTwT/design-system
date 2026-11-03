@@ -32,38 +32,17 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs font-vendoring failure tests, source smoke, package dry-run, real-tarball consumer install/compile against both the Tailwind peer floor (`4.0.0`) and the workspace version, site contrast gates, and living-doc token checks. Python 3 is required for the vendoring tests; they use only the standard library and run offline.
+Python 3 is required for the font-vendoring tests. See [docs/development.md](docs/development.md) for the full verification set, the showcase site commands, and the pinned Chrome browser gate.
 
 ## Release
-
-Release versions are shared by every repository `package.json`.
 
 ```bash
 pnpm release:bump        # patch bump
 pnpm release:bump X.Y.Z  # explicit version
 ```
 
-Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the release workflow, which validates release metadata, publishes `@ayingott/theme` through npm Trusted Publishing / OIDC, creates a GitHub Release from git-cliff notes, and runs registry install smoke. The release tag ruleset is the pre-publish control; the `npm-publish` environment is an OIDC binding and is not a protected approval gate. See [DS-D-09](docs/release/DS-D-09-release.md) for workflow mechanics, [DS-D-14](docs/release/DS-D-14-exact-release-push.md) for the atomic commit-and-tag push, and [DS-D-15](docs/release/DS-D-15-v0.3-release-controls.md) for current V0.3.x controls and accepted residuals. [DS-D-12](docs/release/DS-D-12-v0.2-release-controls.md) records the preceding V0.2.x decision.
+Run the release script from clean `main` after the release PR has merged. See [docs/release.md](docs/release.md) for the release steps, workflow, and rollback.
 
-The showcase site is intentionally separate from source docs:
+## Documentation
 
-```bash
-pnpm site:dev
-pnpm site:build
-pnpm site:browser
-```
-
-`site:build` is the portable static build and emitted-output gate. `site:browser`
-then verifies the built site with a local Chrome/Chromium binary; set
-`CHROME_PATH` when it is outside a standard location. `playwright-core` does not
-download a browser; to reproduce the pinned gate locally, run:
-
-```bash
-pnpm dlx @puppeteer/browsers@3.0.6 install chrome@150.0.7871.124 --path .cache/chrome-for-testing --format "{{path}}"
-CHROME_PATH=/absolute/path/from-above EXPECTED_CHROME_VERSION=150.0.7871.124 pnpm site:browser
-```
-
-CI and release validation use the same exact Chrome for Testing version and
-reject browser-version drift.
-
-`site/` is display-only and does not replace the package smoke or pack gates.
+Start at [docs/index.md](docs/index.md).

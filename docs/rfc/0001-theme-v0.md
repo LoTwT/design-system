@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented as the historical V0 baseline. The current additive package contract also includes the opt-in Neo-Brutalism family defined by [`docs/spec/rfc-brutal-theme.md`](../spec/rfc-brutal-theme.md); that accepted addendum extends, but does not replace, this theme-only boundary.
+Implemented as the historical V0 baseline. The current additive package contract also includes the opt-in Neo-Brutalism family defined by [`docs/spec/rfc-brutal-theme.md`](../spec/rfc-brutal-theme.md); that accepted addendum extends, but does not replace, this theme-only boundary. The bundled fonts listed below were later replaced: #46 swapped Space Grotesk for Bricolage Grotesque, and #56 added LXGW WenKai. See `docs/architecture.md` for the current font set.
 
 ## Repository Addendum (DS-D-05)
 
