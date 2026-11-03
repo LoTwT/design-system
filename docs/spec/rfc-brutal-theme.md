@@ -117,6 +117,8 @@ Hard shadows are opt-in physical tokens:
 
 The family maps cards and panels to the 6px and 8px hard-shadow geometry with family ink, maps card/control radius to zero, and maps surface/control border width to `3px`. The physical `shadow-hard-*` utilities remain current-color utilities for direct consumer composition.
 
+Family ink for shadows is the internal `--brutal-shadow` color (`#111111` in Neo Light, `#080808` in Neo Dark), separate from text and border colors. `--shadow-card`, `--shadow-panel`, and the `pressable` hover/active shadows all use it.
+
 ## 5. Pressable contract
 
 The utility is used with the existing accessibility utilities:

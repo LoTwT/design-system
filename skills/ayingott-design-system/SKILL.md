@@ -319,7 +319,6 @@ These live in the design-system repository. Read them when the skill is not enou
 - `docs/rfc/0001-theme-v0.md` — the implementation RFC.
 - `docs/rfc/0002-reading-token-layer-v0.1.md` — the reading token layer RFC.
 - `docs/spec/rfc-brutal-theme.md` — the accepted Neo-Brutalism family RFC.
-- `docs/decisions/2026-09-09-brutal-dark-refinement.md` — the implemented Neo Dark refinement; supersedes the RFC's text-ink shadow mapping.
 - `docs/spec/brutal-theme-contract.json` — the executable family declarations, invariants, and legal pairs.
 - `docs/decisions/index.md` — DS-D-01 through DS-D-11 design decisions.
 - `packages/theme/README.md` — package consumer guide.

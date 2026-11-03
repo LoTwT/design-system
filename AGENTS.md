@@ -61,7 +61,7 @@ The display-only VitePress showcase remains separate from the package contract.
 ## Documentation Lifecycle
 
 - Living docs (`site/`, `skills/`, `packages/theme/README.md`, and the `docs/spec/` contract baselines) are guarded by contract tests for required phrases; README, `skills/`, and `site/` CSS variable names and the README export list are also checked. Token values restated in prose are not checked. Change them only together with the implementation they describe.
-- Everything else under `docs/` is a point-in-time record (RFCs, decisions, release records, QA snapshots): use dated or numbered filenames and do not retro-edit; supersede with a new document instead.
+- Everything else under `docs/` holds RFCs, the `docs/decisions/index.md` foundation decisions, and release mechanics. Do not add per-PR decision records or QA snapshots: put change rationale and validation in the PR description, and let the generated CHANGELOG record user-visible changes.
 
 ## More Context
 
