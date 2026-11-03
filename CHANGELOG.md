@@ -1,3 +1,19 @@
+## 0.4.0 - 2026-11-03
+
+### Documentation
+
+- Fix drifted showcase copy, sentence-case headings, and simplify the homepage (#65)
+- Restructure agent guide and docs, drop redundant decision records (#67)
+
+### Fixed
+
+- **BREAKING** Restore container scale, mode-aware syntax colors, and 3:1 control borders (#60)
+- Close audit follow-ups for utility contract, CI hardening, and Tailwind floor (#61)
+- **BREAKING** Mode-aware shadow-card/panel utilities and percentage opacity tokens (#62)
+- **BREAKING** Separate neo status stickers, private wenkai family, overlay-safe z-index (#63)
+- **BREAKING** Neutralize paper surfaces, soften ink purple, and rebalance primary actions (#64)
+- **BREAKING** Lift Neo selected contrast, realign Neo Dark syntax, align Neo docs chrome (#66)
+
 ## 0.3.0 - 2026-09-14
 
 ### Added
