@@ -43,7 +43,7 @@ pnpm release:bump        # patch bump
 pnpm release:bump X.Y.Z  # explicit version
 ```
 
-Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the release workflow, which validates release metadata, publishes `@ayingott/theme` through npm Trusted Publishing / OIDC, creates a GitHub Release from git-cliff notes, and runs registry install smoke. The release tag ruleset is the pre-publish control; the `npm-publish` environment is an OIDC binding and is not a protected approval gate. See [DS-D-09](docs/release/DS-D-09-release.md) for workflow mechanics, [DS-D-14](docs/release/DS-D-14-exact-release-push.md) for the atomic commit-and-tag push, and [DS-D-15](docs/release/DS-D-15-v0.3-release-controls.md) for current V0.3.x controls and accepted residuals. [DS-D-12](docs/release/DS-D-12-v0.2-release-controls.md) records the preceding V0.2.x decision.
+Run the release script from `main` after the release PR has merged. It uses `bumpp@11.1.0` and creates `chore: release vX.Y.Z` commits with `vX.Y.Z` tags. The tag push triggers the release workflow, which validates release metadata, publishes `@ayingott/theme` through npm Trusted Publishing / OIDC, creates a GitHub Release from git-cliff notes, and runs registry install smoke. The release tag ruleset is the pre-publish control; the `npm-publish` environment is an OIDC binding and is not a protected approval gate. See [DS-D-09](docs/release/DS-D-09-release.md) for workflow mechanics and [docs/release/README.md](docs/release/README.md) for release gates and accepted residuals.
 
 The showcase site is intentionally separate from source docs:
 

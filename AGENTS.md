@@ -54,6 +54,7 @@ currently enforces them.
 - Pass repository-relative tarballs to `npm publish` with an explicit `./` prefix (or an absolute path); npm 11 can otherwise parse a slash-containing relative path as a Git package spec.
 - Stable releases publish with npm dist-tag `latest` and may become the latest GitHub Release. Prereleases publish with dist-tag `next`, are marked as GitHub prereleases, and must not become latest.
 - The GitHub environment binding for publish is `npm-publish`. It currently has no required reviewers or deployment branch/tag restrictions, and repository administrators retain bypass. Do not describe it as a protected environment; the `v*.*.*` release tag ruleset is the current pre-publish control.
+- A new minor or major version line does not need a separate decision document. Mark breaking changes with `!` in commit subjects so the generated CHANGELOG flags them.
 
 The display-only VitePress showcase remains separate from the package contract.
 
@@ -65,11 +66,7 @@ The display-only VitePress showcase remains separate from the package contract.
 ## More Context
 
 - RFC: `docs/rfc/0001-theme-v0.md`
-- Release: `docs/release/DS-D-09-release.md`
-- V0.1.x release controls: `docs/release/DS-D-10-v0-auto-publish.md`
-- V0.2.x release controls: `docs/release/DS-D-12-v0.2-release-controls.md`
-- Current V0.3.x release controls: `docs/release/DS-D-15-v0.3-release-controls.md`
-- V0.2.0 publish recovery: `docs/release/DS-D-13-v0.2.0-publish-recovery.md`
-- Exact release push: `docs/release/DS-D-14-exact-release-push.md`
+- Release workflow: `docs/release/DS-D-09-release.md`
+- Release gates: `docs/release/README.md`
 - Package: `packages/theme/README.md`
 - Notices: `packages/theme/THIRD_PARTY_NOTICES.md`

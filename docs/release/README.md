@@ -23,9 +23,22 @@ Repo-specific notes:
 - The `npm-publish` environment, Trusted Publisher binding, and `v*.*.*`
   tag-protection ruleset are repository settings, not source files.
 
-Current V0.3.x controls, accepted residuals, and release gates are canonical in
-[`DS-D-15-v0.3-release-controls.md`](DS-D-15-v0.3-release-controls.md).
-[`DS-D-12-v0.2-release-controls.md`](DS-D-12-v0.2-release-controls.md) records
-the preceding V0.2.x decision, and
-[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md) remains the
-point-in-time record for the V0.1.x / Phase 5 control decision.
+Release gates:
+
+1. Start from clean `main` that matches live `origin/main`, with matching
+   package versions.
+2. Verify that the target npm version and remote release tag do not exist.
+3. Run `pnpm check`, `pnpm site:typecheck`, `pnpm site:build`, and
+   `CHROME_PATH=<chrome-binary> pnpm site:browser`.
+4. Optionally rehearse `pnpm release:bump X.Y.Z --yes --no-push` in an
+   isolated checkout and inspect the generated changelog and site copy.
+5. Run `pnpm release:bump X.Y.Z` from clean `main`. It atomically pushes only
+   the release commit and its exact tag. Do not rerun a completed bump after a
+   push rejection.
+6. Declare the release complete only after validation, npm publication,
+   GitHub Release creation, and registry install smoke succeed, then read back
+   the npm version and dist-tag.
+
+Accepted residuals: `main` has no branch ruleset enforcing CI, `npm-publish`
+is not a protected approval gate, and repository administrators retain
+bypass. The `v*.*.*` tag ruleset is the pre-publish control.

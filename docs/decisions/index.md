@@ -155,7 +155,7 @@
 
 ## DS-D-09 Release workflow = bumpp + tag-triggered CI + npm OIDC
 
-**当前状态 / supersession**：release/package contract 仍有效；environment gate 口径由 DS-D-10 部分取代。当前控制与 accepted residual 的 canonical 记录见 [`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)。
+**当前状态 / supersession**：release/package contract 仍有效；environment gate 口径由 DS-D-10 部分取代。当前 release gates 与 accepted residual 见 [`docs/release/README.md`](../release/README.md)。
 
 **决策**：design-system 使用 `bumpp@11.1.0` 控制版本，并用 bumpp 自动加载的 `bump.config.ts` 统一 version files / commit / tag / push / changelog hook。仓库内所有 `package.json` 的 `version` 字段共享同一个 release version。`pnpm release:bump` 默认 patch bump；`pnpm release:bump X.Y.Z` 使用显式版本。
 
@@ -197,7 +197,7 @@ Trusted Publishing automatically generates provenance attestations server-side, 
 
 ## DS-D-10 V0.0.x 自动 publish + tag-protection 替代 fail-safe
 
-**Canonical current doc**：[`docs/release/DS-D-10-v0-auto-publish.md`](../release/DS-D-10-v0-auto-publish.md)，承载当前 live control、package/showcase boundary、accepted residual 与 Phase 5 rehearsal 要求。该控制模型始于 V0.0.x；2026-07-12，repository owner 在 root/theme version 为 0.1.0 的现状下选择 Phase 1B 方案 2，明确接受当前 environment exception，随后以 `go` 授权 Phase 5 rehearsal 开始。2026-07-13，owner 在完整边界被重新说明后，明确确认该 exception 适用于当前 V0.1.x patch line 与本次 Phase 5；未来 minor / major release line 需要新 decision。
+**当前状态**：该控制模型仍有效，当前 release gates 与 accepted residual 见 [`docs/release/README.md`](../release/README.md)。新的 minor / major 版本线不再需要单独 decision。该控制模型始于 V0.0.x；2026-07-12，repository owner 在 root/theme version 为 0.1.0 的现状下选择 Phase 1B 方案 2，明确接受当前 environment exception，随后以 `go` 授权 Phase 5 rehearsal 开始。2026-07-13，owner 在完整边界被重新说明后，明确确认该 exception 适用于当前 V0.1.x patch line 与本次 Phase 5。
 
 **决策**：design-system V0.0.x patch 阶段，CI release pipeline **不再使用 npm-publish environment 的 required reviewer 作为 publish 前 gate**。改为把 fail-safe 上移到 **tag 创建一步**（GitHub Ruleset `Protect release tags` 限制 `v*.*.*` 模式只允许 admin push / update / delete）。
 

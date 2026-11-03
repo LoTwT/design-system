@@ -126,11 +126,11 @@ point at:
 - workflow: `release.yml`
 - environment: `npm-publish`
 
-DS-D-10 partially supersedes the environment approval language in this
-decision and owns the canonical current-control and residual register. This
-document remains canonical for versioning, validation, packaging, publish,
-GitHub Release, registry smoke, and rollback mechanics. See
-[`DS-D-10-v0-auto-publish.md`](DS-D-10-v0-auto-publish.md).
+The environment no longer has required reviewers; the `v*.*.*` tag ruleset
+is the pre-publish control. Current release gates and accepted residuals live
+in [`README.md`](README.md). This document remains canonical for versioning,
+validation, packaging, publish, GitHub Release, registry smoke, and rollback
+mechanics.
 
 npm Trusted Publishing requires npm CLI 11.5.1 or later and Node
 22.14.0 or later. The release workflow uses Node 24.
