@@ -56,6 +56,15 @@
   --vp-sidebar-bg-color: color-mix(in oklab, var(--surface-canvas) 60%, var(--surface-subtle));
 }
 
+/* Neo Light follows the Paper layering instead: the sidebar, code blocks,
+   and inputs share one warm step below the cream canvas. Mixing toward the
+   khaki muted surface avoids the yellow cast of --surface-subtle, and the
+   elevated surface alone sat above the canvas, hiding code-block edges. */
+.brutal:not(.dark) {
+  --vp-c-bg-alt: color-mix(in oklab, var(--surface-canvas) 70%, var(--surface-muted));
+  --vp-sidebar-bg-color: var(--vp-c-bg-alt);
+}
+
 .VPSidebarItem.is-active > .item .text {
   font-weight: var(--font-weight-semibold);
 }
